@@ -37,7 +37,8 @@ function originOf(value: string | undefined): string {
 
 const IS_DEV = process.env.NODE_ENV !== "production";
 const IS_PREVIEW = process.env.VERCEL_ENV === "preview";
-// lib/api.ts falls back to localhost:4000 when the variable is unset.
+// lib/api.ts falls back to localhost:4000 when the variable is unset under
+// `next dev` (a production build without it stops there).
 const API_ORIGIN = originOf(process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000");
 const GA = (process.env.NEXT_PUBLIC_GA_ID || "").trim() !== "";
 const META = (process.env.NEXT_PUBLIC_META_PIXEL_ID || "").trim() !== "";

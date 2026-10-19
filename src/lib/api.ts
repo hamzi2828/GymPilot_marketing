@@ -1,7 +1,21 @@
 // Where the GymsPilotPro API lives. The marketing site uses the public routes
 // under /api/platform/public; the panel uses the rest with a platform token.
 
-export const API_BASE = (process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000").replace(/\/+$/, "");
+// NEXT_PUBLIC_BACKEND_URL says so. Only `next dev` falls back to a local API:
+// a production build without it stops with the reason (as for
+// NEXT_PUBLIC_SITE_URL in content/site.ts), rather than ship a site whose
+// prices, forms, checkout and panel all call http://localhost:4000. The value
+// is written into the build, so a build that got past this has it everywhere.
+function apiBase(): string {
+  const url = (process.env.NEXT_PUBLIC_BACKEND_URL || "").trim();
+  if (url) return url.replace(/\/+$/, "");
+  if (process.env.NODE_ENV !== "production") return "http://localhost:4000";
+  throw new Error(
+    "NEXT_PUBLIC_BACKEND_URL is not set. Set it to the GymsPilotPro API's address (for example https://api.example.com) before building for production: the prices, the forms, checkout and the platform panel all call it."
+  );
+}
+
+export const API_BASE = apiBase();
 export const PLATFORM_API = `${API_BASE}/api/platform`;
 
 export class ApiError extends Error {
