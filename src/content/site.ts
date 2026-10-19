@@ -101,7 +101,7 @@ export const BENEFITS: { eyebrow: string; title: string; text: string; items: { 
   title: "What changes for your gym",
   text: "Less chasing and less paperwork. More members and fuller classes.",
   items: [
-    { key: "renewals", title: "Get paid on time", text: "See who has paid, who is due and who owes. Reminders go out by themselves." },
+    { key: "renewals", title: "Get paid on time", text: "See who has paid and who owes. Members get a payment link and pay by card, JazzCash, Easypaisa or their bank app." },
     { key: "alerts", title: "No more unpaid visits", text: "Members check in by QR code or fingerprint, and the desk hears “Fee expired” when a lapsed member walks in." },
     { key: "website", title: "Win new members", text: "Your own website with your classes, trainers and prices, where people sign up." },
     { key: "booking", title: "Fill your classes", text: "Members book classes and personal training from their phone and get a reminder." },
@@ -179,7 +179,7 @@ export const PRICING = {
     { text: "Fee collection, expiry lists & dues", feature: "feedesk" },
     { text: "Check-in with spoken fee alerts", feature: "alerts" },
     { text: "Class & PT booking", feature: "booking" },
-    { text: "Reminders by email & phone notification", feature: "messaging" },
+    { text: "Fee reminders with a link to pay online", feature: "billing" },
     { text: "Daily sales & profit and loss", feature: "dailysales" },
   ] as Linked[],
   // Under the plans, wherever the native app is sold or given away.
@@ -215,12 +215,16 @@ export const TESTIMONIALS: { quote: string; who: string; where: string; sample: 
   },
 ];
 
-// The first five are what a gym owner asks before anything else and show on
+// The first six are what a gym owner asks before anything else and show on
 // the landing page at once; those marked `more` sit behind "More questions".
 export const FAQ: { q: string; a: string; more?: boolean }[] = [
   {
-    q: "How do payments work?",
-    a: "At the desk you record cash, bank transfer, JazzCash, Easypaisa or card-machine payments, part payments included, and the balance is tracked. These are recorded, not processed: the money reaches you as it always has. Members can also pay by bank transfer and upload the receipt for you to check. Card payments online run through your own Stripe account, where Stripe is available to your business.",
+    q: "How do members pay?",
+    a: "Online by card, JazzCash, Easypaisa or any bank app, through your gym's own Safepay account. Before the due date, on the due date and on the last day, members get a reminder with a link to pay. If you switch it on, a member who wants to can also save a card and pay automatically, and turn that off at any time. At the desk you record cash, bank transfer, wallet or card-machine payments, part payments included, and the balance is tracked; these are recorded, not processed, so that money reaches you as it always has. Members can also send a bank transfer and upload the receipt for you to check. Outside Pakistan, cards online can go through your own Stripe account instead, where Stripe is available to your business.",
+  },
+  {
+    q: "Does the money go to my account?",
+    a: "Yes, straight to your gym. Online payments go through your own Safepay account into your own bank account. GymsPilotPro never holds the money and takes no cut of it. Safepay takes its fee on each payment; a bank transfer or Raast payment straight to you has no Safepay fee. To open a Safepay account you need your CNIC, an NTN from FBR and a bank account certificate.",
   },
   {
     q: "Can I bring my existing members across?",
