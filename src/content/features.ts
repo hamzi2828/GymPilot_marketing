@@ -89,7 +89,7 @@ export const FEATURE_GROUPS: { key: GroupKey; label: string; title: string; text
   { key: "classes", label: "Classes & PT", title: "Classes and personal training", text: "Your timetable, your trainers' diaries, and members booking themselves in." },
   { key: "team", label: "Staff & trainers", title: "Your staff and trainers", text: "Rotas, leave and payslips for the team — and trainers paid a salary, a commission or both." },
   { key: "reach", label: "Website, portal & messages", title: "Reaching your members", text: "Your website, the member portal, and the messages that bring people back." },
-  { key: "control", label: "Data & security", title: "Set up, locked down, backed up", text: "Your settings, who sees what, and data that is only ever yours — with a fresh copy every night." },
+  { key: "control", label: "Data & security", title: "Set up, locked down, yours alone", text: "Your settings, who sees what, and data that is only ever yours." },
 ];
 
 export const FEATURES_PAGE = {
