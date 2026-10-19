@@ -5,7 +5,7 @@
 
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { FiAlertTriangle, FiCalendar, FiCreditCard, FiExternalLink, FiGlobe, FiLayers, FiMail, FiShield, FiUsers } from "react-icons/fi";
+import { FiAlertTriangle, FiCalendar, FiCopy, FiCreditCard, FiExternalLink, FiGlobe, FiLayers, FiMail, FiShield, FiUsers } from "react-icons/fi";
 import { PageHeader, Crumbs, Panel, StatCard, KeyValue, Button, Field, Input, Select, Textarea, Modal, Spinner, Alert, Pill, StatusPill, Avatar, useAsyncAction } from "../../_shared/ui";
 import { PaymentsPanel } from "./Payments";
 import { platformFetch, PlatformApiError, formatDate, formatMoney, DEFAULT_CURRENCY, SUBSCRIPTION_STATUSES, BILLING_CYCLES, type Addon, type DomainStatus, type Gym, type GymStats, type Plan } from "../../_shared/api";
@@ -19,7 +19,74 @@ type Hosting = {
   // needs as a name of its own.
   added: (HostResult & { dns: { type: string; name: string; value: string; note: string }; www?: HostResult })[];
 };
-type InviteResult = { data: { created: boolean; email: string; passwordSet: boolean; inviteSent: boolean }; warnings?: string[] };
+type InviteResult = {
+  data: {
+    created: boolean;
+    email: string;
+    passwordSet: boolean;
+    inviteSent: boolean;
+    /** Why the email did not go, when it did not. */
+    inviteError?: string | null;
+    /** The set-password link itself, when the API hands it over because the email did not go. */
+    setPasswordLink?: string | null;
+  };
+  warnings?: string[];
+};
+/** What the last "Resend owner invite" or "Reset owner password" did, shown until dismissed. */
+type InviteOutcome = { email: string; passwordSet: boolean; sent: boolean; reason: string; link: string };
+
+/**
+ * The answer to an owner invite: whether the email went, why not, and --
+ * when the API gave it -- the set-password link to pass on by hand.
+ */
+function InviteOutcomeNotice({ outcome, onDismiss }: { outcome: InviteOutcome; onDismiss: () => void }) {
+  const [copied, setCopied] = useState<"yes" | "failed" | null>(null);
+  const copy = () => {
+    if (!navigator.clipboard) return setCopied("failed");
+    navigator.clipboard.writeText(outcome.link).then(
+      () => setCopied("yes"),
+      () => setCopied("failed")
+    );
+  };
+  return (
+    <div className="px-6 pt-4">
+      {outcome.passwordSet && (
+        <Alert tone="success" onDismiss={outcome.sent ? onDismiss : undefined}>
+          Password set for <span className="font-semibold">{outcome.email}</span>. They can sign in with it now.
+          {outcome.sent ? " A set-password link was emailed to them as well." : ""}
+        </Alert>
+      )}
+      {!outcome.passwordSet && outcome.sent && (
+        <Alert tone="success" onDismiss={onDismiss}>
+          A set-password link was emailed to <span className="font-semibold">{outcome.email}</span>.
+        </Alert>
+      )}
+      {!outcome.sent && (
+        <Alert tone="warning" onDismiss={onDismiss}>
+          <span className="block">
+            The set-password email to <span className="font-semibold">{outcome.email}</span> could not be sent{outcome.reason ? `: ${outcome.reason}` : "."}
+          </span>
+          {outcome.link ? (
+            <span className="mt-2 block">
+              Send the owner this link yourself, by WhatsApp for example. It opens the page where they choose their password.
+              <span className="mt-2 flex flex-wrap items-center gap-2">
+                <span className="min-w-0 flex-1 break-all rounded-lg bg-white px-2 py-1.5 font-mono text-xs text-slate-900 ring-1 ring-amber-200">{outcome.link}</span>
+                <Button variant="secondary" size="sm" onClick={copy}>
+                  <FiCopy className="h-3.5 w-3.5" /> {copied === "yes" ? "Copied" : "Copy"}
+                </Button>
+              </span>
+              {copied === "failed" && <span className="mt-1 block text-xs">Could not copy: select the link and copy it by hand.</span>}
+            </span>
+          ) : (
+            <span className="mt-1 block">
+              {outcome.passwordSet ? "Pass the password on to them yourself." : <>Use &quot;Reset owner password&quot; to set a password by hand and pass it on.</>}
+            </span>
+          )}
+        </Alert>
+      )}
+    </div>
+  );
+}
 
 /** A plan's price for a cycle, as the amount field shows it. */
 function planPrice(plan: Plan | undefined, cycle: string): string {
@@ -62,6 +129,9 @@ function GymDetail() {
   const [addonSlugs, setAddonSlugs] = useState<string[]>([]);
   const [resetOpen, setResetOpen] = useState(false);
   const [reset, setReset] = useState({ email: "", password: "" });
+  // A refused reset is said inside its window, which stays open.
+  const [resetError, setResetError] = useState<string | null>(null);
+  const [invite, setInvite] = useState<InviteOutcome | null>(null);
   const [suspendOpen, setSuspendOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [confirmSlug, setConfirmSlug] = useState("");
@@ -165,21 +235,28 @@ function GymDetail() {
     });
 
   // "Resend owner invite": a set-password link, nothing about the password
-  // itself changes. The answer says whether the email went. Run through
-  // `action` by the button that asks for it.
-  const sendInvite = async (email: string, password?: string) => {
+  // itself changes; "Reset owner password" may set one by hand as well. The
+  // answer says whether the email went, and why not. Run through `action` by
+  // the button that asks for it. Resolves to why it was refused, or null.
+  const sendInvite = async (email: string, password?: string): Promise<string | null> => {
     setError(null);
     setNotice(null);
+    setInvite(null);
     try {
       const res = await platformFetch<InviteResult>(`/gyms/${id}/reset-owner-password`, { method: "POST", body: password ? { email, password } : { email } });
-      if (res.data.inviteSent) {
-        setNotice(`${password ? "Password set. " : ""}A set-password link was emailed to ${res.data.email}.`);
-      } else {
-        setError(`${password ? "Password set, but the" : "The"} email to ${res.data.email} could not be sent${res.warnings?.length ? ` (${res.warnings[0]})` : ""}. Check the API's SMTP settings and try again.`);
-      }
+      // Reloaded before the answer is shown: a reload clears the page's
+      // messages, and this one has to stay in front of the admin.
       await load();
+      setInvite({
+        email: res.data.email,
+        passwordSet: res.data.passwordSet,
+        sent: res.data.inviteSent,
+        reason: res.data.inviteSent ? "" : res.data.inviteError || "",
+        link: res.data.inviteSent ? "" : res.data.setPasswordLink || "",
+      });
+      return null;
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Request failed");
+      return e instanceof Error ? e.message : "Request failed";
     }
   };
   const chosenAddons = sellableAddons.filter((addon) => addonSlugs.includes(addon.slug));
@@ -709,10 +786,28 @@ function GymDetail() {
           }
           actions={
             <>
-              <Button variant="secondary" size="sm" disabled={busy || !gym.owner.email} loading={action.pending === "invite"} onClick={() => action.run("invite", () => sendInvite(gym.owner.email))}>
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={busy || !gym.owner.email}
+                loading={action.pending === "invite"}
+                onClick={() =>
+                  action.run("invite", async () => {
+                    const problem = await sendInvite(gym.owner.email);
+                    if (problem) setError(problem);
+                  })
+                }
+              >
                 <FiMail className="h-3.5 w-3.5" /> Resend owner invite
               </Button>
-              <Button variant="secondary" size="sm" onClick={() => setResetOpen(true)}>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  setResetError(null);
+                  setResetOpen(true);
+                }}
+              >
                 Reset owner password
               </Button>
             </>
@@ -724,6 +819,7 @@ function GymDetail() {
           }
           padded={false}
         >
+          {invite && <InviteOutcomeNotice key={`${invite.email}-${invite.link}`} outcome={invite} onDismiss={() => setInvite(null)} />}
           {admins === null ? (
             <p className="px-6 py-6 text-xs text-slate-500">Loading…</p>
           ) : !admins.length ? (
@@ -767,6 +863,11 @@ function GymDetail() {
             <Input type="password" value={reset.password} onChange={(e) => setReset((r) => ({ ...r, password: e.target.value }))} autoComplete="new-password" />
           </Field>
         </div>
+        {resetError && (
+          <div className="mt-4">
+            <Alert tone="error">{resetError}</Alert>
+          </div>
+        )}
         <div className="mt-6 flex justify-end gap-2">
           <Button variant="secondary" onClick={() => setResetOpen(false)}>
             Cancel
@@ -776,7 +877,14 @@ function GymDetail() {
             loading={action.pending === "reset"}
             onClick={() =>
               action.run("reset", async () => {
-                await sendInvite(reset.email, reset.password || undefined);
+                setResetError(null);
+                const problem = await sendInvite(reset.email, reset.password || undefined);
+                // Refused: nothing changed, and the window stays open to say why.
+                if (problem) {
+                  setResetError(problem);
+                  return;
+                }
+                // Done: what happened is shown under Administrators.
                 setResetOpen(false);
                 setReset((r) => ({ ...r, password: "" }));
               })
