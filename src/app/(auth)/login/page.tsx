@@ -31,6 +31,8 @@ function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const { busy, run } = useAsyncAction();
   const [quick, setQuick] = useState<QuickAccount | null>(null);
+  // Sent here by the reset page once the new password is saved.
+  const passwordReset = params.get("reset") === "1";
 
   // Arriving with ?quick=1 pre-fills the account, when the dev route has one.
   useEffect(() => {
@@ -135,6 +137,11 @@ function LoginForm() {
           </label>
         ) : (
           <>
+            {passwordReset && !error && (
+              <p role="status" className="rounded-xl bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
+                Password updated. Sign in with your new password.
+              </p>
+            )}
             <label className="block">
               <span className="text-xs font-semibold text-slate-700">Email</span>
               <input type="email" required autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} className={`${authInput} mt-1.5`} />

@@ -27,9 +27,9 @@ function ResetForm() {
       setError(null);
       try {
         await platformFetch("/auth/reset-password", { method: "POST", body: { email, token, password } });
-        // Busy until the sign-in page has taken over.
+        // Busy until the sign-in page has taken over; it says the password changed.
         leave();
-        router.replace("/login");
+        router.replace("/login?reset=1");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Could not reset the password");
       }
