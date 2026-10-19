@@ -24,9 +24,10 @@ const FOCUS = "focus-visible:outline-none focus-visible:ring-2 focus-visible:rin
 
 /**
  * The Features menu on wide screens: the word takes you to the features on
- * the landing page, and the arrow beside it opens a panel of every feature,
- * by group, under the header. A disclosure rather than an ARIA
- * menu -- it is a set of links, so Tab walks through them as on any page.
+ * the landing page (to /features, when on it), and the arrow beside it
+ * opens a panel of every feature, by group, under the header. A disclosure
+ * rather than an ARIA menu -- it is a set of links, so Tab walks through
+ * them as on any page.
  * Enter, Space or Arrow Down opens it (Arrow Down also moves into it), Esc
  * closes it and hands focus back to the button, and it closes when focus or
  * a click lands anywhere else.
@@ -126,6 +127,9 @@ export default function SiteHeader() {
   const onLanding = pathname === "/";
   const href = (target: string) => (target.startsWith("#") && !onLanding ? `/${target}` : target);
   const onFeatures = pathname === "/features" || pathname.startsWith("/features/");
+  // Features is lit under /features, so there it leads to /features itself,
+  // not back to the landing page's features section.
+  const featuresHref = onFeatures ? "/features" : href("#features");
 
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState<string>("");
@@ -192,7 +196,7 @@ export default function SiteHeader() {
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
           {NAV.map((item) => {
             const current = isActive(item);
-            if (item.menu === "features") return <FeaturesMenu key={item.href} current={current} labelHref={href("#features")} />;
+            if (item.menu === "features") return <FeaturesMenu key={item.href} current={current} labelHref={featuresHref} />;
             return (
               <Link key={item.href} href={href(item.href)} aria-current={current ? "true" : undefined} className={`relative rounded-full px-3.5 py-2 text-sm font-medium transition-colors ${FOCUS} ${current ? "bg-white/10 text-white" : "text-slate-300 hover:bg-white/5 hover:text-white"}`}>
                 {item.label}
@@ -227,7 +231,7 @@ export default function SiteHeader() {
                 return (
                   <div key={item.href}>
                     <div className="flex items-center gap-2">
-                      <Link href={href("#features")} onClick={close} className={`flex-1 rounded-lg px-3 py-3 text-base font-medium ${FOCUS} ${current ? "bg-white/10 text-white" : "text-slate-200 hover:bg-white/5"}`}>
+                      <Link href={featuresHref} onClick={close} className={`flex-1 rounded-lg px-3 py-3 text-base font-medium ${FOCUS} ${current ? "bg-white/10 text-white" : "text-slate-200 hover:bg-white/5"}`}>
                         Features
                       </Link>
                       <button

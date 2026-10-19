@@ -306,9 +306,11 @@ details > summary::-webkit-details-marker {
 .reveal.is-visible .v-cta-in { animation: m-cta-in 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both; }
 
 /* A feature card reached from Jump to (/features#<slug>) glows for a moment,
-   so the eye finds it once the page has slid there. */
+   so the eye finds it once the page has slid there. :target covers a full
+   page load; .is-target a move inside the site (TargetGlow.tsx). */
 @keyframes m-target-ring { 0% { opacity: 0; } 15%, 60% { opacity: 1; } 100% { opacity: 0; } }
-.feature-anchor:target::after { content: ""; position: absolute; inset: -5px; border-radius: 1.2rem; box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.75), 0 0 24px 4px rgba(168, 85, 247, 0.35); pointer-events: none; animation: m-target-ring 2.6s ease-out 0.5s both; }
+.feature-anchor:target::after,
+.feature-anchor.is-target::after { content: ""; position: absolute; inset: -5px; border-radius: 1.2rem; box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.75), 0 0 24px 4px rgba(168, 85, 247, 0.35); pointer-events: none; animation: m-target-ring 2.6s ease-out 0.5s both; }
 
 /* The header's menus drop in rather than blink on. */
 @keyframes m-menu { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }

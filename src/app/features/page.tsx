@@ -12,6 +12,7 @@ import Reveal from "@/components/marketing/Reveal";
 import Glow from "@/components/marketing/Glow";
 import FeatureGroupsGrid from "@/components/marketing/FeatureGroupsGrid";
 import Suggestions from "@/components/marketing/Suggestions";
+import TargetGlow from "@/components/marketing/TargetGlow";
 
 // For search results: one sentence, under 160 characters.
 const DESCRIPTION = `All ${FEATURES.length} ${SITE.name} features in plain English: fee collection, dues, check-in alerts, reports, the shop, classes, staff, messaging and your website.`;
@@ -121,6 +122,7 @@ export default function FeaturesPage() {
       </main>
       <SiteFooter />
       <ScrollProgress />
+      <TargetGlow />
     </>
   );
 }
