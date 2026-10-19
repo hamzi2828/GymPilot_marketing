@@ -105,6 +105,8 @@ function NewGymForm() {
   // Where this gym came from: a checkout or a demo request, if any.
   const fromId = params.get("from") || "";
   const [request, setRequest] = useState<DemoRequest | null>(null);
+  // Why that request could not be loaded, when it could not.
+  const [fromError, setFromError] = useState<string | null>(null);
   // The address they signed up with is not ours to retype; it is where the
   // sign-in details go.
   const [emailLocked, setEmailLocked] = useState(false);
@@ -218,14 +220,18 @@ function NewGymForm() {
   );
 
   useEffect(() => {
-    if (!fromId || !plansLoaded || request) return;
+    if (!fromId || !plansLoaded || request || fromError) return;
     platformFetch<{ data: DemoRequest }>(`/demo-requests/${fromId}`)
       .then((res) => {
         setRequest(res.data);
         prefill(res.data, plans);
       })
-      .catch(() => setRequest(null));
-  }, [fromId, plans, plansLoaded, request, prefill]);
+      .catch((e) => {
+        setRequest(null);
+        // An empty form with no word of why would look like a form that was never asked to fill itself in.
+        setFromError(e instanceof Error ? e.message : "Could not load it");
+      });
+  }, [fromId, plans, plansLoaded, request, fromError, prefill]);
 
   // A plain link can still say what to call it.
   useEffect(() => {
@@ -351,6 +357,16 @@ function NewGymForm() {
             </>
           )}
           . Creating another makes a second gym, and the request will point at the new one.
+        </Alert>
+      )}
+      {fromError && (
+        <Alert tone="warning">
+          The request this form was opened from could not be loaded ({fromError}), so nothing has been filled in. Fill the form in by hand, or open the
+          request again from{" "}
+          <Link href="/super-admin/demo-requests" className="font-semibold underline">
+            Demo requests
+          </Link>
+          .
         </Alert>
       )}
       {requestPlanGone && (

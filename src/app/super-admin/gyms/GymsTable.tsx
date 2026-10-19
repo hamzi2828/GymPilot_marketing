@@ -110,10 +110,11 @@ export default function GymsTable({ title, compact = false }: { title?: string; 
         </div>
       </div>
 
-      {error && <p className="mb-3 text-sm text-rose-600">{error}</p>}
-
+      {/* A list that would not load says only that: not also "No gyms match". */}
       {loading ? (
         <Spinner />
+      ) : error ? (
+        <p className="mb-3 text-sm text-rose-600">{error}</p>
       ) : !gyms.length ? (
         <EmptyState title="No gyms match" hint="Try a different search, or create a gym." action={<Button href="/super-admin/gyms/new">New gym</Button>} />
       ) : (

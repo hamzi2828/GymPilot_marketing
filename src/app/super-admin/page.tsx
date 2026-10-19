@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FiAlertCircle, FiArrowRight, FiClock, FiGrid, FiPlus, FiTrendingUp } from "react-icons/fi";
 import { PageHeader, Panel, StatCard, SegmentBar, Spinner, Alert, Button, Pill, Avatar } from "./_shared/ui";
-import { platformFetch, formatMoney, formatDate, DEFAULT_CURRENCY, type Overview } from "./_shared/api";
+import { platformFetch, formatMoney, formatDate, DEFAULT_CURRENCY, type Gym, type Overview } from "./_shared/api";
 import GymsTable from "./gyms/GymsTable";
 
 function greeting() {
@@ -12,9 +12,15 @@ function greeting() {
   return h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
 }
 
+type Overdue = "past_due" | "expired";
+const OVERDUE: Record<Overdue, string> = { past_due: "Past due", expired: "Expired" };
+
 export default function SuperAdminOverviewPage() {
   const [overview, setOverview] = useState<Overview | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // The overview's overdue list holds past-due and expired gyms together.
+  // When there are both, the gym list says which each one is.
+  const [overdue, setOverdue] = useState<Record<string, Overdue> | null>(null);
 
   useEffect(() => {
     platformFetch<{ data: Overview }>("/overview")
@@ -22,10 +28,30 @@ export default function SuperAdminOverviewPage() {
       .catch((e) => setError(e instanceof Error ? e.message : "Could not load overview"));
   }, []);
 
+  useEffect(() => {
+    const subs = overview?.subscriptions;
+    if (!overview?.attention?.past_due.length || !subs?.past_due || !subs.expired) return;
+    let cancelled = false;
+    const ask = (status: Overdue) =>
+      platformFetch<{ data: Gym[] }>(`/gyms?status=active&subscription=${status}`).then((res) => res.data.map((g) => [g.id, status] as const));
+    Promise.all([ask("past_due"), ask("expired")])
+      .then((lists) => {
+        if (!cancelled) setOverdue(Object.fromEntries(lists.flat()));
+      })
+      .catch(() => {
+        /* the rows say "Overdue" without knowing which */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [overview]);
+
   if (error) return <Alert tone="error">{error}</Alert>;
   if (!overview) return <Spinner />;
 
   const subs = overview.subscriptions;
+  // Only one kind on the platform: every overdue row is that kind.
+  const overdueOf = (id: string): Overdue | null => (!subs.expired ? "past_due" : !subs.past_due ? "expired" : overdue?.[id] || null);
   const attention = overview.attention || { renewing: [], past_due: [], suspended: [] };
   const attentionCount = attention.renewing.length + attention.past_due.length + attention.suspended.length;
   const today = new Date().toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" });
@@ -84,9 +110,18 @@ export default function SuperAdminOverviewPage() {
             <p className="px-6 py-8 text-center text-sm text-slate-500">Nothing needs a look right now.</p>
           ) : (
             <ul className="divide-y divide-slate-100">
-              {attention.past_due.map((g) => (
-                <AttentionRow key={`pd-${g.id}`} gym={g} tone="past_due" label="Past due" detail={g.currentPeriodEnd ? `period ended ${formatDate(g.currentPeriodEnd)}` : "no period end"} />
-              ))}
+              {attention.past_due.map((g) => {
+                const status = overdueOf(g.id);
+                return (
+                  <AttentionRow
+                    key={`pd-${g.id}`}
+                    gym={g}
+                    tone={status || "warn"}
+                    label={status ? OVERDUE[status] : "Overdue"}
+                    detail={g.currentPeriodEnd ? `period ended ${formatDate(g.currentPeriodEnd)}` : "no period end"}
+                  />
+                );
+              })}
               {attention.renewing.map((g) => (
                 <AttentionRow key={`rn-${g.id}`} gym={g} tone="warn" label="Renews" detail={g.currentPeriodEnd ? formatDate(g.currentPeriodEnd) : ""} />
               ))}
