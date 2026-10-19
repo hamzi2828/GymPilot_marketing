@@ -9,6 +9,7 @@ import React, { useEffect, useLayoutEffect, useRef } from "react";
 import Link from "next/link";
 import { FiInbox, FiX } from "react-icons/fi";
 import BusySpinner from "@/components/BusySpinner";
+import SearchableSelect, { type SearchableSelectProps, type SelectSkin } from "@/components/SearchableSelect";
 
 // Every action button runs through these: a guard against double clicks and
 // the spinner it shows meanwhile (see Button's `loading`).
@@ -122,8 +123,35 @@ export function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return <input {...props} className={cx(inputClass, widthOf(props.className), props.className)} />;
 }
 
-export function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
-  return <select {...props} className={cx(inputClass, widthOf(props.className), "pr-8", props.className)} />;
+// The panel's look for the searchable dropdown every page uses (see
+// SearchableSelect). The field is a button, which always counts as read-only,
+// so it takes the input's look without the read-only greying.
+const selectSkin: SelectSkin = {
+  trigger: cx(
+    inputClass
+      .split(" ")
+      .filter((c) => !c.startsWith("read-only:"))
+      .join(" "),
+    "pr-2.5 aria-expanded:border-indigo-500 aria-expanded:ring-2 aria-expanded:ring-indigo-500/20"
+  ),
+  placeholder: "text-slate-400",
+  chevron: "text-slate-400",
+  popup: "rounded-xl border border-slate-200 bg-white text-slate-900 shadow-[0_12px_32px_-8px_rgba(15,23,42,0.25)]",
+  search: "h-9 rounded-lg border border-slate-200 bg-white pl-9 pr-3 text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20",
+  searchIcon: "text-slate-400",
+  list: "admin-scroll",
+  group: "text-slate-400",
+  option: "text-slate-700",
+  active: "bg-indigo-50 text-indigo-900",
+  selected: "font-semibold text-indigo-700",
+  disabled: "cursor-not-allowed text-slate-300",
+  check: "text-indigo-600",
+  empty: "text-slate-500",
+};
+
+/** A searchable dropdown: a native select's props and its option children. */
+export function Select({ skin, ...props }: SearchableSelectProps) {
+  return <SearchableSelect {...props} skin={{ ...selectSkin, ...skin }} />;
 }
 
 export function Textarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
