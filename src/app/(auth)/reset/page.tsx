@@ -49,11 +49,11 @@ function ResetForm() {
       <form onSubmit={submit} className="space-y-4">
         {!token && <p className="rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700">This link is missing its token. Request a new one.</p>}
         <label className="block">
-          <span className="text-xs font-semibold text-slate-700">New password (min 10 characters)</span>
+          <span className="text-xs font-semibold text-neutral-700">New password (min 10 characters)</span>
           <input type="password" required minLength={10} autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} className={`${authInput} mt-1.5`} />
         </label>
         <label className="block">
-          <span className="text-xs font-semibold text-slate-700">Confirm</span>
+          <span className="text-xs font-semibold text-neutral-700">Confirm</span>
           <input type="password" required autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)} className={`${authInput} mt-1.5`} />
         </label>
         {error && <p className="rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700">{error}</p>}

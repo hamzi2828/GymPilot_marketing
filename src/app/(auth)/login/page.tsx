@@ -117,7 +117,7 @@ function LoginForm() {
             <Link href="/forgot" className="font-medium text-indigo-600 hover:text-indigo-500">
               Forgot password?
             </Link>
-            <FullPageLink href="/" className="hover:text-slate-800">
+            <FullPageLink href="/" className="hover:text-neutral-800">
               Back to the website
             </FullPageLink>
           </>
@@ -127,28 +127,28 @@ function LoginForm() {
       <form onSubmit={submit} className="space-y-4">
         {challenge && challenge.method === "app" ? (
           <label className="block">
-            <span className="text-xs font-semibold text-slate-700">Code from your authenticator app</span>
+            <span className="text-xs font-semibold text-neutral-700">Code from your authenticator app</span>
             <input autoFocus autoComplete="one-time-code" autoCapitalize="none" spellCheck={false} value={code} onChange={(e) => setCode(e.target.value)} className={`${authInput} mt-1.5 text-center text-xl tracking-[0.3em]`} placeholder="123456" />
-            <span className="mt-1.5 block text-[11px] text-slate-500">Lost your phone? Type one of your backup codes (like abcde-fghjk) instead.</span>
+            <span className="mt-1.5 block text-[11px] text-neutral-500">Lost your phone? Type one of your backup codes (like abcde-fghjk) instead.</span>
           </label>
         ) : challenge ? (
           <label className="block">
-            <span className="text-xs font-semibold text-slate-700">6-digit code</span>
+            <span className="text-xs font-semibold text-neutral-700">6-digit code</span>
             <input autoFocus inputMode="numeric" autoComplete="one-time-code" value={code} onChange={(e) => setCode(e.target.value)} className={`${authInput} mt-1.5 text-center text-2xl tracking-[0.4em]`} placeholder="••••••" />
           </label>
         ) : (
           <>
             {passwordReset && !error && (
-              <p role="status" className="rounded-xl bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
+              <p role="status" className="rounded-lg bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
                 Password updated. Sign in with your new password.
               </p>
             )}
             <label className="block">
-              <span className="text-xs font-semibold text-slate-700">Email</span>
+              <span className="text-xs font-semibold text-neutral-700">Email</span>
               <input type="email" required autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} className={`${authInput} mt-1.5`} />
             </label>
             <label className="block">
-              <span className="text-xs font-semibold text-slate-700">Password</span>
+              <span className="text-xs font-semibold text-neutral-700">Password</span>
               <input type="password" required autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} className={`${authInput} mt-1.5`} />
             </label>
             {quick && (
@@ -159,21 +159,21 @@ function LoginForm() {
                   setPassword(quick.password);
                   setError(null);
                 }}
-                className="flex w-full items-center gap-3 rounded-xl border border-dashed border-indigo-200 bg-indigo-50/60 px-3.5 py-2.5 text-left transition-colors hover:border-indigo-400 hover:bg-indigo-50"
+                className="flex w-full items-center gap-3 rounded-lg border border-dashed border-indigo-200 bg-indigo-50/60 px-3.5 py-2.5 text-left transition-colors hover:border-indigo-400 hover:bg-indigo-50"
               >
                 <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white">
                   <FiZap className="h-4 w-4" />
                 </span>
                 <span className="min-w-0">
-                  <span className="block text-xs font-semibold text-slate-900">Super admin · quick sign in (development)</span>
-                  <span className="block truncate text-[11px] text-slate-500">{quick.email} · tap to fill, then Sign in</span>
+                  <span className="block text-xs font-semibold text-neutral-900">Super admin · quick sign in (development)</span>
+                  <span className="block truncate text-[11px] text-neutral-500">{quick.email} · tap to fill, then Sign in</span>
                 </span>
               </button>
             )}
           </>
         )}
 
-        {error && <p className="rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700">{error}</p>}
+        {error && <p className="rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-700">{error}</p>}
 
         <AuthButton loading={busy} disabled={challenge ? !codeReady(code, challenge.method) : false}>
           {busy ? "Please wait…" : challenge ? "Verify" : "Sign in"}
