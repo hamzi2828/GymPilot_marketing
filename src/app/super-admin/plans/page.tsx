@@ -202,7 +202,7 @@ export default function PlansPage() {
               className="flex flex-col"
               footer={
                 <>
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs text-neutral-500">
                     {plan.gym_count || 0} gym{plan.gym_count === 1 ? "" : "s"} on this plan
                   </span>
                   <div className="flex gap-2">
@@ -218,16 +218,16 @@ export default function PlansPage() {
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h2 className="text-base font-semibold text-slate-900">{plan.name}</h2>
-                  <p className="font-mono text-xs text-slate-400">{plan.slug}</p>
+                  <h2 className="text-base font-semibold text-neutral-900">{plan.name}</h2>
+                  <p className="font-mono text-xs text-neutral-400">{plan.slug}</p>
                 </div>
                 {!plan.isActive && <Pill tone="neutral">inactive</Pill>}
               </div>
-              <p className="mt-4 text-3xl font-semibold tracking-tight text-slate-900">
+              <p className="mt-4 text-3xl font-semibold tracking-tight text-neutral-900">
                 {plan.price.monthly === 0 ? "Free" : formatMoney(plan.price.monthly, plan.price.currency)}
-                {plan.price.monthly > 0 && <span className="text-sm font-normal text-slate-500"> /month</span>}
+                {plan.price.monthly > 0 && <span className="text-sm font-normal text-neutral-500"> /month</span>}
               </p>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-neutral-500">
                 {plan.price.yearly > 0 ? (
                   <>
                     {formatMoney(plan.price.yearly, plan.price.currency)} /year
@@ -239,7 +239,7 @@ export default function PlansPage() {
                 {" · "}
                 {plan.trialDays}-day trial
               </p>
-              {plan.description && <p className="mt-3 text-sm text-slate-600">{plan.description}</p>}
+              {plan.description && <p className="mt-3 text-sm text-neutral-600">{plan.description}</p>}
               <dl className="mt-5 grid grid-cols-2 gap-3">
                 {[
                   ["Members", plan.limits.maxMembers],
@@ -247,22 +247,22 @@ export default function PlansPage() {
                   ["Trainers", plan.limits.maxTrainers],
                   ["Classes", plan.limits.maxClasses],
                 ].map(([label, n]) => (
-                  <div key={String(label)} className="rounded-lg bg-slate-50 px-3 py-2">
-                    <dt className="text-[11px] font-medium uppercase tracking-wider text-slate-400">{label}</dt>
-                    <dd className="text-sm font-semibold text-slate-900">{limit(Number(n))}</dd>
+                  <div key={String(label)} className="rounded-lg bg-neutral-50 px-3 py-2">
+                    <dt className="text-[11px] font-medium uppercase tracking-wider text-neutral-400">{label}</dt>
+                    <dd className="text-sm font-semibold text-neutral-900">{limit(Number(n))}</dd>
                   </div>
                 ))}
               </dl>
               {plan.includedAddons.length > 0 && (
-                <p className="mt-4 text-xs text-slate-500">
+                <p className="mt-4 text-xs text-neutral-500">
                   Comes with:{" "}
-                  <span className="font-medium text-slate-700">
+                  <span className="font-medium text-neutral-700">
                     {plan.includedAddons.map((slug) => addons.find((a) => a.slug === slug)?.name || slug).join(", ")}
                   </span>
                 </p>
               )}
               {plan.features.length > 0 && (
-                <ul className="mt-4 space-y-1.5 text-sm text-slate-600">
+                <ul className="mt-4 space-y-1.5 text-sm text-neutral-600">
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-start gap-2">
                       <FiCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" /> {f}
@@ -328,7 +328,7 @@ export default function PlansPage() {
                           }))
                         }
                         className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
-                          on ? "border-emerald-600 bg-emerald-600 text-white" : "border-slate-200 text-slate-600 hover:border-slate-300"
+                          on ? "border-emerald-600 bg-emerald-600 text-white" : "border-neutral-200 text-neutral-600 hover:border-neutral-300"
                         }`}
                       >
                         {addon.name}

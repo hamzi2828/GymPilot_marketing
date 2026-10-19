@@ -58,7 +58,7 @@ export default function GymsTable({ title, compact = false }: { title?: string; 
       <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         {title && (
           <div className="flex items-center gap-3">
-            <h2 className="text-base font-semibold text-slate-900">{title}</h2>
+            <h2 className="text-base font-semibold text-neutral-900">{title}</h2>
             {pagination && <Pill tone="neutral" dot={false}>{pagination.total}</Pill>}
             {compact && (
               <Link href="/super-admin/gyms" className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-500">
@@ -69,7 +69,7 @@ export default function GymsTable({ title, compact = false }: { title?: string; 
         )}
         <div className="flex flex-wrap items-center gap-2">
           <div className="relative">
-            <FiSearch className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <FiSearch className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
             <input
               value={search}
               onChange={(e) => {
@@ -129,8 +129,8 @@ export default function GymsTable({ title, compact = false }: { title?: string; 
               <div key="g" className="flex items-center gap-3">
                 <Avatar name={gym.name} />
                 <div className="min-w-0">
-                  <p className="truncate font-medium text-slate-900">{gym.name}</p>
-                  <p className="flex items-center gap-2 text-xs text-slate-500">
+                  <p className="truncate font-medium text-neutral-900">{gym.name}</p>
+                  <p className="flex items-center gap-2 text-xs text-neutral-500">
                     <span className="font-mono">{gym.slug}</span>
                     {gym.status === "suspended" && <Pill tone="suspended">suspended</Pill>}
                   </p>
@@ -140,32 +140,32 @@ export default function GymsTable({ title, compact = false }: { title?: string; 
                 {hosts.length ? (
                   <>
                     {hosts.slice(0, 2).map((h) => (
-                      <span key={h} className="rounded-md bg-slate-100 px-1.5 py-0.5 font-mono text-[11px] text-slate-700">
+                      <span key={h} className="rounded-md bg-neutral-100 px-1.5 py-0.5 font-mono text-[11px] text-neutral-700">
                         {h}
                       </span>
                     ))}
-                    {hosts.length > 2 && <span className="text-[11px] text-slate-500">+{hosts.length - 2}</span>}
+                    {hosts.length > 2 && <span className="text-[11px] text-neutral-500">+{hosts.length - 2}</span>}
                   </>
                 ) : (
-                  <span className="text-xs text-slate-400">none</span>
+                  <span className="text-xs text-neutral-400">none</span>
                 )}
               </div>,
-              <span key="p">{plan ? plan.name : <span className="text-slate-400">—</span>}</span>,
+              <span key="p">{plan ? plan.name : <span className="text-neutral-400">—</span>}</span>,
               <div key="s">
                 <StatusPill status={gym.subscription.status} />
-                <p className="mt-1 text-[11px] text-slate-500">{gym.subscription.currentPeriodEnd ? `until ${formatDate(gym.subscription.currentPeriodEnd)}` : "no end date"}</p>
+                <p className="mt-1 text-[11px] text-neutral-500">{gym.subscription.currentPeriodEnd ? `until ${formatDate(gym.subscription.currentPeriodEnd)}` : "no end date"}</p>
               </div>,
-              <span key="m" className="font-medium text-slate-900">{stats.error ? "—" : stats.members ?? "—"}</span>,
-              <span key="a" className="font-medium text-slate-900">{stats.error ? "—" : stats.active_memberships ?? "—"}</span>,
-              <span key="l" className="text-slate-600">{formatDate(stats.last_visit_at || stats.last_login_at)}</span>,
-              ...(compact ? [] : [<span key="db" className="font-mono text-xs text-slate-500">{gym.database.name}</span>]),
+              <span key="m" className="font-medium text-neutral-900">{stats.error ? "—" : stats.members ?? "—"}</span>,
+              <span key="a" className="font-medium text-neutral-900">{stats.error ? "—" : stats.active_memberships ?? "—"}</span>,
+              <span key="l" className="text-neutral-600">{formatDate(stats.last_visit_at || stats.last_login_at)}</span>,
+              ...(compact ? [] : [<span key="db" className="font-mono text-xs text-neutral-500">{gym.database.name}</span>]),
             ];
           })}
         />
       )}
 
       {pagination && pagination.pages > 1 && (
-        <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
+        <div className="mt-4 flex items-center justify-between text-xs text-neutral-500">
           <span>
             Page {pagination.page} of {pagination.pages} · {pagination.total} gyms
           </span>

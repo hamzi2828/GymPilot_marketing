@@ -249,20 +249,20 @@ function exampleLine(daysBefore: number[], onTheDay: boolean, daysAfter: number)
 /* ------------------------------- small parts ------------------------------ */
 
 function Card({ children }: { children: ReactNode }) {
-  return <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04),0_1px_3px_rgba(15,23,42,0.06)]">{children}</section>;
+  return <section className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]">{children}</section>;
 }
 
 /** A card's header: its number, a title and one short line. */
 function CardHead({ step, title, line, aside }: { step: number; title: string; line?: ReactNode; aside?: ReactNode }) {
   return (
-    <header className="flex items-start justify-between gap-3 border-b border-slate-100 px-4 py-4 sm:px-6">
+    <header className="flex items-start justify-between gap-3 border-b border-neutral-100 px-4 py-4 sm:px-6">
       <div className="flex min-w-0 items-start gap-3">
-        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-indigo-600 text-xs font-bold text-white" aria-hidden="true">
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-neutral-900 text-xs font-bold text-white" aria-hidden="true">
           {step}
         </span>
         <div className="min-w-0">
-          <h2 className="text-base font-semibold leading-7 text-slate-900">{title}</h2>
-          {line && <p className="text-sm text-slate-500">{line}</p>}
+          <h2 className="text-base font-semibold leading-7 text-neutral-900">{title}</h2>
+          {line && <p className="text-sm text-neutral-500">{line}</p>}
         </div>
       </div>
       {aside && <div className="flex shrink-0 items-center pt-1">{aside}</div>}
@@ -271,7 +271,7 @@ function CardHead({ step, title, line, aside }: { step: number; title: string; l
 }
 
 function CardFoot({ children }: { children: ReactNode }) {
-  return <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-slate-100 bg-slate-50/60 px-4 py-4 sm:px-6">{children}</div>;
+  return <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-neutral-100 bg-neutral-50/60 px-4 py-4 sm:px-6">{children}</div>;
 }
 
 function Tag({ tone, children }: { tone: "good" | "warn" | "neutral"; children: ReactNode }) {
@@ -301,14 +301,14 @@ function CopyBox({ label, text, how }: { label: string; text: string; how?: stri
   };
   return (
     <div>
-      <p className="text-xs font-semibold text-slate-700">{label}</p>
-      <div className="mt-1.5 flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 py-1.5 pl-3 pr-1.5">
-        <code className="min-w-0 flex-1 select-all break-all font-mono text-xs text-slate-800">{text}</code>
+      <p className="text-xs font-semibold text-neutral-700">{label}</p>
+      <div className="mt-1.5 flex items-center gap-2 rounded-lg border border-neutral-200 bg-neutral-50 py-1.5 pl-3 pr-1.5">
+        <code className="min-w-0 flex-1 select-all break-all font-mono text-xs text-neutral-800">{text}</code>
         <Button variant="secondary" size="sm" onClick={copy}>
           {state === "copied" ? <FiCheck className="h-3.5 w-3.5" /> : <FiCopy className="h-3.5 w-3.5" />} {state === "copied" ? "Copied" : "Copy"}
         </Button>
       </div>
-      <p className={cx("mt-1.5 text-xs", state === "failed" ? "text-rose-700" : "text-slate-500")}>{state === "failed" ? "Your browser would not copy. Select the address and copy it by hand." : how}</p>
+      <p className={cx("mt-1.5 text-xs", state === "failed" ? "text-rose-700" : "text-neutral-500")}>{state === "failed" ? "Your browser would not copy. Select the address and copy it by hand." : how}</p>
     </div>
   );
 }
@@ -532,7 +532,7 @@ export default function PlatformPaymentsPage() {
       if (f.type === "select") {
         return (
           <label key={f.name} className="block">
-            <span className="text-xs font-semibold text-slate-700">{label}</span>
+            <span className="text-xs font-semibold text-neutral-700">{label}</span>
             <Select className="mt-1.5" value={String(value || "")} onChange={(e) => setField(g.id, f.name, e.target.value)}>
               <option value="">Choose…</option>
               {optionList(f).map((o) => (
@@ -541,7 +541,7 @@ export default function PlatformPaymentsPage() {
                 </option>
               ))}
             </Select>
-            {hint && <span className="mt-1.5 block text-xs text-slate-500">{hint}</span>}
+            {hint && <span className="mt-1.5 block text-xs text-neutral-500">{hint}</span>}
           </label>
         );
       }
@@ -549,7 +549,7 @@ export default function PlatformPaymentsPage() {
       const isSaved = secret && (isMaskedSecret(value) || block[`${f.name}Set`] === true) && value === saved.gateways[g.id]?.[f.name];
       return (
         <label key={f.name} className="block">
-          <span className="text-xs font-semibold text-slate-700">{label}</span>
+          <span className="text-xs font-semibold text-neutral-700">{label}</span>
           <Input
             className="mt-1.5 font-mono"
             value={typeof value === "string" ? value : ""}
@@ -566,7 +566,7 @@ export default function PlatformPaymentsPage() {
               <FiCheck className="h-3.5 w-3.5" aria-hidden="true" /> Saved. Type a new one to replace it.
             </span>
           ) : (
-            hint && <span className="mt-1.5 block text-xs text-slate-500">{hint}</span>
+            hint && <span className="mt-1.5 block text-xs text-neutral-500">{hint}</span>
           )}
         </label>
       );
@@ -581,7 +581,7 @@ export default function PlatformPaymentsPage() {
         <div className="space-y-6 px-4 py-5 sm:px-6">
           {modeField && (
             <div>
-              <div role="radiogroup" aria-label="Test or live payments" className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-0.5">
+              <div role="radiogroup" aria-label="Test or live payments" className="inline-flex rounded-lg border border-neutral-200 bg-neutral-50 p-0.5">
                 {modeOptions.map((o) => {
                   const on = modeValue === o.value;
                   return (
@@ -593,7 +593,7 @@ export default function PlatformPaymentsPage() {
                       onClick={() => setField(g.id, modeField.name, o.value)}
                       className={cx(
                         "rounded-md px-4 py-1.5 text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40",
-                        on ? (LIVE_MODE.test(o.value) ? "bg-emerald-600 text-white shadow-sm" : "bg-white text-slate-900 shadow-sm ring-1 ring-slate-200") : "text-slate-500 hover:text-slate-800"
+                        on ? (LIVE_MODE.test(o.value) ? "bg-emerald-600 text-white shadow-sm" : "bg-white text-neutral-900 shadow-sm ring-1 ring-neutral-200") : "text-neutral-500 hover:text-neutral-800"
                       )}
                     >
                       {TEST_MODE.test(o.value) ? "Test" : LIVE_MODE.test(o.value) ? "Live" : o.label}
@@ -601,18 +601,18 @@ export default function PlatformPaymentsPage() {
                   );
                 })}
               </div>
-              <p className="mt-1.5 text-xs text-slate-500">{live ? "Real payments." : "Test payments only — no real money."}</p>
+              <p className="mt-1.5 text-xs text-neutral-500">{live ? "Real payments." : "Test payments only — no real money."}</p>
             </div>
           )}
 
           {keyFields.length > 0 && <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{keyFields.map(field)}</div>}
 
           {(webhookUrl || webhookFields.length > 0) && (
-            <div className="space-y-4 border-t border-slate-100 pt-5">
+            <div className="space-y-4 border-t border-neutral-100 pt-5">
               {webhookUrl && <CopyBox label="Webhook address" text={webhookUrl} how={c.webhookHow || `In ${c.short}, add this as a webhook endpoint.`} />}
               {c.webhookEvents && (
-                <details className="text-xs text-slate-500">
-                  <summary className="cursor-pointer font-medium text-slate-700">Events to send ({c.webhookEvents.length})</summary>
+                <details className="text-xs text-neutral-500">
+                  <summary className="cursor-pointer font-medium text-neutral-700">Events to send ({c.webhookEvents.length})</summary>
                   <p className="mt-1 break-words font-mono">{c.webhookEvents.join(", ")}</p>
                 </details>
               )}
@@ -621,33 +621,33 @@ export default function PlatformPaymentsPage() {
           )}
 
           {stripe && (
-            <div className="space-y-3 border-t border-slate-100 pt-5 text-sm">
+            <div className="space-y-3 border-t border-neutral-100 pt-5 text-sm">
               {stripe.accountId ? (
                 <p className="flex flex-wrap items-center gap-2 text-emerald-700">
                   <FiCheckCircle className="h-4 w-4" aria-hidden="true" />
                   <span className="font-medium">{stripe.accountName}</span>
                   {stripe.mode && <Tag tone={stripe.mode === "live" ? "good" : "neutral"}>{stripe.mode === "live" ? "Live keys" : "Test keys"}</Tag>}
-                  {stripe.checkedAt && <span className="text-xs text-slate-500">checked {formatDate(stripe.checkedAt)}</span>}
+                  {stripe.checkedAt && <span className="text-xs text-neutral-500">checked {formatDate(stripe.checkedAt)}</span>}
                 </p>
               ) : (
-                <p className="text-xs text-slate-500">{stripe.secretKeySet ? "Not tested yet." : "No secret key saved yet."}</p>
+                <p className="text-xs text-neutral-500">{stripe.secretKeySet ? "Not tested yet." : "No secret key saved yet."}</p>
               )}
               <details className="text-xs">
-                <summary className="cursor-pointer font-medium text-slate-700">Recent webhook events</summary>
+                <summary className="cursor-pointer font-medium text-neutral-700">Recent webhook events</summary>
                 {events === null ? (
-                  <p className="mt-2 text-slate-500">Loading…</p>
+                  <p className="mt-2 text-neutral-500">Loading…</p>
                 ) : events.length === 0 ? (
-                  <p className="mt-2 text-slate-500">Nothing has arrived yet.</p>
+                  <p className="mt-2 text-neutral-500">Nothing has arrived yet.</p>
                 ) : (
-                  <ul className="mt-2 divide-y divide-slate-100 rounded-lg border border-slate-200">
+                  <ul className="mt-2 divide-y divide-neutral-100 rounded-lg border border-neutral-200">
                     {events.map((row) => (
                       <li key={row._id} className="px-3 py-2">
                         <p className="flex flex-wrap items-center gap-2">
-                          <span className="font-mono text-slate-800">{row.meta?.type || "event"}</span>
+                          <span className="font-mono text-neutral-800">{row.meta?.type || "event"}</span>
                           {row.meta?.livemode === false && <Tag tone="neutral">test</Tag>}
-                          <span className="text-slate-400">{relativeTime(row.createdAt)}</span>
+                          <span className="text-neutral-400">{relativeTime(row.createdAt)}</span>
                         </p>
-                        <p className="mt-0.5 text-slate-500">
+                        <p className="mt-0.5 text-neutral-500">
                           {row.meta?.result || "received"}
                           {row.gymSlug && (
                             <>
@@ -679,7 +679,7 @@ export default function PlatformPaymentsPage() {
               {result.text}
             </p>
           ) : (
-            unsaved && <p className="text-xs text-slate-500">Save first, then test.</p>
+            unsaved && <p className="text-xs text-neutral-500">Save first, then test.</p>
           )}
         </CardFoot>
       </>
@@ -723,20 +723,20 @@ export default function PlatformPaymentsPage() {
                     onKeyDown={(e) => onTileKey(e, index)}
                     className={cx(
                       "flex items-start gap-3 rounded-xl border-2 p-4 text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40 focus-visible:ring-offset-2",
-                      active ? "border-indigo-600 bg-indigo-50/50" : "border-slate-200 bg-white hover:border-slate-300"
+                      active ? "border-neutral-900 bg-white" : "border-neutral-200 bg-white hover:border-neutral-300"
                     )}
                   >
-                    <span className={cx("flex h-10 w-10 shrink-0 items-center justify-center rounded-lg", active ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-600")} aria-hidden="true">
+                    <span className={cx("flex h-10 w-10 shrink-0 items-center justify-center rounded-lg", active ? "bg-neutral-900 text-white" : "bg-neutral-100 text-neutral-600")} aria-hidden="true">
                       <Icon className="h-5 w-5" />
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="flex items-start justify-between gap-2">
-                        <span className="text-[15px] font-semibold leading-5 text-slate-900">{o.title}</span>
-                        <span className={cx("mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2", active ? "border-indigo-600" : "border-slate-300")} aria-hidden="true">
-                          {active && <span className="h-2.5 w-2.5 rounded-full bg-indigo-600" />}
+                        <span className="text-[15px] font-semibold leading-5 text-neutral-900">{o.title}</span>
+                        <span className={cx("mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2", active ? "border-neutral-900" : "border-neutral-300")} aria-hidden="true">
+                          {active && <span className="h-2.5 w-2.5 rounded-full bg-neutral-900" />}
                         </span>
                       </span>
-                      <span className="mt-1 block text-sm text-slate-500">{o.line}</span>
+                      <span className="mt-1 block text-sm text-neutral-500">{o.line}</span>
                       {o.tag && (
                         <span className="mt-2 block">
                           <Tag tone={o.tag.tone}>{o.tag.text}</Tag>
@@ -789,7 +789,7 @@ export default function PlatformPaymentsPage() {
           <CardHead step={remindersStep} title="Reminders to gym owners" line="Emailed before and after the due date." />
           <div className="space-y-5 px-4 py-5 sm:px-6">
             <div>
-              <div className="flex flex-wrap items-center gap-2 text-sm text-slate-800">
+              <div className="flex flex-wrap items-center gap-2 text-sm text-neutral-800">
                 <span>Send a reminder</span>
                 <input
                   type="text"
@@ -809,7 +809,7 @@ export default function PlatformPaymentsPage() {
                   aria-invalid={parsedDays === null || undefined}
                   className={cx(
                     "h-9 w-16 rounded-lg border bg-white px-2 text-center text-base focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 sm:text-sm",
-                    parsedDays === null ? "border-rose-400" : "border-slate-200"
+                    parsedDays === null ? "border-rose-400" : "border-neutral-200"
                   )}
                 />
                 <span>days before the due date</span>
@@ -824,7 +824,7 @@ export default function PlatformPaymentsPage() {
             <Toggle label="Also on the due date" checked={form.reminders.onDueDay} onChange={(v) => setReminders({ onDueDay: v })} />
 
             <div>
-              <div className="flex flex-wrap items-center gap-2 text-sm text-slate-800">
+              <div className="flex flex-wrap items-center gap-2 text-sm text-neutral-800">
                 <span>Final reminder</span>
                 <input
                   type="number"
@@ -836,11 +836,11 @@ export default function PlatformPaymentsPage() {
                   aria-invalid={lastDayBad || undefined}
                   className={cx(
                     "h-9 w-16 rounded-lg border bg-white px-2 text-center text-base focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 sm:text-sm",
-                    lastDayBad ? "border-rose-400" : "border-slate-200"
+                    lastDayBad ? "border-rose-400" : "border-neutral-200"
                   )}
                 />
                 <span>days after</span>
-                <span className="text-xs text-slate-400">(0 = off)</span>
+                <span className="text-xs text-neutral-400">(0 = off)</span>
               </div>
               {lastDayBad && (
                 <p role="alert" className="mt-1 text-xs text-rose-700">
@@ -849,15 +849,15 @@ export default function PlatformPaymentsPage() {
               )}
             </div>
 
-            <p className="rounded-lg bg-slate-50 px-3 py-2.5 text-sm text-slate-700">{exampleLine(parsedDays ?? form.reminders.daysBefore, form.reminders.onDueDay, lastDayBad ? 0 : lastDay)}</p>
-            <p className="text-xs text-slate-500">Sent only when platform email (SMTP) is set up on the server.</p>
+            <p className="rounded-lg bg-neutral-50 px-3 py-2.5 text-sm text-neutral-700">{exampleLine(parsedDays ?? form.reminders.daysBefore, form.reminders.onDueDay, lastDayBad ? 0 : lastDay)}</p>
+            <p className="text-xs text-neutral-500">Sent only when platform email (SMTP) is set up on the server.</p>
           </div>
         </Card>
 
         {/* ---- Save: one Save for the choice, the keys and the reminders ---- */}
         <div className="sticky bottom-0 z-10 pb-3">
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white/95 px-4 py-3 shadow-[0_-4px_16px_rgba(15,23,42,0.08)] backdrop-blur sm:px-5">
-            <p role="status" className={cx("text-sm", remindersBad || saveFailed ? "text-rose-700" : dirty ? "font-medium text-amber-700" : "text-slate-500")}>
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-neutral-200 bg-white/95 px-4 py-3 shadow-[0_-4px_16px_rgba(15,23,42,0.08)] backdrop-blur sm:px-5">
+            <p role="status" className={cx("text-sm", remindersBad || saveFailed ? "text-rose-700" : dirty ? "font-medium text-amber-700" : "text-neutral-500")}>
               {remindersBad
                 ? "Fix the reminder days to save."
                 : saveFailed

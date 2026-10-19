@@ -89,10 +89,10 @@ export default function SuperAdminAccountPage() {
         <div className="flex flex-wrap items-center gap-4">
           <Avatar name={admin?.name || admin?.email || "?"} size="xl" />
           <div className="min-w-0 flex-1">
-            <p className="text-lg font-semibold text-slate-900">{admin?.name || "Super admin"}</p>
-            <p className="text-sm text-slate-500">{admin?.email}</p>
+            <p className="text-lg font-semibold text-neutral-900">{admin?.name || "Super admin"}</p>
+            <p className="text-sm text-neutral-500">{admin?.email}</p>
           </div>
-          <div className="text-right text-xs text-slate-500">
+          <div className="text-right text-xs text-neutral-500">
             <Pill tone={admin?.two_factor ? "good" : "neutral"}>{method === "app" ? "2FA on · app" : method === "email" ? "2FA on · email" : "2FA off"}</Pill>
             <p className="mt-1">Last sign-in {formatLastLogin(admin?.last_login)}</p>
           </div>
@@ -103,7 +103,7 @@ export default function SuperAdminAccountPage() {
         <Panel
           title={
             <span className="flex items-center gap-2">
-              <FiShield className="h-4 w-4 text-indigo-600" /> Two-factor sign-in
+              <FiShield className="h-4 w-4 text-neutral-400" /> Two-factor sign-in
             </span>
           }
           description={
@@ -119,7 +119,7 @@ export default function SuperAdminAccountPage() {
               <Alert tone="warning">
                 Save these backup codes somewhere safe (a password manager, or printed). Each one signs you in once if you lose your phone. They will not be shown again.
               </Alert>
-              <ul className="grid grid-cols-2 gap-2 rounded-lg border border-slate-200 bg-slate-50 p-3 font-mono text-sm text-slate-900">
+              <ul className="grid grid-cols-2 gap-2 rounded-lg border border-neutral-200 bg-neutral-50 p-3 font-mono text-sm text-neutral-900">
                 {backupCodes.map((c) => (
                   <li key={c}>{c}</li>
                 ))}
@@ -141,14 +141,14 @@ export default function SuperAdminAccountPage() {
             </div>
           ) : setup ? (
             <div className="space-y-4">
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-neutral-600">
                 Scan this with an authenticator app (Google Authenticator, Microsoft Authenticator, 1Password, Authy…), then type the 6-digit code it shows.
               </p>
               <div className="flex flex-wrap items-start gap-4">
                 <QrCode value={setup.otpauth_url} label="QR code for your authenticator app" />
-                <div className="min-w-0 flex-1 space-y-1 text-xs text-slate-500">
+                <div className="min-w-0 flex-1 space-y-1 text-xs text-neutral-500">
                   <p>Can&apos;t scan? Enter this key in the app instead (time-based):</p>
-                  <p className="break-all rounded-lg bg-slate-50 px-2 py-1.5 font-mono text-sm text-slate-900">{setup.secret.replace(/(.{4})/g, "$1 ").trim()}</p>
+                  <p className="break-all rounded-lg bg-neutral-50 px-2 py-1.5 font-mono text-sm text-neutral-900">{setup.secret.replace(/(.{4})/g, "$1 ").trim()}</p>
                   <p>Account: {setup.account}</p>
                 </div>
               </div>
@@ -189,7 +189,7 @@ export default function SuperAdminAccountPage() {
             </div>
           ) : method === "app" ? (
             <div className="space-y-4">
-              <p className="text-sm text-slate-600">To turn it off, confirm your password and a current code from the app (or a backup code).</p>
+              <p className="text-sm text-neutral-600">To turn it off, confirm your password and a current code from the app (or a backup code).</p>
               <Field label="Password">
                 <Input type="password" autoComplete="current-password" value={offPassword} onChange={(e) => setOffPassword(e.target.value)} aria-invalid={!!passwordError || undefined} />
               </Field>
@@ -217,7 +217,7 @@ export default function SuperAdminAccountPage() {
             </div>
           ) : confirm ? (
             <div className="space-y-4">
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-neutral-600">
                 {confirm === "app-setup"
                   ? `Confirm your password to ${method === "email" ? "switch to" : "set up"} an authenticator app.`
                   : "Confirm your password to turn off two-factor sign-in."}
@@ -295,7 +295,7 @@ export default function SuperAdminAccountPage() {
         <Panel
           title={
             <span className="flex items-center gap-2">
-              <FiKey className="h-4 w-4 text-indigo-600" /> Change password
+              <FiKey className="h-4 w-4 text-neutral-400" /> Change password
             </span>
           }
           description="At least 10 characters. Changing it signs you out everywhere else you are signed in."

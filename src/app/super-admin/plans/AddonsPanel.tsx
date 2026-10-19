@@ -128,8 +128,8 @@ export default function AddonsPanel({ plans, addons, onChanged }: { plans: Plan[
     <>
       <div className="mb-4 mt-12 flex items-end justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">Add-ons</h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <h2 className="text-lg font-semibold text-neutral-900">Add-ons</h2>
+          <p className="mt-1 text-sm text-neutral-500">
             Sold beside a plan and added to the gym&apos;s bill. Switch one on for a gym under Gyms → the gym → Plan &amp; subscription.
           </p>
         </div>
@@ -146,7 +146,7 @@ export default function AddonsPanel({ plans, addons, onChanged }: { plans: Plan[
 
       {!addons.length ? (
         <Panel>
-          <p className="text-sm text-slate-500">Nothing sold beside the plans yet.</p>
+          <p className="text-sm text-neutral-500">Nothing sold beside the plans yet.</p>
         </Panel>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -156,7 +156,7 @@ export default function AddonsPanel({ plans, addons, onChanged }: { plans: Plan[
               className="flex flex-col"
               footer={
                 <>
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs text-neutral-500">
                     {addon.gym_count || 0} gym{addon.gym_count === 1 ? "" : "s"} paying for it
                   </span>
                   <div className="flex gap-2">
@@ -172,23 +172,23 @@ export default function AddonsPanel({ plans, addons, onChanged }: { plans: Plan[
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h3 className="text-base font-semibold text-slate-900">{addon.name}</h3>
-                  <p className="font-mono text-xs text-slate-400">{addon.slug}</p>
+                  <h3 className="text-base font-semibold text-neutral-900">{addon.name}</h3>
+                  <p className="font-mono text-xs text-neutral-400">{addon.slug}</p>
                 </div>
                 <div className="flex gap-1.5">
                   {!addon.isActive && <Pill tone="neutral">off</Pill>}
                   {addon.isActive && !addon.isPublic && <Pill tone="neutral">not listed</Pill>}
                 </div>
               </div>
-              <p className="mt-3 text-2xl font-semibold tracking-tight text-slate-900">
+              <p className="mt-3 text-2xl font-semibold tracking-tight text-neutral-900">
                 +{formatMoney(addon.price.monthly, addon.price.currency)}
-                <span className="text-sm font-normal text-slate-500"> /month</span>
+                <span className="text-sm font-normal text-neutral-500"> /month</span>
               </p>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-neutral-500">
                 {addon.price.yearly > 0 ? `${formatMoney(addon.price.yearly, addon.price.currency)} /year` : "no yearly price"}
               </p>
-              {addon.description && <p className="mt-3 text-sm text-slate-600">{addon.description}</p>}
-              <p className="mt-4 text-xs text-slate-500">
+              {addon.description && <p className="mt-3 text-sm text-neutral-600">{addon.description}</p>}
+              <p className="mt-4 text-xs text-neutral-500">
                 {addon.planSlugs.length ? `Sold on: ${addon.planSlugs.join(", ")}` : "Sold on every plan"}
                 {includedOn(addon.slug).length > 0 && (
                   <>
@@ -246,7 +246,7 @@ export default function AddonsPanel({ plans, addons, onChanged }: { plans: Plan[
                       type="button"
                       onClick={() => togglePlan(plan.slug)}
                       className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
-                        on ? "border-indigo-600 bg-indigo-600 text-white" : "border-slate-200 text-slate-600 hover:border-slate-300"
+                        on ? "border-indigo-600 bg-indigo-600 text-white" : "border-neutral-200 text-neutral-600 hover:border-neutral-300"
                       }`}
                     >
                       {plan.name}

@@ -49,7 +49,7 @@ function InviteOutcomeNotice({ outcome, onDismiss }: { outcome: InviteOutcome; o
     );
   };
   return (
-    <div className="px-6 pt-4">
+    <div className="px-5 pt-4">
       {outcome.passwordSet && (
         <Alert tone="success" onDismiss={outcome.sent ? onDismiss : undefined}>
           Password set for <span className="font-semibold">{outcome.email}</span>. They can sign in with it now.
@@ -70,7 +70,7 @@ function InviteOutcomeNotice({ outcome, onDismiss }: { outcome: InviteOutcome; o
             <span className="mt-2 block">
               Send the owner this link yourself, by WhatsApp for example. It opens the page where they choose their password.
               <span className="mt-2 flex flex-wrap items-center gap-2">
-                <span className="min-w-0 flex-1 break-all rounded-lg bg-white px-2 py-1.5 font-mono text-xs text-slate-900 ring-1 ring-amber-200">{outcome.link}</span>
+                <span className="min-w-0 flex-1 break-all rounded-lg bg-white px-2 py-1.5 font-mono text-xs text-neutral-900 ring-1 ring-amber-200">{outcome.link}</span>
                 <Button variant="secondary" size="sm" onClick={copy}>
                   <FiCopy className="h-3.5 w-3.5" /> {copied === "yes" ? "Copied" : "Copy"}
                 </Button>
@@ -405,7 +405,7 @@ function GymDetail() {
           title="Gym & owner"
           footer={
             <>
-              <span className="text-xs text-slate-500">Created {formatDate(gym.createdAt)} · last login inside the gym {formatDate(stats.last_login_at)}</span>
+              <span className="text-xs text-neutral-500">Created {formatDate(gym.createdAt)} · last login inside the gym {formatDate(stats.last_login_at)}</span>
               <Button
                 disabled={busy}
                 loading={action.pending === "details"}
@@ -473,7 +473,7 @@ function GymDetail() {
         <Panel
           title={
             <span className="flex items-center gap-2">
-              <FiGlobe className="h-4 w-4 text-indigo-600" /> Domains
+              <FiGlobe className="h-4 w-4 text-neutral-400" /> Domains
             </span>
           }
           description="Every domain that should show this gym's website. The first line is the primary, used in emails and redirects."
@@ -486,7 +486,7 @@ function GymDetail() {
                     {dom.isPrimary ? " · primary" : ""}
                   </Pill>
                 ))}
-                {!gym.domains.length && <span className="text-xs text-slate-500">No domain yet</span>}
+                {!gym.domains.length && <span className="text-xs text-neutral-500">No domain yet</span>}
               </div>
               <Button
                 disabled={busy}
@@ -516,10 +516,10 @@ function GymDetail() {
             <Textarea value={domainsText} onChange={(e) => setDomainsText(e.target.value)} placeholder={"ironworks.com\nwww.ironworks.com"} className="font-mono" />
           </Field>
           {hosting && hosting.added.length > 0 && (
-            <div className="mt-4 space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-700">
+            <div className="mt-4 space-y-3 rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-xs text-neutral-700">
               {hosting.added.map((h) => (
                 <div key={h.host}>
-                  <p className="flex flex-wrap items-center gap-2 font-semibold text-slate-900">
+                  <p className="flex flex-wrap items-center gap-2 font-semibold text-neutral-900">
                     <span className="font-mono">{h.host}</span>
                     <Pill tone={h.added ? (h.verified === false ? "warn" : "good") : h.skipped ? "neutral" : "bad"} dot={false}>
                       {h.added ? (h.verified === false ? "awaiting verification" : "added to the website host") : h.skipped ? "not added automatically" : `could not be added`}
@@ -527,7 +527,7 @@ function GymDetail() {
                     {h.error && <span className="text-rose-600">{h.error}</span>}
                   </p>
                   <p className="mt-1.5">
-                    DNS: add a <span className="rounded bg-white px-1 font-mono ring-1 ring-slate-200">{h.dns.type}</span> record for <span className="rounded bg-white px-1 font-mono ring-1 ring-slate-200">{h.dns.name}</span> pointing to <span className="rounded bg-white px-1 font-mono ring-1 ring-slate-200">{h.dns.value}</span>. {h.dns.note}
+                    DNS: add a <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{h.dns.type}</span> record for <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{h.dns.name}</span> pointing to <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{h.dns.value}</span>. {h.dns.note}
                   </p>
                   {(h.verification || []).map((v, i) => (
                     <p key={i} className="mt-1">
@@ -545,7 +545,7 @@ function GymDetail() {
                       </p>
                       {h.www.dns && (
                         <p className="mt-1">
-                          DNS: add a <span className="rounded bg-white px-1 font-mono ring-1 ring-slate-200">{h.www.dns.type}</span> record for <span className="rounded bg-white px-1 font-mono ring-1 ring-slate-200">{h.www.dns.name}</span> pointing to <span className="rounded bg-white px-1 font-mono ring-1 ring-slate-200">{h.www.dns.value}</span>.
+                          DNS: add a <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{h.www.dns.type}</span> record for <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{h.www.dns.name}</span> pointing to <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{h.www.dns.value}</span>.
                         </p>
                       )}
                       {(h.www.verification || []).map((v, i) => (
@@ -557,7 +557,7 @@ function GymDetail() {
                   )}
                 </div>
               ))}
-              {!hosting.connected && <p className="text-slate-500">Connect Vercel on the API (VERCEL_TOKEN, VERCEL_PROJECT_ID) to add domains to the website project automatically.</p>}
+              {!hosting.connected && <p className="text-neutral-500">Connect Vercel on the API (VERCEL_TOKEN, VERCEL_PROJECT_ID) to add domains to the website project automatically.</p>}
             </div>
           )}
 
@@ -565,8 +565,8 @@ function GymDetail() {
               here yet, and what to add if not. */}
           {domainStatus && domainStatus.data.length > 0 && (
             <div className="mt-4">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">DNS &amp; verification</p>
-              <ul className="mt-2 divide-y divide-slate-100 rounded-xl border border-slate-200 text-xs">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-400">DNS &amp; verification</p>
+              <ul className="mt-2 divide-y divide-neutral-100 rounded-xl border border-neutral-200 text-xs">
                 {domainStatus.data.map((st) => {
                   const tone = !domainStatus.connected ? "neutral" : st.error ? "bad" : !st.on_project ? "warn" : st.misconfigured ? "warn" : st.verified === false ? "warn" : "good";
                   const label = !domainStatus.connected
@@ -583,19 +583,19 @@ function GymDetail() {
                   return (
                     <li key={st.host} className="px-3 py-2.5">
                       <p className="flex flex-wrap items-center gap-2">
-                        <span className="font-mono text-slate-900">{st.host}</span>
+                        <span className="font-mono text-neutral-900">{st.host}</span>
                         <Pill tone={tone} dot={false}>
                           {label}
                         </Pill>
                         {st.error && <span className="text-rose-600">{st.error}</span>}
                       </p>
                       {domainStatus.connected && label !== "live" && (
-                        <p className="mt-1 text-slate-600">
-                          Add a <span className="rounded bg-white px-1 font-mono ring-1 ring-slate-200">{st.dns.type}</span> record for <span className="rounded bg-white px-1 font-mono ring-1 ring-slate-200">{st.dns.name}</span> pointing to <span className="rounded bg-white px-1 font-mono ring-1 ring-slate-200">{st.dns.value}</span>.
+                        <p className="mt-1 text-neutral-600">
+                          Add a <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{st.dns.type}</span> record for <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{st.dns.name}</span> pointing to <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{st.dns.value}</span>.
                         </p>
                       )}
                       {(st.verification || []).map((v, i) => (
-                        <p key={i} className="mt-1 text-slate-600">
+                        <p key={i} className="mt-1 text-neutral-600">
                           Verification: <span className="font-mono">{v.type}</span> record <span className="font-mono">{v.domain}</span> = <span className="break-all font-mono">{v.value}</span>
                         </p>
                       ))}
@@ -603,7 +603,7 @@ function GymDetail() {
                   );
                 })}
               </ul>
-              {!domainStatus.connected && <p className="mt-2 text-xs text-slate-500">Vercel is not connected on the API, so DNS cannot be checked from here.</p>}
+              {!domainStatus.connected && <p className="mt-2 text-xs text-neutral-500">Vercel is not connected on the API, so DNS cannot be checked from here.</p>}
             </div>
           )}
         </Panel>
@@ -614,7 +614,7 @@ function GymDetail() {
         <Panel
           title={
             <span className="flex items-center gap-2">
-              <FiLayers className="h-4 w-4 text-indigo-600" /> Plan &amp; subscription
+              <FiLayers className="h-4 w-4 text-neutral-400" /> Plan &amp; subscription
             </span>
           }
           description={
@@ -624,7 +624,7 @@ function GymDetail() {
           }
           footer={
             <>
-              <span className="text-xs text-slate-500">
+              <span className="text-xs text-neutral-500">
                 Currently {gym.subscription.status.replace("_", " ")}
                 {gym.subscription.currentPeriodEnd ? ` until ${formatDate(gym.subscription.currentPeriodEnd)}` : ""} · {formatMoney(gym.subscription.amount, gym.subscription.currency)} / {gym.subscription.billingCycle}
                 {(gym.subscription.addons || []).length > 0 && (
@@ -723,7 +723,7 @@ function GymDetail() {
                         type="button"
                         onClick={() => setAddonSlugs((list) => (on ? list.filter((sl) => sl !== addon.slug) : [...list, addon.slug]))}
                         className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors ${
-                          on ? "border-indigo-600 bg-indigo-600 text-white" : "border-slate-200 text-slate-600 hover:border-slate-300"
+                          on ? "border-indigo-600 bg-indigo-600 text-white" : "border-neutral-200 text-neutral-600 hover:border-neutral-300"
                         }`}
                       >
                         {addon.name} +{formatMoney(priceOf(addon), addon.price.currency)}
@@ -731,31 +731,31 @@ function GymDetail() {
                     );
                   })}
                   {includedAddons.length === 0 && sellableAddons.length === 0 && (
-                    <p className="text-sm text-slate-500">Nothing is sold with this plan.</p>
+                    <p className="text-sm text-neutral-500">Nothing is sold with this plan.</p>
                   )}
                 </div>
               </Field>
               {addonNote && <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">{addonNote}</p>}
             </div>
 
-            <div className="md:col-span-2 rounded-xl bg-slate-50 px-4 py-3 text-sm">
-              <div className="flex justify-between text-slate-600">
+            <div className="md:col-span-2 rounded-xl bg-neutral-50 px-4 py-3 text-sm">
+              <div className="flex justify-between text-neutral-600">
                 <span>Plan</span>
-                <span className="font-medium text-slate-900">{formatMoney(planShare, sub.currency || DEFAULT_CURRENCY)}</span>
+                <span className="font-medium text-neutral-900">{formatMoney(planShare, sub.currency || DEFAULT_CURRENCY)}</span>
               </div>
               {includedAddons.map((addon) => (
-                <div key={addon.slug} className="mt-1 flex justify-between text-slate-600">
+                <div key={addon.slug} className="mt-1 flex justify-between text-neutral-600">
                   <span>{addon.name}</span>
                   <span className="font-medium text-emerald-700">included</span>
                 </div>
               ))}
               {chosenAddons.map((addon) => (
-                <div key={addon.slug} className="mt-1 flex justify-between text-slate-600">
+                <div key={addon.slug} className="mt-1 flex justify-between text-neutral-600">
                   <span>{addon.name}</span>
-                  <span className="font-medium text-slate-900">+{formatMoney(priceOf(addon), addon.price.currency)}</span>
+                  <span className="font-medium text-neutral-900">+{formatMoney(priceOf(addon), addon.price.currency)}</span>
                 </div>
               ))}
-              <div className="mt-2 flex justify-between border-t border-slate-200 pt-2 font-semibold text-slate-900">
+              <div className="mt-2 flex justify-between border-t border-neutral-200 pt-2 font-semibold text-neutral-900">
                 <span>Total per {sub.billingCycle === "yearly" ? "year" : "month"}</span>
                 <span>{formatMoney(billTotal, sub.currency || "PKR")}</span>
               </div>
@@ -785,7 +785,7 @@ function GymDetail() {
         <Panel
           title={
             <span className="flex items-center gap-2">
-              <FiShield className="h-4 w-4 text-indigo-600" /> Administrators inside the gym
+              <FiShield className="h-4 w-4 text-neutral-400" /> Administrators inside the gym
             </span>
           }
           actions={
@@ -817,7 +817,7 @@ function GymDetail() {
             </>
           }
           footer={
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-neutral-500">
               The owner signs in at <span className="font-mono">{siteHost ? `${siteHost}/authentication` : "<domain>/authentication"}</span> and manages the gym at <span className="font-mono">/admin</span>. &quot;Resend owner invite&quot; emails {gym.owner.email || "the owner"} a link to set their password.
             </span>
           }
@@ -825,19 +825,19 @@ function GymDetail() {
         >
           {invite && <InviteOutcomeNotice key={`${invite.email}-${invite.link}`} outcome={invite} onDismiss={() => setInvite(null)} />}
           {admins === null ? (
-            <p className="px-6 py-6 text-xs text-slate-500">Loading…</p>
+            <p className="px-5 py-5 text-xs text-neutral-500">Loading…</p>
           ) : !admins.length ? (
-            <p className="px-6 py-6 text-xs text-slate-500">No administrator account yet. Use &quot;Reset owner password&quot; to create one.</p>
+            <p className="px-5 py-5 text-xs text-neutral-500">No administrator account yet. Use &quot;Reset owner password&quot; to create one.</p>
           ) : (
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-neutral-100">
               {admins.map((a) => (
-                <li key={a.id} className="flex items-center gap-3 px-6 py-3 text-sm">
+                <li key={a.id} className="flex items-center gap-3 px-5 py-3 text-sm">
                   <Avatar name={a.name || a.email} size="sm" />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium text-slate-900">{a.name || a.email}</p>
-                    <p className="truncate text-xs text-slate-500">{a.email}</p>
+                    <p className="truncate font-medium text-neutral-900">{a.name || a.email}</p>
+                    <p className="truncate text-xs text-neutral-500">{a.email}</p>
                   </div>
-                  <div className="text-right text-xs text-slate-500">
+                  <div className="text-right text-xs text-neutral-500">
                     {a.is_active ? <Pill tone="good">active</Pill> : <Pill tone="bad">disabled</Pill>}
                     <p className="mt-1">last login {formatDate(a.last_login)}</p>
                   </div>
@@ -856,7 +856,7 @@ function GymDetail() {
       </Panel>
 
       <Modal open={resetOpen} onClose={() => setResetOpen(false)} title="Reset owner password" size="sm">
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-neutral-500">
           Emails this administrator a link to set their own password (creating the account inside the gym if the address is new). Type a password only if you need to set one by hand as well; the password itself is never emailed.
         </p>
         <div className="mt-4 space-y-4">
@@ -900,10 +900,10 @@ function GymDetail() {
       </Modal>
 
       <Modal open={suspendOpen} onClose={() => setSuspendOpen(false)} title={`Suspend ${gym.name}?`} size="sm">
-        <p className="text-sm text-slate-700">
+        <p className="text-sm text-neutral-700">
           Its website, admin and member app go offline straight away, for the owner, staff and members alike. Nothing is deleted, and you can switch it back on at any time.
         </p>
-        <p className="mt-2 text-sm text-slate-700">
+        <p className="mt-2 text-sm text-neutral-700">
           {paysByCard
             ? "Its card subscription is paused in Stripe, so the owner is not charged while the gym is suspended. Reactivating starts the charges again from its next billing date."
             : "This gym does not pay by card, so nothing changes in Stripe. Its paid-until date does not move: time spent suspended still counts."}
@@ -919,10 +919,10 @@ function GymDetail() {
       </Modal>
 
       <Modal open={deleteOpen} onClose={closeDelete} title={`Delete ${gym.name}`} size="sm">
-        <p className="text-sm text-slate-700">
+        <p className="text-sm text-neutral-700">
           This takes {gym.name} off GymsPilotPro. Its website, admin and member app stop working straight away.
         </p>
-        <p className="mt-2 text-sm text-slate-700">
+        <p className="mt-2 text-sm text-neutral-700">
           {paysByCard
             ? "Its card subscription is cancelled in Stripe first, so the owner is not charged again. Nothing is refunded automatically."
             : "This gym does not pay by card, so there is no card subscription to cancel."}
@@ -950,14 +950,14 @@ function GymDetail() {
             </span>
           </label>
           {membersStillPaying && (
-            <label className="flex items-start gap-2 text-sm text-slate-700">
+            <label className="flex items-start gap-2 text-sm text-neutral-700">
               <input type="checkbox" checked={membersAcknowledged} onChange={(e) => setMembersAcknowledged(e.target.checked)} className="mt-0.5 h-4 w-4 accent-rose-600" />
               <span>I understand members&apos; card subscriptions with this gym are not cancelled by deleting it</span>
             </label>
           )}
           {/* Offered only once Stripe has refused to cancel the subscription. */}
           {stripeRefused && (
-            <label className="flex items-start gap-2 text-sm text-slate-700">
+            <label className="flex items-start gap-2 text-sm text-neutral-700">
               <input type="checkbox" checked={cancelledByHand} onChange={(e) => setCancelledByHand(e.target.checked)} className="mt-0.5 h-4 w-4 accent-rose-600" />
               <span>
                 I have cancelled <span className="font-mono text-xs">{gym.subscription.stripeSubscriptionId}</span> in Stripe myself

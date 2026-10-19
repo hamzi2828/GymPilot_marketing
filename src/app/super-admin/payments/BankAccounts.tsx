@@ -156,15 +156,15 @@ export default function BankAccounts({ accounts, onChange }: { accounts: Platfor
 
       {accounts.length === 0 ? (
         <div className="rounded-xl border border-dashed border-amber-300 bg-amber-50/50 px-4 py-6 text-center">
-          <p className="text-sm font-semibold text-slate-900">No bank account yet</p>
-          <p className="mt-0.5 text-xs text-slate-500">Add one so gyms know where to pay.</p>
+          <p className="text-sm font-semibold text-neutral-900">No bank account yet</p>
+          <p className="mt-0.5 text-xs text-neutral-500">Add one so gyms know where to pay.</p>
           <Button className="mt-4" onClick={openNew} disabled={action.busy}>
             <FiPlus className="h-4 w-4" /> Add bank account
           </Button>
         </div>
       ) : (
         <>
-          <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200">
+          <ul className="divide-y divide-neutral-100 rounded-xl border border-neutral-200">
             {accounts.map((b) => {
               const qr = uploadUrl(b.qrCodeUrl);
               const on = b.active !== false;
@@ -172,16 +172,16 @@ export default function BankAccounts({ accounts, onChange }: { accounts: Platfor
                 <li key={idOf(b)} className="flex flex-wrap items-center gap-x-3 gap-y-3 px-3 py-3 sm:px-4">
                   {qr ? (
                     // eslint-disable-next-line @next/next/no-img-element -- an uploaded file on the API or the Blob store
-                    <img src={qr} alt={`QR code for ${b.bankName}`} className="h-11 w-11 shrink-0 rounded-lg border border-slate-200 bg-white object-contain p-0.5" />
+                    <img src={qr} alt={`QR code for ${b.bankName}`} className="h-11 w-11 shrink-0 rounded-lg border border-neutral-200 bg-white object-contain p-0.5" />
                   ) : (
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500" aria-hidden="true">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-neutral-100 text-neutral-500" aria-hidden="true">
                       <LuLandmark className="h-5 w-5" />
                     </span>
                   )}
                   <div className={`min-w-0 flex-1 ${on ? "" : "opacity-60"}`}>
-                    <p className="truncate text-sm font-semibold text-slate-900">{b.bankName}</p>
-                    <p className="break-words text-xs text-slate-500">{[b.accountTitle, b.accountNumber].filter(Boolean).join(" · ")}</p>
-                    {b.iban && <p className="break-all font-mono text-[11px] text-slate-500">{b.iban}</p>}
+                    <p className="truncate text-sm font-semibold text-neutral-900">{b.bankName}</p>
+                    <p className="break-words text-xs text-neutral-500">{[b.accountTitle, b.accountNumber].filter(Boolean).join(" · ")}</p>
+                    {b.iban && <p className="break-all font-mono text-[11px] text-neutral-500">{b.iban}</p>}
                   </div>
                   <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-end">
                     <Toggle label={on ? "Shown" : "Hidden"} checked={on} onChange={(v) => setActive(b, v)} disabled={action.busy} />
@@ -230,16 +230,16 @@ export default function BankAccounts({ accounts, onChange }: { accounts: Platfor
           </Field>
         </div>
 
-        <div className="mt-5 flex flex-wrap items-center gap-4 rounded-xl border border-slate-200 bg-slate-50/60 p-4">
+        <div className="mt-5 flex flex-wrap items-center gap-4 rounded-xl border border-neutral-200 bg-neutral-50/60 p-4">
           {shownQr ? (
             // eslint-disable-next-line @next/next/no-img-element -- a picture chosen on this computer, or one already uploaded
-            <img src={shownQr} alt="QR code" className="h-28 w-28 shrink-0 rounded-lg border border-slate-200 bg-white object-contain p-1" />
+            <img src={shownQr} alt="QR code" className="h-28 w-28 shrink-0 rounded-lg border border-neutral-200 bg-white object-contain p-1" />
           ) : (
-            <span className="flex h-28 w-28 shrink-0 items-center justify-center rounded-lg border border-dashed border-slate-300 bg-white text-center text-xs text-slate-400">No QR code</span>
+            <span className="flex h-28 w-28 shrink-0 items-center justify-center rounded-lg border border-dashed border-neutral-300 bg-white text-center text-xs text-neutral-400">No QR code</span>
           )}
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-slate-900">QR code</p>
-            <p className="mt-0.5 text-xs text-slate-500">Optional. Gyms scan it to pay.</p>
+            <p className="text-sm font-semibold text-neutral-900">QR code</p>
+            <p className="mt-0.5 text-xs text-neutral-500">Optional. Gyms scan it to pay.</p>
             <input ref={fileInput} type="file" accept={QR_TYPES.join(",")} className="sr-only" tabIndex={-1} aria-hidden="true" onChange={(e) => {
               pickQr(e.target.files?.[0]);
               e.target.value = "";
@@ -266,8 +266,8 @@ export default function BankAccounts({ accounts, onChange }: { accounts: Platfor
 
       <Modal open={deleting !== null} onClose={() => action.pending !== "delete" && setDeleting(null)} title="Delete bank account?" size="sm">
         {deleteError && <Alert tone="error">{deleteError}</Alert>}
-        <p className="text-sm text-slate-600">
-          <span className="font-semibold text-slate-900">{deleting?.bankName}</span>
+        <p className="text-sm text-neutral-600">
+          <span className="font-semibold text-neutral-900">{deleting?.bankName}</span>
           {deleting?.accountNumber ? ` · ${deleting.accountNumber}` : ""} — gyms stop seeing it.
         </p>
         <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">

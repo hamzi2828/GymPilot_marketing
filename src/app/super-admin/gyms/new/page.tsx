@@ -382,7 +382,7 @@ function NewGymForm() {
           <Panel
             title={
               <span className="flex items-center gap-2">
-                <FiDatabase className="h-4 w-4 text-indigo-600" /> Gym
+                <FiDatabase className="h-4 w-4 text-neutral-400" /> Gym
               </span>
             }
             description="The name is the only thing to decide. The web address and the database follow from it, and neither can be changed later."
@@ -447,7 +447,7 @@ function NewGymForm() {
           <Panel
             title={
               <span className="flex items-center gap-2">
-                <FiUser className="h-4 w-4 text-indigo-600" /> Owner account
+                <FiUser className="h-4 w-4 text-neutral-400" /> Owner account
               </span>
             }
             description="Created as an administrator inside the gym. The owner is emailed a link to choose their own password; the one typed here is only a fallback you can pass on by hand."
@@ -498,7 +498,7 @@ function NewGymForm() {
           <Panel
             title={
               <span className="flex items-center gap-2">
-                <FiGlobe className="h-4 w-4 text-indigo-600" /> Plan &amp; locale
+                <FiGlobe className="h-4 w-4 text-neutral-400" /> Plan &amp; locale
               </span>
             }
           >
@@ -548,7 +548,7 @@ function NewGymForm() {
                               type="button"
                               onClick={() => setAddonSlugs((list) => (on ? list.filter((s) => s !== addon.slug) : [...list, addon.slug]))}
                               className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors ${
-                                on ? "border-indigo-600 bg-indigo-600 text-white" : "border-slate-200 text-slate-600 hover:border-slate-300"
+                                on ? "border-indigo-600 bg-indigo-600 text-white" : "border-neutral-200 text-neutral-600 hover:border-neutral-300"
                               }`}
                             >
                               {addon.name} +{addon.price.currency} {price}

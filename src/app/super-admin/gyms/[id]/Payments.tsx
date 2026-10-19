@@ -102,7 +102,7 @@ export function PaymentsPanel({
       <Panel
         title={
           <span className="flex items-center gap-2">
-            <FiFileText className="h-4 w-4 text-indigo-600" /> Payments received
+            <FiFileText className="h-4 w-4 text-neutral-400" /> Payments received
           </span>
         }
         description={
@@ -120,22 +120,22 @@ export function PaymentsPanel({
         padded={false}
       >
         {loadError ? (
-          <p className="px-6 py-6 text-xs text-rose-600">{loadError}</p>
+          <p className="px-5 py-5 text-xs text-rose-600">{loadError}</p>
         ) : payments === null ? (
-          <p className="px-6 py-6 text-xs text-slate-500">Loading…</p>
+          <p className="px-5 py-5 text-xs text-neutral-500">Loading…</p>
         ) : !payments.length ? (
-          <p className="px-6 py-6 text-xs text-slate-500">No payments recorded yet.</p>
+          <p className="px-5 py-5 text-xs text-neutral-500">No payments recorded yet.</p>
         ) : (
           <div className="p-4">
             <DataTable
               columns={["Received", { label: "Amount", align: "right" }, "Method", "Reference", "Paid until", "Recorded by"]}
               rows={payments.map((p) => [
                 formatDate(p.receivedAt),
-                <span key="amount" className="font-medium text-slate-900">{formatMoney(p.amount, p.currency)}</span>,
+                <span key="amount" className="font-medium text-neutral-900">{formatMoney(p.amount, p.currency)}</span>,
                 p.methodLabel,
                 <span key="reference" className="font-mono text-xs" title={p.note || undefined}>{p.reference || "—"}</span>,
                 formatDate(p.periodTo),
-                <span key="by" className="text-xs text-slate-500">{p.recordedBy || "—"}</span>,
+                <span key="by" className="text-xs text-neutral-500">{p.recordedBy || "—"}</span>,
               ])}
             />
           </div>

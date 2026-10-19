@@ -32,7 +32,7 @@ export default function QrCode({ value, size = 192, label }: { value: string; si
       height={size}
       viewBox={`${-quiet} ${-quiet} ${count + quiet * 2} ${count + quiet * 2}`}
       shapeRendering="crispEdges"
-      className="rounded-lg border border-slate-200 bg-white"
+      className="rounded-lg border border-neutral-200 bg-white"
     >
       <rect x={-quiet} y={-quiet} width={count + quiet * 2} height={count + quiet * 2} fill="#ffffff" />
       <path d={path} fill="#0f172a" />

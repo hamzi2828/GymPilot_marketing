@@ -70,14 +70,14 @@ export default function SuperAdminOverviewPage() {
       />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Gyms" value={overview.gyms.total} hint={`${overview.gyms.active} active · ${overview.gyms.suspended} suspended`} icon={<FiGrid className="h-4.5 w-4.5" />} tone="accent" />
-        <StatCard label="Renewing within 30 days" value={overview.expiring_within_30_days} hint={`${subs.trialing || 0} on trial`} icon={<FiClock className="h-4.5 w-4.5" />} tone="warn" />
-        <StatCard label="Need attention" value={attentionCount} hint={`${subs.past_due || 0} past due · ${subs.expired || 0} expired · ${overview.gyms.suspended} suspended`} icon={<FiAlertCircle className="h-4.5 w-4.5" />} tone={attentionCount ? "bad" : "good"} />
+        <StatCard label="Gyms" value={overview.gyms.total} hint={`${overview.gyms.active} active · ${overview.gyms.suspended} suspended`} icon={<FiGrid className="h-4 w-4" />} tone="accent" />
+        <StatCard label="Renewing within 30 days" value={overview.expiring_within_30_days} hint={`${subs.trialing || 0} on trial`} icon={<FiClock className="h-4 w-4" />} tone="warn" />
+        <StatCard label="Need attention" value={attentionCount} hint={`${subs.past_due || 0} past due · ${subs.expired || 0} expired · ${overview.gyms.suspended} suspended`} icon={<FiAlertCircle className="h-4 w-4" />} tone={attentionCount ? "bad" : "good"} />
         <StatCard
           label="Monthly recurring"
           value={overview.mrr.length ? overview.mrr.map((row) => formatMoney(row.amount, row.currency)).join(" · ") : formatMoney(0, overview.currency || DEFAULT_CURRENCY)}
           hint="Active subscriptions; yearly plans divided by 12"
-          icon={<FiTrendingUp className="h-4.5 w-4.5" />}
+          icon={<FiTrendingUp className="h-4 w-4" />}
           tone="good"
         />
       </div>
@@ -90,7 +90,7 @@ export default function SuperAdminOverviewPage() {
               { label: "Trialing", value: subs.trialing || 0, className: "bg-sky-500" },
               { label: "Past due", value: subs.past_due || 0, className: "bg-amber-500" },
               { label: "Expired", value: subs.expired || 0, className: "bg-rose-500" },
-              { label: "Cancelled", value: subs.cancelled || 0, className: "bg-slate-400" },
+              { label: "Cancelled", value: subs.cancelled || 0, className: "bg-neutral-400" },
             ]}
           />
         </Panel>
@@ -107,9 +107,9 @@ export default function SuperAdminOverviewPage() {
           padded={false}
         >
           {attentionCount === 0 ? (
-            <p className="px-6 py-8 text-center text-sm text-slate-500">Nothing needs a look right now.</p>
+            <p className="px-5 py-8 text-center text-sm text-neutral-500">Nothing needs a look right now.</p>
           ) : (
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-neutral-100">
               {attention.past_due.map((g) => {
                 const status = overdueOf(g.id);
                 return (
@@ -143,18 +143,18 @@ export default function SuperAdminOverviewPage() {
 function AttentionRow({ gym, tone, label, detail }: { gym: { id: string; name: string; slug: string; plan?: string | null }; tone: string; label: string; detail: string }) {
   return (
     <li>
-      <Link href={`/super-admin/gyms/${gym.id}`} className="flex items-center gap-3 px-6 py-3 transition-colors hover:bg-slate-50">
+      <Link href={`/super-admin/gyms/${gym.id}`} className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-neutral-50">
         <Avatar name={gym.name} size="sm" />
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-medium text-slate-900">{gym.name}</span>
-          <span className="block truncate text-xs text-slate-500">
+          <span className="block truncate text-sm font-medium text-neutral-900">{gym.name}</span>
+          <span className="block truncate text-xs text-neutral-500">
             {gym.slug}
             {gym.plan ? ` · ${gym.plan}` : ""}
           </span>
         </span>
         <span className="text-right">
           <Pill tone={tone}>{label}</Pill>
-          {detail && <span className="mt-1 block text-[11px] text-slate-500">{detail}</span>}
+          {detail && <span className="mt-1 block text-[11px] text-neutral-500">{detail}</span>}
         </span>
       </Link>
     </li>

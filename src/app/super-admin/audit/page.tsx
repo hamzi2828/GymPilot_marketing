@@ -56,12 +56,12 @@ export default function AuditPage() {
           empty="Nothing recorded yet"
           rows={rows.map((row) => [
             <div key="w">
-              <p className="text-sm text-slate-800">{relativeTime(row.createdAt)}</p>
-              <p className="text-[11px] text-slate-400">{new Date(row.createdAt).toLocaleString()}</p>
+              <p className="text-sm text-neutral-800">{relativeTime(row.createdAt)}</p>
+              <p className="text-[11px] text-neutral-400">{new Date(row.createdAt).toLocaleString()}</p>
             </div>,
             <div key="a" className="flex items-center gap-2.5">
               <Avatar name={row.actorEmail} size="sm" />
-              <span className="text-sm text-slate-800">{row.actorEmail}</span>
+              <span className="text-sm text-neutral-800">{row.actorEmail}</span>
             </div>,
             <Pill key="x" tone={TONE[row.action] || "primary"} dot={false}>
               {row.action.replace(/_/g, " ")}
@@ -75,11 +75,11 @@ export default function AuditPage() {
                 <span key="g" className="font-mono text-xs">{row.gymSlug}</span>
               )
             ) : (
-              <span key="g" className="text-slate-300">—</span>
+              <span key="g" className="text-neutral-300">—</span>
             ),
-            <span key="m" className="block max-w-md break-all font-mono text-[11px] leading-relaxed text-slate-500">
+            <span key="m" className="block max-w-md break-all font-mono text-[11px] leading-relaxed text-neutral-500">
               {row.meta ? JSON.stringify(row.meta) : ""}
-              {row.ip && <span className="block text-slate-400">from {row.ip}</span>}
+              {row.ip && <span className="block text-neutral-400">from {row.ip}</span>}
             </span>,
           ])}
         />

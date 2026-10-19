@@ -134,11 +134,11 @@ export default function DemoRequestsPage() {
       />
       {error && <Alert tone="error" onDismiss={() => setError(null)}>{error}</Alert>}
 
-      <div className="mb-4 flex flex-wrap gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-card sm:inline-flex">
+      <div className="mb-4 flex flex-wrap gap-1 rounded-lg border border-neutral-200 bg-white p-1 sm:inline-flex">
         {[["", "All", total], ...DEMO_REQUEST_STATUSES.map((s) => [s, s[0].toUpperCase() + s.slice(1), counts[s] || 0])].map(([key, label, n]) => (
-          <button key={String(key)} type="button" disabled={loading} onClick={() => setFilter(key as "" | DemoRequestStatus)} className={cx("inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors disabled:cursor-wait", filter === key ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-100")}>
+          <button key={String(key)} type="button" disabled={loading} onClick={() => setFilter(key as "" | DemoRequestStatus)} className={cx("inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-colors disabled:cursor-wait", filter === key ? "bg-neutral-900 text-white" : "text-neutral-600 hover:bg-neutral-100")}>
             {label}
-            <span className={cx("rounded-full px-1.5 text-[11px] font-semibold", filter === key ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500")}>{n as number}</span>
+            <span className={cx("rounded-full px-1.5 text-[11px] font-semibold", filter === key ? "bg-white/20 text-white" : "bg-neutral-100 text-neutral-500")}>{n as number}</span>
           </button>
         ))}
       </div>
@@ -152,19 +152,19 @@ export default function DemoRequestsPage() {
           onRowClick={(i) => openRow(rows[i])}
           rows={rows.map((r) => [
             <div key="w">
-              <p className="text-sm text-slate-800">{relativeTime(r.createdAt)}</p>
-              <p className="text-[11px] text-slate-400">{new Date(r.createdAt).toLocaleString()}</p>
+              <p className="text-sm text-neutral-800">{relativeTime(r.createdAt)}</p>
+              <p className="text-[11px] text-neutral-400">{new Date(r.createdAt).toLocaleString()}</p>
             </div>,
             <div key="c" className="flex items-center gap-2.5">
               <Avatar name={r.name} size="sm" />
               <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-slate-900">{r.name}</p>
-                <p className="truncate text-xs text-slate-500">{r.email}</p>
-                {r.phone && <p className="truncate text-xs text-slate-500">{r.phone}</p>}
+                <p className="truncate text-sm font-medium text-neutral-900">{r.name}</p>
+                <p className="truncate text-xs text-neutral-500">{r.email}</p>
+                {r.phone && <p className="truncate text-xs text-neutral-500">{r.phone}</p>}
               </div>
             </div>,
             <div key="g" className="min-w-0">
-              <p className="truncate text-sm font-medium text-slate-900">
+              <p className="truncate text-sm font-medium text-neutral-900">
                 {r.gymName || "—"}
                 {r.kind === "trial" && (
                   <span className="ml-2 rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-indigo-700">
@@ -177,7 +177,7 @@ export default function DemoRequestsPage() {
                   </span>
                 )}
               </p>
-              <p className="truncate text-xs text-slate-500">
+              <p className="truncate text-xs text-neutral-500">
                 {r.plan
                   ? `${r.plan.name} · ${formatMoney(r.plan.amount, r.plan.currency)} / ${r.plan.billingCycle === "yearly" ? "yr" : "mo"}${
                       r.plan.addonNames.length ? ` · ${r.plan.addonNames.join(", ")}` : ""
@@ -185,8 +185,8 @@ export default function DemoRequestsPage() {
                   : [r.gymSize, r.country].filter(Boolean).join(" · ")}
               </p>
             </div>,
-            <p key="m" className="max-w-md truncate text-xs text-slate-600" title={r.message}>
-              {r.message || <span className="text-slate-300">—</span>}
+            <p key="m" className="max-w-md truncate text-xs text-neutral-600" title={r.message}>
+              {r.message || <span className="text-neutral-300">—</span>}
             </p>,
             <div key="s" className="space-y-1">
               <Pill tone={TONE[r.status] || "neutral"}>{r.status}</Pill>
@@ -197,7 +197,7 @@ export default function DemoRequestsPage() {
                   </Pill>
                 </div>
               )}
-              {r.gymId && <p className="text-[11px] text-slate-500">gym set up</p>}
+              {r.gymId && <p className="text-[11px] text-neutral-500">gym set up</p>}
             </div>,
           ])}
         />
@@ -208,11 +208,11 @@ export default function DemoRequestsPage() {
           <div className="space-y-5">
             {formError && <Alert tone="error">{formError}</Alert>}
             <div className="flex flex-wrap gap-2">
-              <a href={`mailto:${open.email}`} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">
+              <a href={`mailto:${open.email}`} className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-50">
                 <FiMail className="h-3.5 w-3.5" /> {open.email}
               </a>
               {open.phone && (
-                <a href={`tel:${open.phone}`} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">
+                <a href={`tel:${open.phone}`} className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-50">
                   <FiPhone className="h-3.5 w-3.5" /> {open.phone}
                 </a>
               )}
@@ -220,12 +220,12 @@ export default function DemoRequestsPage() {
             {open.signup && SIGNUP_STATE[open.signup.state] && (
               <div className={cx("rounded-xl border p-4", open.signup.state === "failed" ? "border-rose-200 bg-rose-50/60" : "border-emerald-200 bg-emerald-50/50")}>
                 <div className="flex items-center justify-between gap-3">
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-600">Online signup</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-neutral-600">Online signup</p>
                   <Pill tone={SIGNUP_STATE[open.signup.state].tone} dot={false}>
                     {SIGNUP_STATE[open.signup.state].label}
                   </Pill>
                 </div>
-                <p className="mt-2 text-sm text-slate-700">
+                <p className="mt-2 text-sm text-neutral-700">
                   {open.signup.state === "awaiting_payment" && !open.signup.paymentStarted
                     ? "Never reached the payment page. Nothing to do unless you want to follow up."
                     : SIGNUP_STATE[open.signup.state].help}
@@ -238,14 +238,14 @@ export default function DemoRequestsPage() {
                 )}
                 {open.signup.state === "ready" &&
                   (open.signup.inviteSent ? (
-                    <p className="mt-2 text-sm text-slate-700">The owner was emailed their set-password link.</p>
+                    <p className="mt-2 text-sm text-neutral-700">The owner was emailed their set-password link.</p>
                   ) : (
                     <p className="mt-2 text-sm font-medium text-amber-800">
                       The set-password email did not go out: open the gym and use Resend owner invite, or Reset owner password to set one by hand.
                     </p>
                   ))}
                 {(open.warnings || []).length > 0 && (
-                  <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-slate-600">
+                  <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-neutral-600">
                     {(open.warnings || []).map((w) => (
                       <li key={w}>{w}</li>
                     ))}
@@ -255,7 +255,7 @@ export default function DemoRequestsPage() {
                   <dl className="mt-3 space-y-1 text-xs">
                     {open.signup.siteUrl && (
                       <div className="flex justify-between gap-3">
-                        <dt className="text-slate-500">Website</dt>
+                        <dt className="text-neutral-500">Website</dt>
                         <dd>
                           <a href={open.signup.siteUrl} target="_blank" rel="noopener noreferrer" className="font-medium text-indigo-600 hover:text-indigo-700">
                             {open.signup.siteUrl.replace(/^https?:\/\//, "")}
@@ -265,8 +265,8 @@ export default function DemoRequestsPage() {
                     )}
                     {open.signup.stripeSubscriptionId && (
                       <div className="flex justify-between gap-3">
-                        <dt className="text-slate-500">Stripe</dt>
-                        <dd className="font-mono text-slate-700">
+                        <dt className="text-neutral-500">Stripe</dt>
+                        <dd className="font-mono text-neutral-700">
                           {open.signup.stripeCustomerId} · {open.signup.stripeSubscriptionId}
                         </dd>
                       </div>
@@ -281,45 +281,45 @@ export default function DemoRequestsPage() {
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-indigo-700">{open.signup ? "Paid for online" : "Chose at checkout"}</p>
                 <div className="mt-2 space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-slate-600">Plan</span>
-                    <span className="font-semibold text-slate-900">
+                    <span className="text-neutral-600">Plan</span>
+                    <span className="font-semibold text-neutral-900">
                       {open.plan.name} · {open.plan.billingCycle}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-600">Add-ons</span>
-                    <span className="font-medium text-slate-900">{open.plan.addonNames.join(", ") || "none"}</span>
+                    <span className="text-neutral-600">Add-ons</span>
+                    <span className="font-medium text-neutral-900">{open.plan.addonNames.join(", ") || "none"}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-600">Trial</span>
-                    <span className="font-medium text-slate-900">{open.plan.trialDays ? `${open.plan.trialDays} days` : "none"}</span>
+                    <span className="text-neutral-600">Trial</span>
+                    <span className="font-medium text-neutral-900">{open.plan.trialDays ? `${open.plan.trialDays} days` : "none"}</span>
                   </div>
                   <div className="flex justify-between border-t border-indigo-200 pt-1.5">
-                    <span className="font-semibold text-slate-900">Then</span>
-                    <span className="font-semibold text-slate-900">
+                    <span className="font-semibold text-neutral-900">Then</span>
+                    <span className="font-semibold text-neutral-900">
                       {formatMoney(open.plan.amount, open.plan.currency)} / {open.plan.billingCycle === "yearly" ? "year" : "month"}
                     </span>
                   </div>
                   {open.preferredSlug && (
                     <div className="flex justify-between pt-1.5">
-                      <span className="text-slate-600">Web address wanted</span>
-                      <span className="font-mono text-xs text-slate-900">{open.preferredSlug}</span>
+                      <span className="text-neutral-600">Web address wanted</span>
+                      <span className="font-mono text-xs text-neutral-900">{open.preferredSlug}</span>
                     </div>
                   )}
                 </div>
               </div>
             )}
 
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-neutral-200 bg-neutral-50 p-3">
               {open.gymId ? (
-                <p className="text-sm text-slate-700">
+                <p className="text-sm text-neutral-700">
                   Set up as a gym{open.convertedAt ? ` on ${new Date(open.convertedAt).toLocaleDateString()}` : ""}.{" "}
                   <Link href={`/super-admin/gyms/${open.gymId}`} className="inline-flex items-center gap-1 font-semibold text-indigo-600 hover:text-indigo-700">
                     Open the gym <FiExternalLink className="h-3.5 w-3.5" />
                   </Link>
                 </p>
               ) : (
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-neutral-500">
                   {open.plan ? "Everything they chose is filled in for you." : "No plan was chosen: pick one on the next page."}
                 </p>
               )}
@@ -330,18 +330,18 @@ export default function DemoRequestsPage() {
 
             <dl className="grid grid-cols-2 gap-3 text-sm">
               <div>
-                <dt className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Gym size</dt>
-                <dd className="text-slate-800">{open.gymSize || "—"}</dd>
+                <dt className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400">Gym size</dt>
+                <dd className="text-neutral-800">{open.gymSize || "—"}</dd>
               </div>
               <div>
-                <dt className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Country / city</dt>
-                <dd className="text-slate-800">{open.country || "—"}</dd>
+                <dt className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400">Country / city</dt>
+                <dd className="text-neutral-800">{open.country || "—"}</dd>
               </div>
               <div className="col-span-2">
-                <dt className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Message</dt>
-                <dd className="whitespace-pre-wrap rounded-lg bg-slate-50 p-3 text-slate-800">{open.message || "—"}</dd>
+                <dt className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400">Message</dt>
+                <dd className="whitespace-pre-wrap rounded-lg bg-neutral-50 p-3 text-neutral-800">{open.message || "—"}</dd>
               </div>
-              <div className="col-span-2 text-xs text-slate-500">
+              <div className="col-span-2 text-xs text-neutral-500">
                 Received {new Date(open.createdAt).toLocaleString()}
                 {open.source ? ` · from ${open.source}` : ""}
               </div>
