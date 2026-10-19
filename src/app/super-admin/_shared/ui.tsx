@@ -5,9 +5,15 @@
 // platform, not to any gym), generous spacing, and one set of controls used
 // by every page so the panel reads as one product.
 
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect, useRef } from "react";
 import Link from "next/link";
 import { FiInbox, FiX } from "react-icons/fi";
+import BusySpinner from "@/components/BusySpinner";
+
+// Every action button runs through these: a guard against double clicks and
+// the spinner it shows meanwhile (see Button's `loading`).
+export { useAsyncAction, type AsyncAction } from "@/lib/useAsyncAction";
+export { BusySpinner };
 
 export const cx = (...classes: (string | false | null | undefined)[]) => classes.filter(Boolean).join(" ");
 
@@ -37,9 +43,40 @@ type ButtonProps = {
   size?: "sm" | "md";
   href?: string;
   className?: string;
+  /** Its action is running: a spinner in place of the icon (or before the label), disabled and aria-busy. */
+  loading?: boolean;
 };
 
-export function Button({ children, onClick, type = "button", disabled, variant = "primary", size = "md", href, className = "" }: ButtonProps) {
+// Only an icon's size passes to the spinner that stands in for it.
+const sizeOf = (className?: string) => (className || "").split(/\s+/).filter((c) => /^(h|w|size)-/.test(c)).join(" ");
+
+function busyContent(children: React.ReactNode, size: "sm" | "md") {
+  const [first, ...rest] = React.Children.toArray(children);
+  // A leading icon (a component, not text) gives its place to the spinner.
+  if (React.isValidElement<{ className?: string }>(first) && typeof first.type !== "string") {
+    return [<BusySpinner key="busy" className={sizeOf(first.props.className) || "h-4 w-4"} />, ...rest];
+  }
+  return [<BusySpinner key="busy" className={size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4"} />, first, ...rest];
+}
+
+export function Button({ children, onClick, type = "button", disabled, variant = "primary", size = "md", href, className = "", loading = false }: ButtonProps) {
+  const ref = useRef<HTMLButtonElement>(null);
+  const idleWidth = useRef(0);
+  // Busy, it keeps the width it had: the spinner borrows a little of the
+  // padding rather than push its neighbours along. Only a busy label too long
+  // for that (Save → Saving…) makes it wider, and then just enough.
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.width = "";
+    if (!loading) {
+      idleWidth.current = el.offsetWidth;
+      return;
+    }
+    const style = getComputedStyle(el);
+    const spare = Math.max(0, parseFloat(style.paddingLeft) + parseFloat(style.paddingRight) - 8);
+    el.style.width = `${Math.max(idleWidth.current, el.offsetWidth - spare)}px`;
+  });
   const base = "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-lg font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40 disabled:cursor-not-allowed disabled:opacity-50";
   const sizes = { sm: "h-8 px-3 text-xs", md: "h-10 px-4 text-sm" };
   const variants = {
@@ -57,8 +94,8 @@ export function Button({ children, onClick, type = "button", disabled, variant =
     );
   }
   return (
-    <button type={type} onClick={onClick} disabled={disabled} className={classes}>
-      {children}
+    <button ref={ref} type={type} onClick={onClick} disabled={disabled || loading} aria-busy={loading || undefined} className={classes}>
+      {loading ? busyContent(children, size) : children}
     </button>
   );
 }

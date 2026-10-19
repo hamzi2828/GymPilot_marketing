@@ -102,6 +102,36 @@ details > summary::-webkit-details-marker {
 }
 
 /* ---------------------------------------------------------------------------
+   The loading bar along the top of the window (components/NavigationProgress.tsx).
+   It runs out quickly, then crawls without ever quite arriving until the
+   page is there; then it fills and fades. Without motion it just appears and
+   goes.
+   --------------------------------------------------------------------------- */
+.nav-progress {
+  transform: scaleX(0);
+  transform-origin: left;
+  opacity: 0;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
+}
+.nav-progress[data-phase="start"] {
+  opacity: 1;
+}
+.nav-progress[data-phase="running"] {
+  opacity: 1;
+  transform: scaleX(0.9);
+  transition: transform 8s cubic-bezier(0.08, 0.82, 0.17, 1);
+}
+.nav-progress[data-phase="done"] {
+  transform: scaleX(1);
+  transition: transform 0.2s ease-out, opacity 0.25s ease 0.2s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-progress {
+    transition: none !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
    Panel helpers
    --------------------------------------------------------------------------- */
 .admin-scroll {

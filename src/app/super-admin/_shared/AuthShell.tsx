@@ -5,7 +5,7 @@
 
 import Link from "next/link";
 import { FiArrowLeft } from "react-icons/fi";
-import { cx } from "./ui";
+import { BusySpinner, cx } from "./ui";
 import Glow from "@/components/marketing/Glow";
 
 const POINTS = ["Every gym in its own database", "Plans, trials and renewals in one place", "Domains verified and served automatically"];
@@ -66,9 +66,11 @@ export default function AuthShell({ title, subtitle, children, footer }: { title
 
 export const authInput = "h-11 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20";
 
-export function AuthButton({ children, disabled, type = "submit", className = "" }: { children: React.ReactNode; disabled?: boolean; type?: "submit" | "button"; className?: string }) {
+/** `loading`: its request is running -- a spinner before the label, disabled and aria-busy. Full width, so nothing moves. */
+export function AuthButton({ children, disabled, loading = false, type = "submit", className = "" }: { children: React.ReactNode; disabled?: boolean; loading?: boolean; type?: "submit" | "button"; className?: string }) {
   return (
-    <button type={type} disabled={disabled} className={cx("inline-flex h-11 w-full items-center justify-center rounded-xl bg-indigo-600 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50", className)}>
+    <button type={type} disabled={disabled || loading} aria-busy={loading || undefined} className={cx("inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50", className)}>
+      {loading && <BusySpinner />}
       {children}
     </button>
   );
