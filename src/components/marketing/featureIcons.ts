@@ -3,7 +3,7 @@
 // client component on every page) does not carry every picture with it.
 
 import type { ComponentType } from "react";
-import { FiActivity, FiBarChart2, FiBookOpen, FiCalendar, FiClipboard, FiCreditCard, FiDatabase, FiDollarSign, FiEdit3, FiFileText, FiGlobe, FiHardDrive, FiKey, FiMessageCircle, FiPercent, FiPrinter, FiRefreshCw, FiSearch, FiShield, FiShoppingBag, FiSliders, FiSmartphone, FiTag, FiTarget, FiTool, FiUploadCloud, FiUser, FiUserCheck, FiUserPlus, FiUsers, FiVolume2, FiZap } from "react-icons/fi";
+import { FiActivity, FiBarChart2, FiBookOpen, FiCalendar, FiClipboard, FiCreditCard, FiDatabase, FiDollarSign, FiEdit3, FiFileText, FiGlobe, FiKey, FiMessageCircle, FiPercent, FiPrinter, FiRefreshCw, FiSearch, FiShield, FiShoppingBag, FiSliders, FiSmartphone, FiTag, FiTarget, FiTool, FiUploadCloud, FiUser, FiUserCheck, FiUserPlus, FiUsers, FiVolume2, FiZap } from "react-icons/fi";
 import type { FeatureKey } from "@/content/features";
 
 export const FEATURE_ICONS: Record<FeatureKey, ComponentType<{ className?: string }>> = {
@@ -38,7 +38,6 @@ export const FEATURE_ICONS: Record<FeatureKey, ComponentType<{ className?: strin
   setup: FiSliders,
   security: FiShield,
   data: FiDatabase,
-  backups: FiHardDrive,
 };
 
 export const FEATURE_TINTS: Record<FeatureKey, string> = {
@@ -73,5 +72,4 @@ export const FEATURE_TINTS: Record<FeatureKey, string> = {
   setup: "bg-purple-50 text-purple-600 ring-purple-100",
   security: "bg-slate-900 text-emerald-300 ring-slate-700",
   data: "bg-slate-100 text-slate-700 ring-slate-200",
-  backups: "bg-slate-900 text-sky-300 ring-slate-700",
 };

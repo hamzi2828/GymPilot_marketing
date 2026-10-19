@@ -138,7 +138,7 @@ const TERMS: LegalDoc = {
       heading: "Your data",
       blocks: [
         "Your gym's data belongs to you. We use it only to run the service for you.",
-        "You can download all of it at any time under Settings → Data & backup.",
+        "You can export your members, payments and reports from your admin area at any time.",
         "Our Privacy Policy explains what is stored, where, and how it is deleted.",
       ],
     },
@@ -184,7 +184,6 @@ const TERMS: LegalDoc = {
       heading: "Availability and support",
       blocks: [
         "We work to keep the service running all day, every day, but we cannot promise it will never be interrupted.",
-        "We take an encrypted backup of every gym each night. You can also download your own.",
         "Support is through the channels listed on your plan.",
       ],
     },
@@ -351,26 +350,10 @@ const PRIVACY: LegalDoc = {
       heading: "Where it is kept",
       blocks: present<LegalBlock>([
         "Every gym has its own database. One gym's data is never mixed with another's.",
-        "The software runs on Vercel. The databases are MongoDB databases in the cloud. Uploaded files and stored backups are kept in Vercel's file storage.",
+        "The software runs on Vercel. The databases are MongoDB databases in the cloud. Uploaded files are kept in Vercel's file storage.",
         LEGAL.hostingRegion && `The servers are in ${LEGAL.hostingRegion}.`,
         "Data travels between your browser and our servers over an encrypted connection (HTTPS).",
       ]),
-    },
-    {
-      id: "backups",
-      kicker: "Part 2 · Gym members' data",
-      heading: "Backups",
-      blocks: [
-        {
-          list: [
-            "Every night we make a backup of each active gym.",
-            "It is encrypted before it is stored, with a key for that gym only.",
-            "We keep the last seven and delete older ones.",
-            "When a gym is deleted, its stored backups are deleted too.",
-          ],
-        },
-        "A gym's administrator can also download a backup. That file holds members' personal details in readable form, so the gym must keep it safe. Fingerprint templates and saved keys inside it stay encrypted.",
-      ],
     },
     {
       id: "security",
@@ -395,7 +378,7 @@ const PRIVACY: LegalDoc = {
       heading: "Who else handles it",
       blocks: [
         "We use these companies to run the service:",
-        { list: ["Vercel, for running the software and storing files and backups.", "MongoDB, for the databases.", "An email provider, for the emails we send ourselves."] },
+        { list: ["Vercel, for running the software and storing files.", "MongoDB, for the databases.", "An email provider, for the emails we send ourselves."] },
         "A gym can also switch on services of its own. Data goes to them only when the gym sets them up:",
         {
           list: [
@@ -430,10 +413,10 @@ const PRIVACY: LegalDoc = {
       kicker: "Part 2 · Gym members' data",
       heading: "How a gym exports or deletes its data",
       blocks: [
-        "To export: an administrator opens Settings → Data & backup and presses Download full backup. It is one file with every record of the gym. Reports also download as CSV or Excel.",
+        "To export: download the gym's members, payments and reports from the admin area, as CSV or Excel.",
         "To delete one member: delete their account in the admin area. Their fingerprint templates go with it.",
         // DECISION: the 30 days, and how long a closed gym's data is kept when nobody asks.
-        "To delete everything: write to us from the owner's email address. We delete the gym's database and its stored backups within 30 days, and confirm when it is done.",
+        "To delete everything: write to us from the owner's email address. We delete the gym's database within 30 days, and confirm when it is done.",
         "We keep a gym's data for as long as the gym is a customer. We do not delete it the moment a plan ends, so a gym can come back. Ask us and we will delete it sooner.",
       ],
     },
@@ -519,7 +502,7 @@ const REFUNDS: LegalDoc = {
       id: "data",
       heading: "Your data when you leave",
       blocks: [
-        "Download your gym's data before you go, under Settings → Data & backup.",
+        "Before you go, export your members, payments and reports from your admin area.",
         "We do not delete it the moment your plan ends. Ask us and we will delete it. Our Privacy Policy explains how.",
       ],
     },

@@ -14,7 +14,7 @@ import FeatureGroupsGrid from "@/components/marketing/FeatureGroupsGrid";
 import Suggestions from "@/components/marketing/Suggestions";
 
 // For search results: one sentence, under 160 characters.
-const DESCRIPTION = `All ${FEATURES.length} ${SITE.name} features in plain English: fee collection, dues, check-in alerts, reports, the shop, classes, staff, messaging, your website and backups.`;
+const DESCRIPTION = `All ${FEATURES.length} ${SITE.name} features in plain English: fee collection, dues, check-in alerts, reports, the shop, classes, staff, messaging and your website.`;
 
 export const metadata: Metadata = {
   title: "Features",

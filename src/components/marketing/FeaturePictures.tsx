@@ -446,7 +446,7 @@ function DataPicture() {
         ))}
       </div>
       <p className="v-rise mt-3 text-[11px] text-slate-500" style={stagger(8)}>
-        Download everything as a spreadsheet whenever you like.
+        Download members, payments and reports whenever you like.
       </p>
     </Frame>
   );
@@ -1169,41 +1169,6 @@ function TrainerPayPicture() {
   );
 }
 
-function BackupsPicture() {
-  const stored = [
-    ["Tonight 02:00", "Daily"],
-    ["Yesterday 02:00", "Daily"],
-    ["Mon 16:20", "Back up now"],
-  ];
-  return (
-    <Frame>
-      <ul className="space-y-1.5">
-        {stored.map(([when, kind], i) => (
-          <li key={when} className="v-rise flex items-center gap-2 rounded-lg bg-white px-3 py-1.5 text-[11px] ring-1 ring-slate-200" style={stagger(i)}>
-            <FiLock className="h-3 w-3 shrink-0 text-emerald-600" />
-            <span className="font-semibold text-slate-800">{when}</span>
-            <span className="text-slate-400">{kind}</span>
-            <span className="ml-auto text-[10px] font-semibold text-brand-600">Download</span>
-          </li>
-        ))}
-      </ul>
-      <p className="v-rise mt-2 text-[10px] text-slate-500" style={stagger(3)}>
-        Encrypted · the newest 7 kept
-      </p>
-      <div className="mt-3 flex flex-wrap items-center gap-1 text-[10px] font-semibold">
-        {["Preview", "Confirm", "Safety copy", "Restore"].map((s, i) => (
-          <span key={s} className="flex items-center gap-1">
-            <span className={`v-pop rounded-full px-2 py-0.5 ${i === 2 ? "bg-slate-900 text-white" : "bg-white text-slate-600 ring-1 ring-slate-200"}`} style={stagger(4 + i)}>
-              {s}
-            </span>
-            {i < 3 && <span className="text-slate-300">→</span>}
-          </span>
-        ))}
-      </div>
-    </Frame>
-  );
-}
-
 /** Keyed by the feature key in content/features.ts. */
 export const FEATURE_PICTURES: Record<FeatureKey, React.ComponentType> = {
   members: MembersPicture,
@@ -1237,5 +1202,4 @@ export const FEATURE_PICTURES: Record<FeatureKey, React.ComponentType> = {
   setup: SetupPicture,
   security: SecurityPicture,
   data: DataPicture,
-  backups: BackupsPicture,
 };

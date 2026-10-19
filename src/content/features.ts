@@ -52,8 +52,7 @@ export type FeatureKey =
   | "leads"
   | "setup"
   | "security"
-  | "data"
-  | "backups";
+  | "data";
 
 export interface Feature {
   /** Internal name: pictures, icons and related links are keyed by it. */
@@ -602,7 +601,7 @@ export const FEATURES: Feature[] = [
     ],
     points: ["Guided setup on day one", "Country and currency", "8 colour schemes", "Your logo, email and bank details"],
     screens: ["Admin → Setup (first run)", "Settings → General (Business, Money & time, Website)", "Settings → Logo, Colour Scheme", "Settings → Stripe, SMTP, Banks, Messaging"],
-    related: ["website", "security", "backups"],
+    related: ["website", "security", "import"],
   },
   {
     key: "security",
@@ -614,11 +613,11 @@ export const FEATURES: Feature[] = [
     text: "Two-step sign-in, roles for staff, and a record of every change.",
     body: [
       "Staff see only their part of the gym: roles decide who sees what, and you can make your own. Two-step sign-in sends a code by email, and you can sign out every device at once.",
-      "Anything that changes is written down with who did it, in an audit log that even a restore leaves alone. Members can download a copy of their own data.",
+      "Anything that changes is written down in an audit log, with who did it. Members can download a copy of their own data.",
     ],
     points: ["Two-factor sign-in by email", "Sign out every device at once", "Roles decide who sees what", "Audit log of every change", "Members download their own data"],
     screens: ["Admin → Roles & Access", "Admin → Audit log", "Member → Privacy & security"],
-    related: ["backups", "data", "staff"],
+    related: ["data", "staff", "selfservice"],
   },
   {
     key: "data",
@@ -630,28 +629,11 @@ export const FEATURES: Feature[] = [
     text: "Your gym gets its own website, its own member portal and its own private database.",
     body: [
       "Every gym on GymsPilotPro has a database of its own, never mixed with another gym's. That is unusual, and it is why we can promise nobody else's data is ever a query away from yours.",
-      "Export everything any time, and it is still yours if you leave.",
+      "Export your members, payments and reports from the admin panel whenever you like, as CSV or Excel. Your data stays yours if you leave.",
     ],
-    points: ["A database per gym", "Never mixed with another gym", "Export everything any time", "Still yours if you leave"],
-    screens: ["A database per gym", "Downloads from every report", "Settings → Data & backup"],
-    related: ["backups", "security", "import"],
-  },
-  {
-    key: "backups",
-    slug: "backups",
-    group: "control",
-    name: "Backups & restore",
-    short: "Download a full copy of your gym any time.",
-    title: "A backup every night, and a restore that is safe",
-    text: "Download the whole gym whenever you like; every night an encrypted copy is kept, the last seven at a time.",
-    body: [
-      "Every night GymsPilotPro makes a backup of your gym, encrypts it before it is stored, and keeps the last seven. Need one right now — before a big import, say? Press Back up now.",
-      "The whole gym is yours to download too, as one file any archive tool opens: members, memberships, payments, attendance, settings — everything. Keys for Stripe, email and messaging stay sealed inside it.",
-      "Restoring is careful. GymsPilotPro reads the whole backup and shows you what is in it first, you confirm by typing your gym's short name, and a backup of the gym as it is now is taken before anything changes. If anything goes wrong on the way, the gym is left exactly as it was. Only administrators can do it, and the audit log keeps every step.",
-    ],
-    points: ["Nightly encrypted backup, 7 kept", "Back up now, any time", "Download the whole gym", "Preview before restoring", "Safety copy before every restore"],
-    screens: ["Settings → Data & backup"],
-    related: ["data", "security", "import"],
+    points: ["A database per gym", "Never mixed with another gym", "Export members, payments and reports", "Still yours if you leave"],
+    screens: ["A database per gym", "Downloads from every report"],
+    related: ["reports", "security", "import"],
   },
 ];
 

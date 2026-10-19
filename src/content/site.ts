@@ -232,7 +232,7 @@ export const FAQ: { q: string; a: string; more?: boolean }[] = [
   },
   {
     q: "Is my data mixed with other gyms?",
-    a: "No. Every gym gets its own database. Members, payments, attendance and messages live only there, and the platform can export or hand it back to you at any time.",
+    a: "No. Every gym gets its own database. Members, payments, attendance and messages live only there. You can export your members, payments and reports from the admin panel at any time.",
   },
   {
     q: "Is there a contract?",
@@ -246,11 +246,6 @@ export const FAQ: { q: string; a: string; more?: boolean }[] = [
   {
     q: "What about the front desk hardware?",
     a: "Any tablet or PC with a browser becomes a check-in kiosk: it scans members' QR codes with its camera or takes a typed member ID. For fingerprints there is a Windows desk app that works with DigitalPersona USB readers; our team installs it on your front-desk PC. Wall-mounted fingerprint machines are not supported, and check-in needs an internet connection. Both play a different sound for each kind of check-in and can say “Fee expired, please renew” out loud.",
-    more: true,
-  },
-  {
-    q: "Is my data backed up?",
-    a: "Yes. Every night each gym gets an encrypted backup, and the last seven are kept. Owners can download the whole gym at any time, and restore from a backup after seeing what is in it — GymsPilotPro takes a safety copy first.",
     more: true,
   },
   {
