@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Brand from "./Brand";
 import ContactLinks from "./ContactLinks";
+import FullPageLink from "@/components/FullPageLink";
 import { FOOTER, LEGAL, SITE } from "@/content/site";
 
 export default function SiteFooter() {
@@ -47,9 +48,12 @@ export default function SiteFooter() {
                 </li>
               ))}
               <li>
-                <Link href={FOOTER.platform.href} className="text-slate-600 hover:text-slate-300">
+                {/* The platform's sign-in opens as a page of its own, under the
+                    panel's stricter policy, not inside this one with its
+                    analytics still running. */}
+                <FullPageLink href={FOOTER.platform.href} className="text-slate-600 hover:text-slate-300">
                   {FOOTER.platform.label}
-                </Link>
+                </FullPageLink>
               </li>
             </ul>
           </nav>

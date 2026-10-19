@@ -1,10 +1,12 @@
 "use client";
 
 // The sign-in, forgot and reset pages share this split screen: the product
-// on the left, the form on the right.
+// on the left, the form on the right. Its links back to the site load the
+// site as a page of its own, with its own policy and analytics, not inside
+// the panel's (FullPageLink).
 
-import Link from "next/link";
 import { FiArrowLeft } from "react-icons/fi";
+import FullPageLink from "@/components/FullPageLink";
 import { BusySpinner, cx } from "./ui";
 import Glow from "@/components/marketing/Glow";
 
@@ -18,9 +20,9 @@ export default function AuthShell({ title, subtitle, children, footer }: { title
         <Glow className="-left-40 top-1/3 h-[720px] w-[720px]" color="rgba(79,70,229,0.35)" />
         <Glow className="right-0 top-0 h-[520px] w-[520px] translate-x-1/3" color="rgba(217,70,239,0.22)" />
         <div className="relative">
-          <Link href="/" className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-white">
+          <FullPageLink href="/" className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-white">
             <FiArrowLeft className="h-3.5 w-3.5" /> Back to the site
-          </Link>
+          </FullPageLink>
         </div>
         <div className="relative">
           <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 text-white shadow-lg shadow-indigo-500/30" aria-hidden="true">
@@ -46,14 +48,14 @@ export default function AuthShell({ title, subtitle, children, footer }: { title
 
       <section className="flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-sm">
-          <Link href="/" className="mb-8 flex items-center gap-2.5 lg:hidden">
+          <FullPageLink href="/" className="mb-8 flex items-center gap-2.5 lg:hidden">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 text-white" aria-hidden="true">
               <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
                 <path d="M3 10h2v4H3v-4Zm16 0h2v4h-2v-4ZM6 8h2v8H6V8Zm10 0h2v8h-2V8Zm-7 3h6v2H9v-2Z" />
               </svg>
             </span>
             <span className="font-display text-lg font-bold text-slate-900">GymsPilotPro</span>
-          </Link>
+          </FullPageLink>
           <h1 className="font-display text-2xl font-bold tracking-tight text-slate-900">{title}</h1>
           {subtitle && <p className="mt-1.5 text-sm text-slate-500">{subtitle}</p>}
           <div className="mt-8">{children}</div>

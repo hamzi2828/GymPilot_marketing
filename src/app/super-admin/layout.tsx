@@ -10,6 +10,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { FiCreditCard, FiExternalLink, FiGrid, FiHome, FiInbox, FiLayers, FiList, FiLogOut, FiMenu, FiPlus, FiUser, FiX } from "react-icons/fi";
 import { clearPlatformToken, getPlatformToken, platformFetch, type Overview, type PlatformAdmin } from "./_shared/api";
 import { Avatar, BusySpinner, cx, useAsyncAction } from "./_shared/ui";
+import FullPageLink from "@/components/FullPageLink";
 
 type NavItem = { name: string; path: string; icon: React.ReactNode; exact?: boolean; badge?: number };
 
@@ -144,9 +145,9 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
       ))}
       <div>
         <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">Site</p>
-        <Link href="/" className="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-400 transition-colors hover:bg-white/5 hover:text-white">
+        <FullPageLink href="/" className="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-400 transition-colors hover:bg-white/5 hover:text-white">
           <FiExternalLink className="h-[18px] w-[18px] text-slate-500 group-hover:text-slate-300" /> Marketing site
-        </Link>
+        </FullPageLink>
       </div>
     </nav>
   );

@@ -7,6 +7,7 @@ import { FiZap } from "react-icons/fi";
 import { platformFetch, setPlatformToken } from "@/app/super-admin/_shared/api";
 import AuthShell, { AuthButton, authInput } from "@/app/super-admin/_shared/AuthShell";
 import { useAsyncAction } from "@/app/super-admin/_shared/ui";
+import FullPageLink from "@/components/FullPageLink";
 
 // One-tap sign-in for the super admin account during local development.
 // Nothing is inlined into the page: arriving with ?quick=1 asks the app's own
@@ -116,9 +117,9 @@ function LoginForm() {
             <Link href="/forgot" className="font-medium text-indigo-600 hover:text-indigo-500">
               Forgot password?
             </Link>
-            <Link href="/" className="hover:text-slate-800">
+            <FullPageLink href="/" className="hover:text-slate-800">
               Back to the website
-            </Link>
+            </FullPageLink>
           </>
         )
       }

@@ -6,7 +6,10 @@
 // sent from the forms with trackConversion().
 //
 // Not on the platform panel or its sign-in pages: those are GymsPilotPro's own
-// staff at work, not visitors an advert brought.
+// staff at work, not visitors an advert brought. Their pages also get a
+// policy that lets no analytics host in (PANEL_PATHS in next.config.ts, kept
+// in step with PANEL), and the links into them load a fresh page
+// (FullPageLink), so a tracker loaded on the site never runs there.
 
 import Script from "next/script";
 import { usePathname } from "next/navigation";

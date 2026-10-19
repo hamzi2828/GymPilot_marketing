@@ -19,6 +19,13 @@ import type { NextConfig } from "next";
 //   object-src 'none', base-uri 'self', form-action 'self', and nobody may
 //               frame any of it.
 // Preview deployments also get Vercel's toolbar (vercel.live).
+//
+// The panel and its sign-in pages (PANEL_PATHS) get the same policy without
+// the analytics hosts: the console that runs every gym, and the reset page
+// with its token in the address, never run a tracker's script or send it
+// anything, even if one was loaded on a marketing page first. Links into
+// them from the site are plain <a>s, so arriving is a fresh page that this
+// policy covers, not a move inside the marketing page still running them.
 // ---------------------------------------------------------------------------
 function originOf(value: string | undefined): string {
   try {
@@ -35,17 +42,23 @@ const API_ORIGIN = originOf(process.env.NEXT_PUBLIC_BACKEND_URL || "http://local
 const GA = (process.env.NEXT_PUBLIC_GA_ID || "").trim() !== "";
 const META = (process.env.NEXT_PUBLIC_META_PIXEL_ID || "").trim() !== "";
 
-function contentSecurityPolicy(): string {
+// Where the analytics policy does not reach (see above). Kept in step with
+// PANEL in components/marketing/Analytics.tsx.
+const PANEL_PATHS = ["/login", "/forgot", "/reset", "/super-admin", "/super-admin/:path*"];
+
+function contentSecurityPolicy({ analytics }: { analytics: boolean }): string {
+  const ga = analytics && GA;
+  const meta = analytics && META;
   const vercelLive = IS_PREVIEW ? ["https://vercel.live"] : [];
-  const ga = GA ? ["https://*.googletagmanager.com", "https://*.google-analytics.com", "https://*.analytics.google.com"] : [];
+  const gaHosts = ga ? ["https://*.googletagmanager.com", "https://*.google-analytics.com", "https://*.analytics.google.com"] : [];
   const directives: Record<string, string[]> = {
     "default-src": ["'self'"],
-    "script-src": ["'self'", "'unsafe-inline'", ...(IS_DEV ? ["'unsafe-eval'"] : []), ...(GA ? ["https://*.googletagmanager.com"] : []), ...(META ? ["https://connect.facebook.net"] : []), ...vercelLive],
+    "script-src": ["'self'", "'unsafe-inline'", ...(IS_DEV ? ["'unsafe-eval'"] : []), ...(ga ? ["https://*.googletagmanager.com"] : []), ...(meta ? ["https://connect.facebook.net"] : []), ...vercelLive],
     "style-src": ["'self'", "'unsafe-inline'", ...vercelLive],
     "font-src": ["'self'", "data:", ...(IS_PREVIEW ? ["https://vercel.live", "https://assets.vercel.com"] : [])],
-    "img-src": ["'self'", "data:", "blob:", ...ga, ...(META ? ["https://www.facebook.com"] : []), ...(IS_PREVIEW ? ["https://vercel.live", "https://vercel.com"] : [])],
-    "connect-src": ["'self'", API_ORIGIN, ...ga, ...(META ? ["https://www.facebook.com", "https://connect.facebook.net"] : []), ...(IS_PREVIEW ? ["https://vercel.live", "wss://ws-us3.pusher.com"] : [])].filter(Boolean),
-    "frame-src": ["'self'", ...(GA ? ["https://*.googletagmanager.com"] : []), ...vercelLive],
+    "img-src": ["'self'", "data:", "blob:", ...gaHosts, ...(meta ? ["https://www.facebook.com"] : []), ...(IS_PREVIEW ? ["https://vercel.live", "https://vercel.com"] : [])],
+    "connect-src": ["'self'", API_ORIGIN, ...gaHosts, ...(meta ? ["https://www.facebook.com", "https://connect.facebook.net"] : []), ...(IS_PREVIEW ? ["https://vercel.live", "wss://ws-us3.pusher.com"] : [])].filter(Boolean),
+    "frame-src": ["'self'", ...(ga ? ["https://*.googletagmanager.com"] : []), ...vercelLive],
     "worker-src": ["'self'", "blob:"],
     "manifest-src": ["'self'"],
     "object-src": ["'none'"],
@@ -73,12 +86,18 @@ const nextConfig: NextConfig = {
       {
         source: "/:path*",
         headers: [
-          { key: "Content-Security-Policy", value: contentSecurityPolicy() },
+          { key: "Content-Security-Policy", value: contentSecurityPolicy({ analytics: true }) },
           { key: "X-Frame-Options", value: "DENY" },
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
         ],
       },
+      // After the rule above, so its policy is the one these pages get (the
+      // later of two matching rules sets the header).
+      ...PANEL_PATHS.map((source) => ({
+        source,
+        headers: [{ key: "Content-Security-Policy", value: contentSecurityPolicy({ analytics: false }) }],
+      })),
       // The desk app installer the gym admin panel links to: always saved as
       // a file, never opened in the tab.
       {
