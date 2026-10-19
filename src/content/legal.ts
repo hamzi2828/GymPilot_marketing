@@ -161,7 +161,7 @@ const TERMS: LegalDoc = {
       id: "other-services",
       heading: "Services you connect",
       blocks: [
-        "Some features use an account you hold with someone else: Stripe for card payments, an SMS or WhatsApp provider, your email server, your domain name.",
+        "Some features use an account you hold with someone else: Safepay or Stripe for your members' online payments, an SMS or WhatsApp provider, your email server, your domain name.",
         "Those accounts, their charges and their rules are between you and that provider.",
       ],
     },
@@ -314,6 +314,7 @@ const PRIVACY: LegalDoc = {
             "Name, phone, email if given, username, date of birth, gender, address and photo.",
             "Emergency contact, health questionnaire answers, the signed agreement and uploaded documents.",
             "Memberships, payments, invoices and any balance owed.",
+            "If the member chose automatic payments, a reference to their saved card and a record of their consent (see below).",
             "Class and personal training bookings, and check-in visits.",
             "Messages the gym sent, and the member's notification choices.",
             "Notes written by staff.",
@@ -321,8 +322,26 @@ const PRIVACY: LegalDoc = {
           ],
         },
         "Passwords are stored only as a one-way hash. Nobody can read them, including us.",
-        "Card numbers are never stored. Online card payments go through the gym's own Stripe account.",
+        `Card numbers are never stored by ${NAME}. Members pay online on the page of the gym's own payment provider: Safepay, or Stripe.`,
         "For staff and trainers the gym can also keep rotas, leave, pay and payslips.",
+      ],
+    },
+    {
+      id: "saved-cards",
+      kicker: "Part 2 · Gym members' data",
+      heading: "Saved cards and automatic payments",
+      blocks: [
+        "Automatic payments are optional. A member who wants them saves a card when they pay online, and ticks a box to agree to it. Nothing is saved without that.",
+        {
+          list: [
+            `The card is stored by Safepay, the gym's payment provider, not by ${NAME}. The member types it on Safepay's page, not ours.`,
+            `${NAME} keeps only Safepay's reference to the card, with its brand, last four digits and expiry date, so the member can see which card it is. The reference is stored encrypted.`,
+            "It also keeps a record of the member's consent: the words they agreed to, and when.",
+            "The card is charged only for that member's membership at that gym, on each due date, as the consent says.",
+            `The member can turn automatic payments off at any time in their account. ${NAME} then removes its reference to the card and does not charge it again.`,
+          ],
+        },
+        "What Safepay keeps, and for how long, is covered by Safepay's own terms and privacy policy.",
       ],
     },
     {
@@ -366,7 +385,7 @@ const PRIVACY: LegalDoc = {
             "Two-step sign-in by email is available, and a gym can require it for all staff.",
             "Changes made by staff are written to an audit log.",
             "Sign-in and password reset are limited to slow down guessing.",
-            "Keys the gym saves for Stripe, email and messaging are stored encrypted.",
+            "The secret keys the gym saves for Safepay, Stripe, email and messaging are stored encrypted.",
           ],
         },
         "No system is perfectly safe. If we learn of a breach that affects a gym's data, we tell that gym without delay.",
@@ -382,6 +401,7 @@ const PRIVACY: LegalDoc = {
         "A gym can also switch on services of its own. Data goes to them only when the gym sets them up:",
         {
           list: [
+            "Safepay, for payments by card, JazzCash, Easypaisa or bank app, through the gym's own Safepay account. It also stores a card a member saves for automatic payments.",
             "Stripe, for card payments, through the gym's own Stripe account.",
             "The gym's own email server, for emails to members.",
             "The gym's own SMS or WhatsApp provider, for text messages.",
@@ -402,6 +422,7 @@ const PRIVACY: LegalDoc = {
             "Download a copy of their own data from their account page.",
             "Change their own details.",
             "Choose which messages they get, or turn them off.",
+            "Turn automatic payments off, which removes their saved card from their account.",
             "Withdraw their fingerprint agreement. The stored templates are then deleted.",
             "Ask the gym to correct or delete their account.",
           ],
