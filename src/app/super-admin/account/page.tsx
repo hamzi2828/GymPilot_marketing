@@ -3,11 +3,18 @@
 import { useEffect, useState } from "react";
 import { FiShield, FiKey, FiSmartphone, FiMail, FiCopy } from "react-icons/fi";
 import { PageHeader, Panel, Button, Field, Input, Alert, Avatar, Pill, formatLastLogin, useAsyncAction, type AsyncAction } from "../_shared/ui";
-import { platformFetch, setPlatformToken, type PlatformAdmin } from "../_shared/api";
+import { platformFetch, PlatformApiError, setPlatformToken, type PlatformAdmin } from "../_shared/api";
 import QrCode from "./QrCode";
 
 /** What setting up the authenticator app hands back: shown until a code confirms it. */
 type AppSetup = { secret: string; otpauth_url: string; account: string; issuer: string };
+
+/** A change to two-factor sign-in that asks for the password first. */
+type NeedsPassword = "app-setup" | "email-off";
+
+/** The API turned the password down (none typed, or not the right one): said under the field, not at the top. */
+const passwordRefusal = (e: unknown): string | null =>
+  e instanceof PlatformApiError && !!e.code && (e.code.startsWith("PASSWORD_") || e.code === "WRONG_PASSWORD") ? e.message || "That password is not right." : null;
 
 export default function SuperAdminAccountPage() {
   const [admin, setAdmin] = useState<PlatformAdmin | null>(null);
@@ -24,23 +31,54 @@ export default function SuperAdminAccountPage() {
   const [backupCodes, setBackupCodes] = useState<string[] | null>(null);
   const [offPassword, setOffPassword] = useState("");
   const [offCode, setOffCode] = useState("");
+  // Turning emailed codes off, and setting up (or switching to) the app, ask
+  // for the password first: a stolen session must not be able to change the
+  // step that guards the next sign-in. `setupPassword` is the one confirmed
+  // for the app's setup, sent again with its first code.
+  const [confirm, setConfirm] = useState<NeedsPassword | null>(null);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [setupPassword, setSetupPassword] = useState("");
+  const [passwordError, setPasswordError] = useState<string | null>(null);
   const method = admin?.two_factor ? (admin.two_factor_method === "app" ? "app" : "email") : null;
+
+  const askPassword = (change: NeedsPassword | null) => {
+    setConfirm(change);
+    setConfirmPassword("");
+    setPasswordError(null);
+  };
+  const cancelSetup = () => {
+    setSetup(null);
+    setSetupCode("");
+    setSetupPassword("");
+    setPasswordError(null);
+  };
 
   const load = () => platformFetch<{ admin: PlatformAdmin }>("/auth/me").then((r) => setAdmin(r.admin));
   useEffect(() => {
     load().catch(() => setAdmin(null));
   }, []);
 
+  // In the two-factor forms a refusal of the password is said under its
+  // field; anything else at the top.
   const run = (form: AsyncAction, key: string, fn: () => Promise<string>) =>
     form.run(key, async () => {
       setNotice(null);
+      if (form === twoFactor) setPasswordError(null);
       try {
         setNotice({ tone: "success", text: await fn() });
         await load();
       } catch (e) {
-        setNotice({ tone: "error", text: e instanceof Error ? e.message : "Request failed" });
+        const refused = form === twoFactor ? passwordRefusal(e) : null;
+        if (refused) setPasswordError(refused);
+        else setNotice({ tone: "error", text: e instanceof Error ? e.message : "Request failed" });
       }
     });
+
+  const passwordProblem = passwordError && (
+    <p role="alert" className="-mt-2 text-xs text-rose-600">
+      {passwordError}
+    </p>
+  );
 
   return (
     <>
@@ -117,24 +155,29 @@ export default function SuperAdminAccountPage() {
               <Field label="Code from the app">
                 <Input inputMode="numeric" autoComplete="one-time-code" value={setupCode} onChange={(e) => setSetupCode(e.target.value)} placeholder="123456" />
               </Field>
+              {/* Only when the password confirmed before the QR code was turned down now. */}
+              {passwordError && (
+                <>
+                  <Field label="Your password">
+                    <Input type="password" autoComplete="current-password" value={setupPassword} onChange={(e) => setSetupPassword(e.target.value)} aria-invalid />
+                  </Field>
+                  {passwordProblem}
+                </>
+              )}
               <div className="flex justify-end gap-2">
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    setSetup(null);
-                    setSetupCode("");
-                  }}
-                >
+                <Button variant="ghost" onClick={cancelSetup}>
                   Cancel
                 </Button>
                 <Button
-                  disabled={twoFactor.busy || setupCode.replace(/\D/g, "").length !== 6}
+                  disabled={twoFactor.busy || setupCode.replace(/\D/g, "").length !== 6 || (!!passwordError && !setupPassword)}
                   loading={twoFactor.pending === "app-on"}
                   onClick={() =>
                     run(twoFactor, "app-on", async () => {
-                      const r = await platformFetch<{ backup_codes: string[] }>("/auth/two-factor/app/enable", { method: "POST", body: { code: setupCode.replace(/\D/g, "") } });
-                      setSetup(null);
-                      setSetupCode("");
+                      const r = await platformFetch<{ backup_codes: string[] }>("/auth/two-factor/app/enable", {
+                        method: "POST",
+                        body: { code: setupCode.replace(/\D/g, ""), currentPassword: setupPassword },
+                      });
+                      cancelSetup();
                       setBackupCodes(r.backup_codes);
                       return "Authenticator app is on. You will be asked for a code from it at every sign-in.";
                     })
@@ -148,8 +191,9 @@ export default function SuperAdminAccountPage() {
             <div className="space-y-4">
               <p className="text-sm text-slate-600">To turn it off, confirm your password and a current code from the app (or a backup code).</p>
               <Field label="Password">
-                <Input type="password" autoComplete="current-password" value={offPassword} onChange={(e) => setOffPassword(e.target.value)} />
+                <Input type="password" autoComplete="current-password" value={offPassword} onChange={(e) => setOffPassword(e.target.value)} aria-invalid={!!passwordError || undefined} />
               </Field>
+              {passwordProblem}
               <Field label="Code from the app, or a backup code">
                 <Input autoComplete="one-time-code" autoCapitalize="none" spellCheck={false} value={offCode} onChange={(e) => setOffCode(e.target.value)} placeholder="123456" />
               </Field>
@@ -171,35 +215,79 @@ export default function SuperAdminAccountPage() {
                 </Button>
               </div>
             </div>
+          ) : confirm ? (
+            <div className="space-y-4">
+              <p className="text-sm text-slate-600">
+                {confirm === "app-setup"
+                  ? `Confirm your password to ${method === "email" ? "switch to" : "set up"} an authenticator app.`
+                  : "Confirm your password to turn off two-factor sign-in."}
+              </p>
+              <Field label="Your password">
+                <Input type="password" autoComplete="current-password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} aria-invalid={!!passwordError || undefined} />
+              </Field>
+              {passwordProblem}
+              <div className="flex justify-end gap-2">
+                <Button variant="ghost" onClick={() => askPassword(null)}>
+                  Cancel
+                </Button>
+                {confirm === "app-setup" ? (
+                  <Button
+                    disabled={twoFactor.busy || !confirmPassword}
+                    loading={twoFactor.pending === "app-setup"}
+                    onClick={() =>
+                      run(twoFactor, "app-setup", async () => {
+                        const r = await platformFetch<{ data: AppSetup }>("/auth/two-factor/app/setup", { method: "POST", body: { currentPassword: confirmPassword } });
+                        setSetup(r.data);
+                        setSetupPassword(confirmPassword);
+                        askPassword(null);
+                        return "Scan the QR code, then enter the code your app shows.";
+                      })
+                    }
+                  >
+                    Continue
+                  </Button>
+                ) : (
+                  <Button
+                    variant="danger"
+                    disabled={twoFactor.busy || !confirmPassword}
+                    loading={twoFactor.pending === "email-off"}
+                    onClick={() =>
+                      run(twoFactor, "email-off", async () => {
+                        await platformFetch("/auth/two-factor", { method: "PUT", body: { enabled: false, currentPassword: confirmPassword } });
+                        askPassword(null);
+                        return "Two-factor sign-in is off.";
+                      })
+                    }
+                  >
+                    Turn off
+                  </Button>
+                )}
+              </div>
+            </div>
           ) : (
             <div className="flex flex-wrap gap-2">
-              <Button
-                variant={method ? "secondary" : "primary"}
-                disabled={twoFactor.busy || !admin}
-                loading={twoFactor.pending === "app-setup"}
-                onClick={() =>
-                  run(twoFactor, "app-setup", async () => {
-                    const r = await platformFetch<{ data: AppSetup }>("/auth/two-factor/app/setup", { method: "POST" });
-                    setSetup(r.data);
-                    return "Scan the QR code, then enter the code your app shows.";
-                  })
-                }
-              >
+              <Button variant={method ? "secondary" : "primary"} disabled={twoFactor.busy || !admin} onClick={() => askPassword("app-setup")}>
                 <FiSmartphone className="h-4 w-4" /> {method === "email" ? "Switch to an authenticator app" : "Use an authenticator app"}
               </Button>
-              <Button
-                variant="secondary"
-                disabled={twoFactor.busy || !admin}
-                loading={twoFactor.pending === "2fa"}
-                onClick={() =>
-                  run(twoFactor, "2fa", async () => {
-                    const r = await platformFetch<{ admin: { two_factor: boolean } }>("/auth/two-factor", { method: "PUT", body: { enabled: !admin?.two_factor } });
-                    return r.admin.two_factor ? "Two-factor sign-in is on: a code will be emailed to you." : "Two-factor sign-in is off.";
-                  })
-                }
-              >
-                <FiMail className="h-4 w-4" /> {method === "email" ? "Turn off" : "Email me a code instead"}
-              </Button>
+              {method === "email" ? (
+                <Button variant="secondary" disabled={twoFactor.busy || !admin} onClick={() => askPassword("email-off")}>
+                  <FiMail className="h-4 w-4" /> Turn off
+                </Button>
+              ) : (
+                <Button
+                  variant="secondary"
+                  disabled={twoFactor.busy || !admin}
+                  loading={twoFactor.pending === "email-on"}
+                  onClick={() =>
+                    run(twoFactor, "email-on", async () => {
+                      await platformFetch("/auth/two-factor", { method: "PUT", body: { enabled: true } });
+                      return "Two-factor sign-in is on: a code will be emailed to you.";
+                    })
+                  }
+                >
+                  <FiMail className="h-4 w-4" /> Email me a code instead
+                </Button>
+              )}
             </div>
           )}
         </Panel>
