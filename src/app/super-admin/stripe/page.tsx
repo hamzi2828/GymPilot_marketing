@@ -8,7 +8,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { FiCheckCircle, FiCopy, FiExternalLink, FiZap } from "react-icons/fi";
-import { Alert, Button, Field, Input, PageHeader, Panel, Pill, Spinner, Toggle, relativeTime } from "../_shared/ui";
+import { Alert, Button, Field, Input, PageHeader, Panel, Pill, Spinner, Toggle, relativeTime, useAsyncAction } from "../_shared/ui";
 import { platformFetch, formatDate } from "../_shared/api";
 
 /** One platform_stripe_event row from GET /audit. */
@@ -57,8 +57,10 @@ export default function PlatformStripePage() {
   const [events, setEvents] = useState<StripeEventRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [testing, setTesting] = useState(false);
+  // Saving, testing and retrying the load: one at a time, the one running spins.
+  const action = useAsyncAction();
+  const busy = action.pending === "save";
+  const testing = action.pending === "test";
   const [copied, setCopied] = useState(false);
 
   const [form, setForm] = useState({ enabled: false, publishableKey: "", secretKey: "", webhookSecret: "" });
@@ -93,38 +95,34 @@ export default function PlatformStripePage() {
     load();
   }, [load]);
 
-  const save = async () => {
-    setBusy(true);
-    setError(null);
-    setNotice(null);
-    try {
-      const res = await platformFetch<{ data: StripeSettings; message?: string }>("/settings", {
-        method: "PUT",
-        body: { stripe: form },
-      });
-      hydrate(res.data);
-      setNotice("Saved.");
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not save");
-    } finally {
-      setBusy(false);
-    }
-  };
+  const save = () =>
+    action.run("save", async () => {
+      setError(null);
+      setNotice(null);
+      try {
+        const res = await platformFetch<{ data: StripeSettings; message?: string }>("/settings", {
+          method: "PUT",
+          body: { stripe: form },
+        });
+        hydrate(res.data);
+        setNotice("Saved.");
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Could not save");
+      }
+    });
 
-  const test = async () => {
-    setTesting(true);
-    setError(null);
-    setNotice(null);
-    try {
-      const res = await platformFetch<{ message: string }>("/settings/stripe/test", { method: "POST" });
-      setNotice(res.message);
-      await load();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Stripe refused those keys");
-    } finally {
-      setTesting(false);
-    }
-  };
+  const test = () =>
+    action.run("test", async () => {
+      setError(null);
+      setNotice(null);
+      try {
+        const res = await platformFetch<{ message: string }>("/settings/stripe/test", { method: "POST" });
+        setNotice(res.message);
+        await load();
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Stripe refused those keys");
+      }
+    });
 
   const copyWebhook = async () => {
     if (!data) return;
@@ -143,7 +141,7 @@ export default function PlatformStripePage() {
       return (
         <>
           <Alert tone="error">{error}</Alert>
-          <Button variant="secondary" onClick={load}>
+          <Button variant="secondary" loading={action.pending === "reload"} onClick={() => action.run("reload", load)}>
             Try again
           </Button>
         </>
@@ -161,7 +159,7 @@ export default function PlatformStripePage() {
         title="Stripe"
         description="GymsPilotPro's own Stripe account — where gyms pay for their plan. A gym's own keys, for taking its members' money, live in that gym's admin instead."
         actions={
-          <Button variant="secondary" onClick={test} disabled={testing || !s.secretKeySet}>
+          <Button variant="secondary" onClick={test} disabled={action.busy || !s.secretKeySet} loading={testing}>
             <FiZap className="h-4 w-4" /> {testing ? "Testing…" : "Test connection"}
           </Button>
         }
@@ -187,7 +185,7 @@ export default function PlatformStripePage() {
               <span className="text-xs text-slate-500">
                 {data.updatedAt ? `Last saved ${formatDate(data.updatedAt)}${data.updatedByEmail ? ` by ${data.updatedByEmail}` : ""}` : "Never saved"}
               </span>
-              <Button onClick={save} disabled={busy}>
+              <Button onClick={save} disabled={action.busy} loading={busy}>
                 {busy ? "Saving…" : "Save keys"}
               </Button>
             </>

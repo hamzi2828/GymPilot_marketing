@@ -168,11 +168,12 @@ export default function GymsTable({ title, compact = false }: { title?: string; 
           <span>
             Page {pagination.page} of {pagination.pages} · {pagination.total} gyms
           </span>
+          {/* The list shows it is loading; the page buttons wait for it. */}
           <div className="flex gap-2">
-            <Button variant="secondary" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+            <Button variant="secondary" size="sm" disabled={loading || page <= 1} onClick={() => setPage((p) => p - 1)}>
               Previous
             </Button>
-            <Button variant="secondary" size="sm" disabled={page >= pagination.pages} onClick={() => setPage((p) => p + 1)}>
+            <Button variant="secondary" size="sm" disabled={loading || page >= pagination.pages} onClick={() => setPage((p) => p + 1)}>
               Next
             </Button>
           </div>

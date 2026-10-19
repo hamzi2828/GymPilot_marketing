@@ -8,7 +8,7 @@ import { Suspense, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FiDatabase, FiGlobe, FiUser } from "react-icons/fi";
-import { PageHeader, Crumbs, Panel, Button, Field, Input, Select, Textarea, Alert } from "../../_shared/ui";
+import { PageHeader, Crumbs, Panel, Button, Field, Input, Select, Textarea, Alert, useAsyncAction } from "../../_shared/ui";
 import { platformFetch, type Addon, type DemoRequest, type Plan, type Gym, type PlatformConfig } from "../../_shared/api";
 
 const COMMON_TIMEZONES = [
@@ -118,7 +118,7 @@ function NewGymForm() {
   // the request is only filled in after it has.
   const [plansLoaded, setPlansLoaded] = useState(false);
   const [config, setConfig] = useState<PlatformConfig | null>(null);
-  const [busy, setBusy] = useState(false);
+  const { busy, run } = useAsyncAction();
   const [error, setError] = useState<string | null>(null);
 
   const [form, setForm] = useState({
@@ -263,51 +263,53 @@ function NewGymForm() {
       (!selectedPlan || a.price.currency === selectedPlan.price.currency)
   );
 
-  const submit = async (e: React.FormEvent) => {
+  const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    setBusy(true);
-    setError(null);
-    try {
-      const res = await platformFetch<{ data: Gym; ownerInviteSent?: boolean; inviteSiteUrl?: string; warnings?: string[] }>("/gyms", {
-        method: "POST",
-        body: {
-          // The request this came from is marked converted and linked to the gym.
-          demoRequestId: request ? request.id : undefined,
-          name: form.name,
-          // A preference, not a decision: the address they asked for at
-          // checkout if there was one, otherwise the name decides, and a
-          // clash only adds a number.
-          preferredSlug: form.slug || undefined,
-          database: databaseName ? { name: databaseName } : undefined,
-          domains: form.domains
-            .split(/[\s,]+/)
-            .map((d) => d.trim())
-            .filter(Boolean),
-          owner: {
-            firstName: form.ownerFirstName,
-            lastName: form.ownerLastName,
-            email: form.ownerEmail,
-            phone: form.ownerPhone,
-            password: form.ownerPassword,
+    run("create", async (leave) => {
+      setError(null);
+      try {
+        const res = await platformFetch<{ data: Gym; ownerInviteSent?: boolean; inviteSiteUrl?: string; warnings?: string[] }>("/gyms", {
+          method: "POST",
+          body: {
+            // The request this came from is marked converted and linked to the gym.
+            demoRequestId: request ? request.id : undefined,
+            name: form.name,
+            // A preference, not a decision: the address they asked for at
+            // checkout if there was one, otherwise the name decides, and a
+            // clash only adds a number.
+            preferredSlug: form.slug || undefined,
+            database: databaseName ? { name: databaseName } : undefined,
+            domains: form.domains
+              .split(/[\s,]+/)
+              .map((d) => d.trim())
+              .filter(Boolean),
+            owner: {
+              firstName: form.ownerFirstName,
+              lastName: form.ownerLastName,
+              email: form.ownerEmail,
+              phone: form.ownerPhone,
+              password: form.ownerPassword,
+            },
+            planId: form.planId || undefined,
+            subscription: form.planId ? { billingCycle, addonSlugs } : undefined,
+            locale: { timezone: form.timezone, currency: form.currency, country: form.country },
+            notes: form.notes,
           },
-          planId: form.planId || undefined,
-          subscription: form.planId ? { billingCycle, addonSlugs } : undefined,
-          locale: { timezone: form.timezone, currency: form.currency, country: form.country },
-          notes: form.notes,
-        },
-      });
-      // The gym page says whether the owner got their invite, and what else
-      // did not go to plan.
-      const query = new URLSearchParams({ invite: res.ownerInviteSent ? "sent" : "failed" });
-      // Where the set-password link opens: the platform subdomain when there
-      // is one, which is not always the domain shown as primary.
-      if (res.inviteSiteUrl) query.set("inviteHost", res.inviteSiteUrl.replace(/^https?:\/\//, ""));
-      for (const warning of res.warnings || []) query.append("warning", warning);
-      router.replace(`/super-admin/gyms/${res.data.id}?${query.toString()}`);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not create the gym");
-      setBusy(false);
-    }
+        });
+        // The gym page says whether the owner got their invite, and what else
+        // did not go to plan.
+        const query = new URLSearchParams({ invite: res.ownerInviteSent ? "sent" : "failed" });
+        // Where the set-password link opens: the platform subdomain when there
+        // is one, which is not always the domain shown as primary.
+        if (res.inviteSiteUrl) query.set("inviteHost", res.inviteSiteUrl.replace(/^https?:\/\//, ""));
+        for (const warning of res.warnings || []) query.append("warning", warning);
+        // Created: busy until the gym's page has replaced this form.
+        leave();
+        router.replace(`/super-admin/gyms/${res.data.id}?${query.toString()}`);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Could not create the gym");
+      }
+    });
   };
 
   return (
@@ -553,7 +555,7 @@ function NewGymForm() {
           </Panel>
 
           <div className="flex flex-col gap-2">
-            <Button type="submit" disabled={busy}>
+            <Button type="submit" loading={busy}>
               {busy ? "Creating…" : "Create gym"}
             </Button>
             <Button variant="secondary" onClick={() => router.push("/super-admin/gyms")} disabled={busy}>

@@ -12,7 +12,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FiExternalLink, FiMail, FiPhone } from "react-icons/fi";
-import { PageHeader, DataTable, Spinner, Alert, Avatar, Pill, Button, Modal, Field, Select, Textarea, relativeTime, cx } from "../_shared/ui";
+import { PageHeader, DataTable, Spinner, Alert, Avatar, Pill, Button, Modal, Field, Select, Textarea, relativeTime, cx, useAsyncAction } from "../_shared/ui";
 import { platformFetch, formatMoney, DEMO_REQUEST_STATUSES, type DemoRequest, type DemoRequestStatus, type SignupState } from "../_shared/api";
 
 const TONE: Record<DemoRequestStatus, string> = { new: "primary", contacted: "warn", converted: "good", closed: "neutral" };
@@ -40,9 +40,15 @@ export default function DemoRequestsPage() {
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState<DemoRequest | null>(null);
   const [draft, setDraft] = useState({ status: "new" as DemoRequestStatus, notes: "" });
-  const [busy, setBusy] = useState(false);
+  // A save or delete that failed is said in the request's window, not behind it.
+  const [formError, setFormError] = useState<string | null>(null);
+  const action = useAsyncAction();
+  const busy = action.busy;
+  // The list is being fetched: it shows a spinner, and the filters wait.
+  const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
+    setLoading(true);
     try {
       const res = await platformFetch<{ data: DemoRequest[]; counts: Record<string, number> }>(`/demo-requests${filter ? `?status=${filter}` : ""}`);
       setRows(res.data);
@@ -50,6 +56,8 @@ export default function DemoRequestsPage() {
       setError(null);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not load demo requests");
+    } finally {
+      setLoading(false);
     }
   }, [filter]);
 
@@ -60,39 +68,40 @@ export default function DemoRequestsPage() {
   const openRow = (r: DemoRequest) => {
     setOpen(r);
     setDraft({ status: r.status, notes: r.notes || "" });
+    setFormError(null);
   };
 
-  const save = async () => {
+  const save = () => {
     if (!open) return;
-    setBusy(true);
-    try {
-      await platformFetch(`/demo-requests/${open.id}`, { method: "PATCH", body: draft });
-      setOpen(null);
-      await load();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not save");
-    } finally {
-      setBusy(false);
-    }
+    action.run("save", async () => {
+      setFormError(null);
+      try {
+        await platformFetch(`/demo-requests/${open.id}`, { method: "PATCH", body: draft });
+        setOpen(null);
+        await load();
+      } catch (e) {
+        setFormError(e instanceof Error ? e.message : "Could not save");
+      }
+    });
   };
 
-  const remove = async () => {
+  const remove = () => {
     // A signup that may still be paid for is what its gym is built from.
     const live = open?.signup && open.signup.state !== "ready" && open.signup.paymentStarted;
     const question = live
       ? `Delete the signup from ${open?.name}? If they pay (or have paid) for it, no gym can be made from it automatically any more. This cannot be undone.`
       : `Delete the request from ${open?.name}? This cannot be undone.`;
     if (!open || !window.confirm(question)) return;
-    setBusy(true);
-    try {
-      await platformFetch(`/demo-requests/${open.id}`, { method: "DELETE" });
-      setOpen(null);
-      await load();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not delete");
-    } finally {
-      setBusy(false);
-    }
+    action.run("delete", async () => {
+      setFormError(null);
+      try {
+        await platformFetch(`/demo-requests/${open.id}`, { method: "DELETE" });
+        setOpen(null);
+        await load();
+      } catch (e) {
+        setFormError(e instanceof Error ? e.message : "Could not delete");
+      }
+    });
   };
 
   // Every request can become a gym, whether or not it came with a plan. One
@@ -126,14 +135,14 @@ export default function DemoRequestsPage() {
 
       <div className="mb-4 flex flex-wrap gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-card sm:inline-flex">
         {[["", "All", total], ...DEMO_REQUEST_STATUSES.map((s) => [s, s[0].toUpperCase() + s.slice(1), counts[s] || 0])].map(([key, label, n]) => (
-          <button key={String(key)} type="button" onClick={() => setFilter(key as "" | DemoRequestStatus)} className={cx("inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors", filter === key ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-100")}>
+          <button key={String(key)} type="button" disabled={loading} onClick={() => setFilter(key as "" | DemoRequestStatus)} className={cx("inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors disabled:cursor-wait", filter === key ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-100")}>
             {label}
             <span className={cx("rounded-full px-1.5 text-[11px] font-semibold", filter === key ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500")}>{n as number}</span>
           </button>
         ))}
       </div>
 
-      {!rows ? (
+      {!rows || loading ? (
         <Spinner />
       ) : (
         <DataTable
@@ -196,6 +205,7 @@ export default function DemoRequestsPage() {
       <Modal open={!!open} onClose={() => setOpen(null)} title={open ? `${open.name} · ${open.gymName || "demo request"}` : ""} size="md">
         {open && (
           <div className="space-y-5">
+            {formError && <Alert tone="error">{formError}</Alert>}
             <div className="flex flex-wrap gap-2">
               <a href={`mailto:${open.email}`} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">
                 <FiMail className="h-3.5 w-3.5" /> {open.email}
@@ -343,15 +353,15 @@ export default function DemoRequestsPage() {
               <Textarea value={draft.notes} onChange={(e) => setDraft((x) => ({ ...x, notes: e.target.value }))} placeholder="Call booked for Tuesday, wants Stripe + bank transfer…" />
             </Field>
             <div className="flex items-center justify-between gap-2">
-              <Button variant="danger" size="sm" onClick={remove} disabled={busy}>
+              <Button variant="danger" size="sm" onClick={remove} disabled={busy} loading={action.pending === "delete"}>
                 Delete
               </Button>
               <div className="flex gap-2">
               <Button variant="secondary" onClick={() => setOpen(null)} disabled={busy}>
                 Cancel
               </Button>
-              <Button onClick={save} disabled={busy}>
-                {busy ? "Saving…" : "Save"}
+              <Button onClick={save} disabled={busy} loading={action.pending === "save"}>
+                {action.pending === "save" ? "Saving…" : "Save"}
               </Button>
               </div>
             </div>

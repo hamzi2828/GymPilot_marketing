@@ -6,7 +6,7 @@
 
 import { useState } from "react";
 import { FiPlus } from "react-icons/fi";
-import { Alert, Button, Field, Input, Modal, Panel, Pill, Select, Textarea, Toggle } from "../_shared/ui";
+import { Alert, Button, Field, Input, Modal, Panel, Pill, Select, Textarea, Toggle, useAsyncAction } from "../_shared/ui";
 import { formatMoney, platformFetch, type Addon, type Plan } from "../_shared/api";
 
 const CURRENCIES = ["PKR", "USD", "GBP", "EUR", "AED", "SAR", "INR"];
@@ -57,52 +57,58 @@ export default function AddonsPanel({ plans, addons, onChanged }: { plans: Plan[
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Addon | null>(null);
   const [draft, setDraft] = useState<Draft>(emptyDraft);
-  const [busy, setBusy] = useState(false);
+  // A save that failed is said in the form, not behind it.
+  const [formError, setFormError] = useState<string | null>(null);
+  const action = useAsyncAction();
+  const busy = action.busy;
 
   const openNew = () => {
     setEditing(null);
     setDraft(emptyDraft);
+    setFormError(null);
     setOpen(true);
   };
   const openEdit = (addon: Addon) => {
     setEditing(addon);
     setDraft(toDraft(addon));
+    setFormError(null);
     setOpen(true);
   };
 
-  const save = async () => {
-    setBusy(true);
-    setError(null);
-    const body = {
-      name: draft.name,
-      slug: draft.slug || undefined,
-      description: draft.description,
-      price: { monthly: Number(draft.monthly) || 0, yearly: Number(draft.yearly) || 0, currency: draft.currency },
-      planSlugs: draft.planSlugs,
-      isPublic: draft.isPublic,
-      isActive: draft.isActive,
-      order: Number(draft.order) || 0,
-    };
-    try {
-      if (editing) await platformFetch(`/addons/${editing.id}`, { method: "PUT", body });
-      else await platformFetch("/addons", { method: "POST", body });
-      setOpen(false);
-      await onChanged();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not save the add-on");
-    } finally {
-      setBusy(false);
-    }
-  };
+  const save = () =>
+    action.run("save", async () => {
+      setError(null);
+      setFormError(null);
+      const body = {
+        name: draft.name,
+        slug: draft.slug || undefined,
+        description: draft.description,
+        price: { monthly: Number(draft.monthly) || 0, yearly: Number(draft.yearly) || 0, currency: draft.currency },
+        planSlugs: draft.planSlugs,
+        isPublic: draft.isPublic,
+        isActive: draft.isActive,
+        order: Number(draft.order) || 0,
+      };
+      try {
+        if (editing) await platformFetch(`/addons/${editing.id}`, { method: "PUT", body });
+        else await platformFetch("/addons", { method: "POST", body });
+        setOpen(false);
+        await onChanged();
+      } catch (e) {
+        setFormError(e instanceof Error ? e.message : "Could not save the add-on");
+      }
+    });
 
-  const remove = async (addon: Addon) => {
+  const remove = (addon: Addon) => {
     if (!window.confirm(`Delete the "${addon.name}" add-on?`)) return;
-    try {
-      await platformFetch(`/addons/${addon.id}`, { method: "DELETE" });
-      await onChanged();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not delete the add-on");
-    }
+    action.run(`delete:${addon.id}`, async () => {
+      try {
+        await platformFetch(`/addons/${addon.id}`, { method: "DELETE" });
+        await onChanged();
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Could not delete the add-on");
+      }
+    });
   };
 
   /** The plans that hand this add-on over for nothing. */
@@ -157,7 +163,7 @@ export default function AddonsPanel({ plans, addons, onChanged }: { plans: Plan[
                     <Button variant="secondary" size="sm" onClick={() => openEdit(addon)}>
                       Edit
                     </Button>
-                    <Button variant="danger" size="sm" onClick={() => remove(addon)} disabled={!!addon.gym_count}>
+                    <Button variant="danger" size="sm" onClick={() => remove(addon)} disabled={!!addon.gym_count || busy} loading={action.pending === `delete:${addon.id}`}>
                       Delete
                     </Button>
                   </div>
@@ -197,6 +203,7 @@ export default function AddonsPanel({ plans, addons, onChanged }: { plans: Plan[
       )}
 
       <Modal open={open} onClose={() => setOpen(false)} title={editing ? `Edit ${editing.name}` : "New add-on"} size="lg">
+        {formError && <Alert tone="error">{formError}</Alert>}
         <div className="grid gap-4 md:grid-cols-2">
           <Field label="Name">
             <Input value={draft.name} onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))} placeholder="Member app" />
@@ -261,8 +268,8 @@ export default function AddonsPanel({ plans, addons, onChanged }: { plans: Plan[
           <Button variant="secondary" onClick={() => setOpen(false)} disabled={busy}>
             Cancel
           </Button>
-          <Button onClick={save} disabled={busy || !draft.name.trim()}>
-            {busy ? "Saving…" : "Save add-on"}
+          <Button onClick={save} disabled={busy || !draft.name.trim()} loading={action.pending === "save"}>
+            {action.pending === "save" ? "Saving…" : "Save add-on"}
           </Button>
         </div>
       </Modal>

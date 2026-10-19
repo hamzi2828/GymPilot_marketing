@@ -6,7 +6,7 @@
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { FiAlertTriangle, FiCalendar, FiCreditCard, FiExternalLink, FiGlobe, FiLayers, FiMail, FiShield, FiUsers } from "react-icons/fi";
-import { PageHeader, Crumbs, Panel, StatCard, KeyValue, Button, Field, Input, Select, Textarea, Modal, Spinner, Alert, Pill, StatusPill, Avatar } from "../../_shared/ui";
+import { PageHeader, Crumbs, Panel, StatCard, KeyValue, Button, Field, Input, Select, Textarea, Modal, Spinner, Alert, Pill, StatusPill, Avatar, useAsyncAction } from "../../_shared/ui";
 import { PaymentsPanel } from "./Payments";
 import { platformFetch, PlatformApiError, formatDate, formatMoney, DEFAULT_CURRENCY, SUBSCRIPTION_STATUSES, BILLING_CYCLES, type Addon, type DomainStatus, type Gym, type GymStats, type Plan } from "../../_shared/api";
 
@@ -50,7 +50,9 @@ function GymDetail() {
   const [hosting, setHosting] = useState<Hosting | null>(null);
   // Where each registered domain stands on the website host right now.
   const [domainStatus, setDomainStatus] = useState<{ connected: boolean; data: DomainStatus[] } | null>(null);
-  const [busy, setBusy] = useState(false);
+  // One change to the gym at a time: the button that started it spins, the others wait.
+  const action = useAsyncAction();
+  const busy = action.busy;
 
   // Editors
   const [details, setDetails] = useState({ name: "", ownerFirstName: "", ownerLastName: "", ownerEmail: "", ownerPhone: "", timezone: "", currency: "", country: "", notes: "" });
@@ -163,9 +165,9 @@ function GymDetail() {
     });
 
   // "Resend owner invite": a set-password link, nothing about the password
-  // itself changes. The answer says whether the email went.
+  // itself changes. The answer says whether the email went. Run through
+  // `action` by the button that asks for it.
   const sendInvite = async (email: string, password?: string) => {
-    setBusy(true);
     setError(null);
     setNotice(null);
     try {
@@ -178,8 +180,6 @@ function GymDetail() {
       await load();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Request failed");
-    } finally {
-      setBusy(false);
     }
   };
   const chosenAddons = sellableAddons.filter((addon) => addonSlugs.includes(addon.slug));
@@ -193,20 +193,19 @@ function GymDetail() {
       .catch(() => setAdmins([]));
   }, [id, gym?.updatedAt]);
 
-  const run = async (label: string, fn: () => Promise<unknown>) => {
-    setBusy(true);
-    setError(null);
-    setNotice(null);
-    try {
-      await fn();
-      await load();
-      setNotice(label);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Request failed");
-    } finally {
-      setBusy(false);
-    }
-  };
+  // `key` says which button spins while it runs.
+  const run = (key: string, label: string, fn: () => Promise<unknown>) =>
+    action.run(key, async () => {
+      setError(null);
+      setNotice(null);
+      try {
+        await fn();
+        await load();
+        setNotice(label);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Request failed");
+      }
+    });
 
   if (error && !gym) return <Alert tone="error">{error}</Alert>;
   if (!gym) return <Spinner />;
@@ -215,23 +214,22 @@ function GymDetail() {
   // Suspending and reactivating. The API pauses the gym's card subscription
   // in Stripe with it; when Stripe refuses, the switch still happens and the
   // warning says what is left to do by hand.
-  const setGymStatus = async (status: "active" | "suspended") => {
-    setBusy(true);
-    setError(null);
-    setNotice(null);
-    try {
-      const res = await platformFetch<{ warnings?: string[] }>(`/gyms/${id}/status`, { method: "PATCH", body: { status } });
-      await load();
-      if (res.warnings?.length) setError(res.warnings.join(" "));
-      else if (status === "suspended") setNotice(paysByCard ? "Gym suspended. Its card is not charged while it is suspended." : "Gym suspended.");
-      else setNotice(paysByCard ? "Gym reactivated. Its card is charged again from its next billing date." : "Gym reactivated.");
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Request failed");
-    } finally {
-      setBusy(false);
-      setSuspendOpen(false);
-    }
-  };
+  const setGymStatus = (status: "active" | "suspended") =>
+    action.run("status", async () => {
+      setError(null);
+      setNotice(null);
+      try {
+        const res = await platformFetch<{ warnings?: string[] }>(`/gyms/${id}/status`, { method: "PATCH", body: { status } });
+        await load();
+        if (res.warnings?.length) setError(res.warnings.join(" "));
+        else if (status === "suspended") setNotice(paysByCard ? "Gym suspended. Its card is not charged while it is suspended." : "Gym suspended.");
+        else setNotice(paysByCard ? "Gym reactivated. Its card is charged again from its next billing date." : "Gym reactivated.");
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Request failed");
+      } finally {
+        setSuspendOpen(false);
+      }
+    });
 
   const stats = gym.stats || {};
   const cardSubscriptions = stats.card_subscriptions || 0;
@@ -268,7 +266,7 @@ function GymDetail() {
               </Button>
             )}
             {gym.status === "suspended" ? (
-              <Button disabled={busy} onClick={() => setGymStatus("active")}>
+              <Button disabled={busy} loading={action.pending === "status"} onClick={() => setGymStatus("active")}>
                 Reactivate
               </Button>
             ) : (
@@ -330,8 +328,9 @@ function GymDetail() {
               <span className="text-xs text-slate-500">Created {formatDate(gym.createdAt)} · last login inside the gym {formatDate(stats.last_login_at)}</span>
               <Button
                 disabled={busy}
+                loading={action.pending === "details"}
                 onClick={() =>
-                  run("Details saved", () =>
+                  run("details", "Details saved", () =>
                     platformFetch(`/gyms/${id}`, {
                       method: "PUT",
                       body: {
@@ -411,8 +410,9 @@ function GymDetail() {
               </div>
               <Button
                 disabled={busy}
+                loading={action.pending === "domains"}
                 onClick={() =>
-                  run("Domains saved", async () => {
+                  run("domains", "Domains saved", async () => {
                     const res = await platformFetch<{ hosting?: Hosting }>(`/gyms/${id}/domains`, {
                       method: "PUT",
                       body: {
@@ -558,10 +558,11 @@ function GymDetail() {
               </span>
               <Button
                 disabled={busy}
+                loading={action.pending === "subscription"}
                 onClick={() =>
                   // A card-paying gym's price change goes to Stripe first; if
                   // Stripe refuses, the error says why and nothing is saved.
-                  run(gym.subscription.stripeSubscriptionId ? "Subscription saved (and Stripe updated where the price changed)" : "Subscription saved", () =>
+                  run("subscription", gym.subscription.stripeSubscriptionId ? "Subscription saved (and Stripe updated where the price changed)" : "Subscription saved", () =>
                     platformFetch(`/gyms/${id}/subscription`, {
                       method: "PUT",
                       body: {
@@ -708,7 +709,7 @@ function GymDetail() {
           }
           actions={
             <>
-              <Button variant="secondary" size="sm" disabled={busy || !gym.owner.email} onClick={() => sendInvite(gym.owner.email)}>
+              <Button variant="secondary" size="sm" disabled={busy || !gym.owner.email} loading={action.pending === "invite"} onClick={() => action.run("invite", () => sendInvite(gym.owner.email))}>
                 <FiMail className="h-3.5 w-3.5" /> Resend owner invite
               </Button>
               <Button variant="secondary" size="sm" onClick={() => setResetOpen(true)}>
@@ -772,11 +773,14 @@ function GymDetail() {
           </Button>
           <Button
             disabled={busy || !reset.email || (reset.password.length > 0 && reset.password.length < 8)}
-            onClick={async () => {
-              await sendInvite(reset.email, reset.password || undefined);
-              setResetOpen(false);
-              setReset((r) => ({ ...r, password: "" }));
-            }}
+            loading={action.pending === "reset"}
+            onClick={() =>
+              action.run("reset", async () => {
+                await sendInvite(reset.email, reset.password || undefined);
+                setResetOpen(false);
+                setReset((r) => ({ ...r, password: "" }));
+              })
+            }
           >
             {reset.password ? "Set password & email link" : "Email set-password link"}
           </Button>
@@ -796,7 +800,7 @@ function GymDetail() {
           <Button variant="secondary" onClick={() => setSuspendOpen(false)}>
             Cancel
           </Button>
-          <Button variant="danger" disabled={busy} onClick={() => setGymStatus("suspended")}>
+          <Button variant="danger" disabled={busy} loading={action.pending === "status"} onClick={() => setGymStatus("suspended")}>
             Suspend gym
           </Button>
         </div>
@@ -856,21 +860,24 @@ function GymDetail() {
           <Button
             variant="danger"
             disabled={busy || confirmSlug !== gym.slug || (stripeRefused && !cancelledByHand) || (membersStillPaying && !membersAcknowledged)}
-            onClick={async () => {
-              setBusy(true);
-              setDeleteError(null);
-              try {
-                await platformFetch(`/gyms/${id}`, { method: "DELETE", body: { confirmSlug, dropDatabase, subscriptionCancelled: stripeRefused && cancelledByHand, memberSubscriptionsAcknowledged: membersStillPaying && membersAcknowledged } });
-                router.replace("/super-admin/gyms");
-              } catch (e) {
-                // Nothing was deleted. The reason stays in front of the admin,
-                // with the way on when it is Stripe that said no.
-                if (e instanceof PlatformApiError && e.code === "SUBSCRIPTION_NOT_CANCELLED") setStripeRefused(true);
-                if (e instanceof PlatformApiError && e.code === "MEMBER_SUBSCRIPTIONS_ACTIVE") setMembersRefused(true);
-                setDeleteError(e instanceof Error ? e.message : "Could not delete the gym");
-                setBusy(false);
-              }
-            }}
+            loading={action.pending === "delete"}
+            onClick={() =>
+              action.run("delete", async (leave) => {
+                setDeleteError(null);
+                try {
+                  await platformFetch(`/gyms/${id}`, { method: "DELETE", body: { confirmSlug, dropDatabase, subscriptionCancelled: stripeRefused && cancelledByHand, memberSubscriptionsAcknowledged: membersStillPaying && membersAcknowledged } });
+                  // Gone: busy until the list of gyms has replaced this page.
+                  leave();
+                  router.replace("/super-admin/gyms");
+                } catch (e) {
+                  // Nothing was deleted. The reason stays in front of the admin,
+                  // with the way on when it is Stripe that said no.
+                  if (e instanceof PlatformApiError && e.code === "SUBSCRIPTION_NOT_CANCELLED") setStripeRefused(true);
+                  if (e instanceof PlatformApiError && e.code === "MEMBER_SUBSCRIPTIONS_ACTIVE") setMembersRefused(true);
+                  setDeleteError(e instanceof Error ? e.message : "Could not delete the gym");
+                }
+              })
+            }
           >
             Delete gym
           </Button>

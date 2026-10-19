@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { FiCheck, FiPlus } from "react-icons/fi";
-import { PageHeader, Panel, Button, Field, Input, Select, Textarea, Toggle, Modal, Spinner, EmptyState, Alert, Pill } from "../_shared/ui";
+import { PageHeader, Panel, Button, Field, Input, Select, Textarea, Toggle, Modal, Spinner, EmptyState, Alert, Pill, useAsyncAction } from "../_shared/ui";
 import { platformFetch, formatMoney, type Addon, type Plan } from "../_shared/api";
 import AddonsPanel from "./AddonsPanel";
 
@@ -83,7 +83,10 @@ export default function PlansPage() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Plan | null>(null);
   const [draft, setDraft] = useState<Draft>(emptyDraft);
-  const [busy, setBusy] = useState(false);
+  // A save that failed is said in the form, not behind it.
+  const [formError, setFormError] = useState<string | null>(null);
+  const action = useAsyncAction();
+  const busy = action.busy;
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -109,54 +112,57 @@ export default function PlansPage() {
   const openNew = () => {
     setEditing(null);
     setDraft(emptyDraft);
+    setFormError(null);
     setOpen(true);
   };
   const openEdit = (plan: Plan) => {
     setEditing(plan);
     setDraft(toDraft(plan));
+    setFormError(null);
     setOpen(true);
   };
 
-  const save = async () => {
-    setBusy(true);
-    setError(null);
-    const body = {
-      name: draft.name,
-      slug: draft.slug || undefined,
-      description: draft.description,
-      price: { monthly: Number(draft.monthly) || 0, yearly: Number(draft.yearly) || 0, currency: draft.currency },
-      limits: {
-        maxMembers: Number(draft.maxMembers) || 0,
-        maxStaff: Number(draft.maxStaff) || 0,
-        maxTrainers: Number(draft.maxTrainers) || 0,
-        maxClasses: Number(draft.maxClasses) || 0,
-      },
-      features: draft.features,
-      includedAddons: draft.includedAddons,
-      trialDays: Number(draft.trialDays) || 0,
-      isActive: draft.isActive,
-      order: Number(draft.order) || 0,
-    };
-    try {
-      if (editing) await platformFetch(`/plans/${editing.id}`, { method: "PUT", body });
-      else await platformFetch("/plans", { method: "POST", body });
-      setOpen(false);
-      await load();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not save plan");
-    } finally {
-      setBusy(false);
-    }
-  };
+  const save = () =>
+    action.run("save", async () => {
+      setError(null);
+      setFormError(null);
+      const body = {
+        name: draft.name,
+        slug: draft.slug || undefined,
+        description: draft.description,
+        price: { monthly: Number(draft.monthly) || 0, yearly: Number(draft.yearly) || 0, currency: draft.currency },
+        limits: {
+          maxMembers: Number(draft.maxMembers) || 0,
+          maxStaff: Number(draft.maxStaff) || 0,
+          maxTrainers: Number(draft.maxTrainers) || 0,
+          maxClasses: Number(draft.maxClasses) || 0,
+        },
+        features: draft.features,
+        includedAddons: draft.includedAddons,
+        trialDays: Number(draft.trialDays) || 0,
+        isActive: draft.isActive,
+        order: Number(draft.order) || 0,
+      };
+      try {
+        if (editing) await platformFetch(`/plans/${editing.id}`, { method: "PUT", body });
+        else await platformFetch("/plans", { method: "POST", body });
+        setOpen(false);
+        await load();
+      } catch (e) {
+        setFormError(e instanceof Error ? e.message : "Could not save plan");
+      }
+    });
 
-  const remove = async (plan: Plan) => {
+  const remove = (plan: Plan) => {
     if (!window.confirm(`Delete the "${plan.name}" plan?`)) return;
-    try {
-      await platformFetch(`/plans/${plan.id}`, { method: "DELETE" });
-      await load();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not delete plan");
-    }
+    action.run(`delete:${plan.id}`, async () => {
+      try {
+        await platformFetch(`/plans/${plan.id}`, { method: "DELETE" });
+        await load();
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Could not delete plan");
+      }
+    });
   };
 
   const set = (key: keyof Draft) => (value: string) => setDraft((d) => ({ ...d, [key]: value }));
@@ -203,7 +209,7 @@ export default function PlansPage() {
                     <Button variant="secondary" size="sm" onClick={() => openEdit(plan)}>
                       Edit
                     </Button>
-                    <Button variant="danger" size="sm" onClick={() => remove(plan)} disabled={!!plan.gym_count}>
+                    <Button variant="danger" size="sm" onClick={() => remove(plan)} disabled={!!plan.gym_count || busy} loading={action.pending === `delete:${plan.id}`}>
                       Delete
                     </Button>
                   </div>
@@ -273,6 +279,7 @@ export default function PlansPage() {
       {!loading && <AddonsPanel plans={plans} addons={addons} onChanged={load} />}
 
       <Modal open={open} onClose={() => setOpen(false)} title={editing ? `Edit ${editing.name}` : "New plan"} size="lg">
+        {formError && <Alert tone="error">{formError}</Alert>}
         <div className="grid gap-4 md:grid-cols-2">
           {field("Name", "name")}
           {field("Slug", "slug", "text", "starter")}
@@ -341,8 +348,8 @@ export default function PlansPage() {
           <Button variant="secondary" onClick={() => setOpen(false)} disabled={busy}>
             Cancel
           </Button>
-          <Button onClick={save} disabled={busy || !draft.name.trim()}>
-            {busy ? "Saving…" : "Save plan"}
+          <Button onClick={save} disabled={busy || !draft.name.trim()} loading={action.pending === "save"}>
+            {action.pending === "save" ? "Saving…" : "Save plan"}
           </Button>
         </div>
       </Modal>

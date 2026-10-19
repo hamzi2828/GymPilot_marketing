@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { FiShield, FiKey, FiSmartphone, FiMail, FiCopy } from "react-icons/fi";
-import { PageHeader, Panel, Button, Field, Input, Alert, Avatar, Pill, formatLastLogin } from "../_shared/ui";
+import { PageHeader, Panel, Button, Field, Input, Alert, Avatar, Pill, formatLastLogin, useAsyncAction, type AsyncAction } from "../_shared/ui";
 import { platformFetch, setPlatformToken, type PlatformAdmin } from "../_shared/api";
 import QrCode from "./QrCode";
 
@@ -13,7 +13,9 @@ export default function SuperAdminAccountPage() {
   const [admin, setAdmin] = useState<PlatformAdmin | null>(null);
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
-  const [busy, setBusy] = useState<string | null>(null);
+  // Two forms, each one action at a time: two-factor sign-in, and the password.
+  const twoFactor = useAsyncAction();
+  const passwordChange = useAsyncAction();
   const [notice, setNotice] = useState<{ tone: "success" | "error"; text: string } | null>(null);
   // Authenticator app: the setup in progress, the codes shown once after it,
   // and the turn-off form.
@@ -29,18 +31,16 @@ export default function SuperAdminAccountPage() {
     load().catch(() => setAdmin(null));
   }, []);
 
-  const run = async (key: string, fn: () => Promise<string>) => {
-    setBusy(key);
-    setNotice(null);
-    try {
-      setNotice({ tone: "success", text: await fn() });
-      await load();
-    } catch (e) {
-      setNotice({ tone: "error", text: e instanceof Error ? e.message : "Request failed" });
-    } finally {
-      setBusy(null);
-    }
-  };
+  const run = (form: AsyncAction, key: string, fn: () => Promise<string>) =>
+    form.run(key, async () => {
+      setNotice(null);
+      try {
+        setNotice({ tone: "success", text: await fn() });
+        await load();
+      } catch (e) {
+        setNotice({ tone: "error", text: e instanceof Error ? e.message : "Request failed" });
+      }
+    });
 
   return (
     <>
@@ -128,9 +128,10 @@ export default function SuperAdminAccountPage() {
                   Cancel
                 </Button>
                 <Button
-                  disabled={busy === "app-on" || setupCode.replace(/\D/g, "").length !== 6}
+                  disabled={twoFactor.busy || setupCode.replace(/\D/g, "").length !== 6}
+                  loading={twoFactor.pending === "app-on"}
                   onClick={() =>
-                    run("app-on", async () => {
+                    run(twoFactor, "app-on", async () => {
                       const r = await platformFetch<{ backup_codes: string[] }>("/auth/two-factor/app/enable", { method: "POST", body: { code: setupCode.replace(/\D/g, "") } });
                       setSetup(null);
                       setSetupCode("");
@@ -155,9 +156,10 @@ export default function SuperAdminAccountPage() {
               <div className="flex justify-end">
                 <Button
                   variant="danger"
-                  disabled={busy === "app-off" || !offPassword || !offCode.trim()}
+                  disabled={twoFactor.busy || !offPassword || !offCode.trim()}
+                  loading={twoFactor.pending === "app-off"}
                   onClick={() =>
-                    run("app-off", async () => {
+                    run(twoFactor, "app-off", async () => {
                       await platformFetch("/auth/two-factor/app/disable", { method: "POST", body: { password: offPassword, code: offCode.trim() } });
                       setOffPassword("");
                       setOffCode("");
@@ -173,9 +175,10 @@ export default function SuperAdminAccountPage() {
             <div className="flex flex-wrap gap-2">
               <Button
                 variant={method ? "secondary" : "primary"}
-                disabled={busy === "app-setup" || !admin}
+                disabled={twoFactor.busy || !admin}
+                loading={twoFactor.pending === "app-setup"}
                 onClick={() =>
-                  run("app-setup", async () => {
+                  run(twoFactor, "app-setup", async () => {
                     const r = await platformFetch<{ data: AppSetup }>("/auth/two-factor/app/setup", { method: "POST" });
                     setSetup(r.data);
                     return "Scan the QR code, then enter the code your app shows.";
@@ -186,9 +189,10 @@ export default function SuperAdminAccountPage() {
               </Button>
               <Button
                 variant="secondary"
-                disabled={busy === "2fa" || !admin}
+                disabled={twoFactor.busy || !admin}
+                loading={twoFactor.pending === "2fa"}
                 onClick={() =>
-                  run("2fa", async () => {
+                  run(twoFactor, "2fa", async () => {
                     const r = await platformFetch<{ admin: { two_factor: boolean } }>("/auth/two-factor", { method: "PUT", body: { enabled: !admin?.two_factor } });
                     return r.admin.two_factor ? "Two-factor sign-in is on: a code will be emailed to you." : "Two-factor sign-in is off.";
                   })
@@ -217,9 +221,10 @@ export default function SuperAdminAccountPage() {
             </Field>
             <div className="flex justify-end">
               <Button
-                disabled={busy === "pw" || next.length < 10 || !current}
+                disabled={passwordChange.busy || next.length < 10 || !current}
+                loading={passwordChange.pending === "pw"}
                 onClick={() =>
-                  run("pw", async () => {
+                  run(passwordChange, "pw", async () => {
                     // The old token ended with the old password; the answer carries this session's new one.
                     const r = await platformFetch<{ token?: string }>("/auth/password", { method: "PUT", body: { currentPassword: current, newPassword: next } });
                     if (r.token) setPlatformToken(r.token);

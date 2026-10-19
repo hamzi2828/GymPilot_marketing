@@ -9,7 +9,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { FiCreditCard, FiExternalLink, FiGrid, FiHome, FiInbox, FiLayers, FiList, FiLogOut, FiMenu, FiPlus, FiUser, FiX } from "react-icons/fi";
 import { clearPlatformToken, getPlatformToken, platformFetch, type Overview, type PlatformAdmin } from "./_shared/api";
-import { Avatar, cx } from "./_shared/ui";
+import { Avatar, BusySpinner, cx, useAsyncAction } from "./_shared/ui";
 
 type NavItem = { name: string; path: string; icon: React.ReactNode; exact?: boolean; badge?: number };
 
@@ -36,6 +36,7 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
   const [checked, setChecked] = useState(false);
   const [open, setOpen] = useState(false);
   const [newRequests, setNewRequests] = useState(0);
+  const signingOut = useAsyncAction();
 
   useEffect(() => {
     if (!getPlatformToken()) {
@@ -87,11 +88,14 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
 
   // Ends the session on the server as well, so a copy of the token stops
   // working. If the API cannot be reached, this browser is signed out anyway.
-  const signOut = async () => {
-    await platformFetch("/auth/logout", { method: "POST" }).catch(() => {});
-    clearPlatformToken();
-    router.replace("/login");
-  };
+  // Busy until the sign-in page has replaced the panel.
+  const signOut = () =>
+    signingOut.run("sign-out", async (leave) => {
+      await platformFetch("/auth/logout", { method: "POST" }).catch(() => {});
+      clearPlatformToken();
+      leave();
+      router.replace("/login");
+    });
 
   const groups: { heading: string; items: NavItem[] }[] = [
     {
@@ -156,8 +160,8 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
           <p className="break-all text-[11px] leading-snug text-slate-400">{admin.email}</p>
         </div>
       </div>
-      <button type="button" onClick={signOut} className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 px-3 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:border-white/20 hover:bg-white/5 hover:text-white">
-        <FiLogOut className="h-3.5 w-3.5" /> Sign out
+      <button type="button" onClick={signOut} disabled={signingOut.busy} aria-busy={signingOut.busy || undefined} className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 px-3 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:border-white/20 hover:bg-white/5 hover:text-white disabled:cursor-not-allowed disabled:opacity-60">
+        {signingOut.busy ? <BusySpinner className="h-3.5 w-3.5" /> : <FiLogOut className="h-3.5 w-3.5" />} Sign out
       </button>
     </div>
   );

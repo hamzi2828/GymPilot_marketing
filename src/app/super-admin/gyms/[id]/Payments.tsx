@@ -181,7 +181,7 @@ export function PaymentsPanel({
           <Button variant="secondary" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button disabled={saving || incomplete} onClick={save}>
+          <Button disabled={incomplete} loading={saving} onClick={save}>
             {saving ? "Saving…" : "Save payment"}
           </Button>
         </div>
