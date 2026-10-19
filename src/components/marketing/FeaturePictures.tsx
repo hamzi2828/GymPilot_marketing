@@ -10,41 +10,43 @@ function Frame({ children, className = "" }: { children: React.ReactNode; classN
   return <div className={`relative overflow-hidden rounded-xl border border-slate-200/80 bg-gradient-to-b from-slate-50 to-white p-4 ${className}`}>{children}</div>;
 }
 
+// The payment link a member gets before the due date: the local ways to pay,
+// into the gym's own Safepay account, then what happened next.
 function BillingPicture() {
   return (
     <Frame className="flex h-full flex-col justify-center">
       <div className="v-rise rounded-xl bg-slate-950 p-4 text-white shadow-lift" style={stagger(0)}>
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-[10px] uppercase tracking-wider text-slate-400">Membership</p>
+            <p className="text-[10px] uppercase tracking-wider text-slate-400">Iron Works · your fee</p>
             <p className="font-display text-base font-semibold">Unlimited monthly</p>
           </div>
-          <span className="v-pop rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-300 ring-1 ring-inset ring-emerald-500/30" style={stagger(3)}>
-            Active
+          <span className="v-pop rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-300 ring-1 ring-inset ring-amber-500/30" style={stagger(3)}>
+            Due 4 Nov
           </span>
         </div>
         <p className="mt-3 font-display text-2xl font-bold">
-          Rs 5,000<span className="text-sm font-normal text-slate-400"> / month</span>
+          Rs 5,000<span className="text-sm font-normal text-slate-400"> · last day 7 Nov</span>
         </p>
-        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10">
-          <div className="v-fill h-full w-[72%] origin-left rounded-full bg-gradient-to-r from-brand-400 to-purple-400" style={stagger(4)} />
-        </div>
-        <p className="mt-1.5 text-[11px] text-slate-400">Paid to 4 Nov · JazzCash</p>
-        <div className="mt-3 flex gap-2 text-[11px] font-semibold">
-          {["Pause", "Upgrade", "Invoice PDF"].map((b, i) => (
-            <span key={b} className="v-pop rounded-lg bg-white/10 px-2.5 py-1" style={stagger(5 + i)}>
-              {b}
+        <div className="mt-3 flex flex-wrap gap-1.5 text-[10px] font-semibold">
+          {["Card", "JazzCash", "Easypaisa", "Bank app"].map((m, i) => (
+            <span key={m} className={`v-pop rounded-full px-2 py-0.5 ${m === "Easypaisa" ? "bg-white text-slate-900" : "bg-white/10 text-slate-200"}`} style={stagger(4 + i)}>
+              {m}
             </span>
           ))}
         </div>
+        <div className="v-pop mt-3 flex items-center justify-center gap-1.5 rounded-lg bg-white py-1.5 text-xs font-semibold text-slate-900" style={stagger(8)}>
+          <FiLock className="h-3 w-3" /> Pay now
+        </div>
+        <p className="mt-1.5 text-center text-[10px] text-slate-400">Straight to the gym&apos;s own account · Safepay</p>
       </div>
       <div className="mt-3 space-y-1.5 text-[11px]">
         {[
-          ["Invoice #1042 emailed", "Paid by JazzCash", "text-emerald-600"],
-          ["Bank transfer receipt uploaded", "Waiting for a check", "text-amber-600"],
-          ["Renewal reminder", "Sent 3 days before", "text-slate-500"],
+          ["Reminder with pay link", "Sent 3 days before", "text-slate-500"],
+          ["Invoice #1042 · Easypaisa", "Paid", "text-emerald-600"],
+          ["Auto-pay · Visa •••• 4821", "Member agreed", "text-brand-600"],
         ].map(([a, b, c], i) => (
-          <div key={a} className="v-rise flex items-center justify-between rounded-lg bg-white px-3 py-1.5 ring-1 ring-slate-100" style={stagger(8 + i)}>
+          <div key={a} className="v-rise flex items-center justify-between rounded-lg bg-white px-3 py-1.5 ring-1 ring-slate-100" style={stagger(9 + i)}>
             <span className="font-medium text-slate-700">{a}</span>
             <span className={`font-semibold ${c}`}>{b}</span>
           </div>
@@ -164,7 +166,7 @@ function MessagingPicture() {
           <div className="max-w-[85%] rounded-2xl rounded-bl-sm bg-emerald-500 px-3 py-2 text-[11px] text-white">Hi Sara, HIIT Blast is tonight at 18:00 in Studio A. See you there!</div>
         </div>
         <div className="v-bubble-r flex items-end justify-end gap-2" style={stagger(3)}>
-          <div className="max-w-[85%] rounded-2xl rounded-br-sm bg-slate-900 px-3 py-2 text-[11px] text-white">Your fee of Rs 5,000 is due tomorrow. Pay at the desk, or by bank transfer on our website.</div>
+          <div className="max-w-[85%] rounded-2xl rounded-br-sm bg-slate-900 px-3 py-2 text-[11px] text-white">Your fee of Rs 5,000 is due tomorrow. Pay by card, JazzCash, Easypaisa or your bank app: ironworks.fit/pay/…</div>
           <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-700 text-[10px] font-bold text-white">S</span>
         </div>
         <div className="v-rise flex items-center gap-2.5 rounded-xl bg-white px-3 py-2 ring-1 ring-slate-200" style={stagger(6)}>

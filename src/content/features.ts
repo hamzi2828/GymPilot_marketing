@@ -9,7 +9,11 @@
 // Honesty rule: every claim here is something the product does today. Money
 // taken at the desk (cash, card terminal, bank transfer, JazzCash, Easypaisa,
 // other wallets) is *recorded* as how the member paid -- GymsPilotPro is not a
-// payment gateway for those. Only cards online go through Stripe.
+// payment gateway for those. Online payments go through the gym's own account
+// with a payment provider -- Safepay in Pakistan (card, JazzCash, Easypaisa,
+// bank apps), or Stripe for cards elsewhere -- straight to the gym, never
+// through GymsPilotPro. Automatic card payments are the member's choice and
+// are never promised to go through: a declined card gets the payment link.
 //
 // House style: `text` is one sentence a busy owner reads in a glance,
 // `points` are three to five short phrases, and `body` is two or three short
@@ -180,11 +184,11 @@ export const FEATURES: Feature[] = [
     body: [
       "Fee expiry is the desk's call list. Expiring shows whose membership ends in the next few days — pick 1, 3, 7, 15 or 30, or any number up to a year. Expired / unpaid shows whose has run out without a renewal, paid or never paid. Dues shows what each member still owes, with the total at the top. The dashboard's “fees due” card opens the same list.",
       "Every row has a Collect button that opens Collect fees on that member with the right form ready: a renewal for the expiring and expired, the dues payment for those who owe. Export any list as a CSV, or print it as a clean page for the desk.",
-      "Renew and the new term starts when the current one ends, so nobody loses days by paying early — and nobody pays the admission fee twice. Got a date wrong, or agreed a discount after the sale? Change the dates on a membership — or its discount, when it was paid at the desk — and every change is kept with who made it and when. GymsPilotPro also reminds members before their fee runs out.",
+      "Renew and the new term starts when the current one ends, so nobody loses days by paying early — and nobody pays the admission fee twice. Got a date wrong, or agreed a discount after the sale? Change the dates on a membership — or its discount, when it was paid at the desk — and every change is kept with who made it and when. GymsPilotPro also reminds members before their fee runs out. With Safepay connected, it reminds them before the due date, on it and on the last day, each time with a link to pay online.",
     ],
     points: ["Expiring in the next N days", "Expired or never paid", "Dues with totals", "Collect straight from the list", "CSV and print"],
-    screens: ["Admin → Fee expiry", "Admin → Dashboard (fees due)", "Admin → Package Orders → Renew, Edit terms", "Admin → Messaging → Campaigns"],
-    related: ["feedesk", "dues", "messaging"],
+    screens: ["Admin → Fee expiry", "Admin → Dashboard (fees due)", "Admin → Package Orders → Renew, Edit terms", "Admin → Messaging → Campaigns", "Settings → Payments"],
+    related: ["feedesk", "dues", "billing"],
   },
   {
     key: "logins",
@@ -280,18 +284,18 @@ export const FEATURES: Feature[] = [
     slug: "online-payments",
     group: "money",
     name: "Payments",
-    short: "Cash, bank, JazzCash and Easypaisa.",
+    short: "Card, JazzCash, Easypaisa or a bank app.",
     title: "Get paid, however your members pay",
-    text: "Record cash, bank transfer, JazzCash and Easypaisa at the desk, check bank transfer receipts online, and take cards where Stripe is available to your business.",
+    text: "Members pay online by card, JazzCash, Easypaisa or any bank app, straight to your gym through your own Safepay account — and the desk records cash and transfers as it always has.",
     body: [
-      "Most fees are paid at the desk. Record each one as cash, bank transfer, JazzCash, Easypaisa, another mobile wallet or a card on your own terminal. GymsPilotPro records how the member paid — it is not a payment gateway for these, so the money reaches you as it always has. The membership gets an invoice either way, and the desk prints a receipt.",
-      "Members can also pay by bank transfer from your website. They see your bank details at checkout and upload their receipt; you confirm it or reject it. Invoices go out by themselves, with the tax shown.",
-      "Card payments online work where Stripe is available to your business. You connect your own Stripe account, card money goes straight into it and never through us, and recurring memberships renew by themselves with failed payments retried. Stripe does not open accounts in every country, so check before you count on it.",
-      "Members can pause or cancel within the rules you set, and a change of package is priced fairly for the days that are left.",
+      "Members pay online by card, JazzCash, Easypaisa or any bank app, on Safepay's secure page. You connect your own Safepay account in Settings → Payments, so every payment goes into your gym's bank account and never through GymsPilotPro. Safepay takes its fee on each payment. GymsPilotPro marks the membership paid and sends the invoice and receipt. To open a Safepay account you need your CNIC, an NTN from FBR and a bank account certificate.",
+      "Nobody has to chase. Before the due date, on the due date and on the last day to pay, the member gets a reminder with a link to pay — by email and phone notification, and by SMS or WhatsApp through your own provider account. You choose how many days before, and when the last day falls. Once you have added your bank and Raast details, each reminder shows them too, for members who would rather send a transfer with no Safepay fee.",
+      "Members who want to can save a card and pay automatically on each due date. It is their choice: they tick a box that says what will be charged and when, and they can turn it off at any time in their account. Safepay keeps the card, not GymsPilotPro. If a card is declined, the member gets the payment link instead. You switch automatic payments on once Safepay has enabled them for your account.",
+      "At the desk, record cash, bank transfer, JazzCash, Easypaisa, another wallet or a card on your own terminal: GymsPilotPro records how the member paid, and the money reaches you as it always has. Members can also send a bank transfer from your website and upload the receipt for you to check. Outside Pakistan, cards online can go through your own Stripe account instead, where Stripe is available to your business.",
     ],
-    points: ["Cash, bank transfer, JazzCash, Easypaisa at the desk", "Bank transfer with a receipt to check", "Monthly, yearly and class packs", "Invoices sent automatically", "Cards online where Stripe is available"],
-    screens: ["Admin → Packages", "Admin → Package Orders", "Admin → Registrations", "Settings → Stripe & Banks", "Member app → Membership"],
-    related: ["dues", "offers", "desksale"],
+    points: ["Card, JazzCash, Easypaisa or any bank app", "Straight to your account through Safepay", "Reminders with a payment link, up to the last day", "Automatic card payments, if the member agrees", "Cash, bank and wallets recorded at the desk"],
+    screens: ["Settings → Payments", "Settings → Banks", "Admin → Package Orders → Payment link", "Admin → Registrations", "Website → Checkout, Payment link", "Website → My account → Automatic payments", "Member app → Membership"],
+    related: ["renewals", "messaging", "dues"],
   },
   {
     key: "offers",
@@ -544,12 +548,12 @@ export const FEATURES: Feature[] = [
     title: "Members look after themselves",
     text: "Bookings, invoices, details and their check-in code — all in the member portal, in every plan.",
     body: [
-      "Every question a member would ask at the desk is answered on their own page: their classes and PT sessions, every payment and invoice, their visits, and their check-in QR code.",
+      "Every question a member would ask at the desk is answered on their own page: their classes and PT sessions, every payment and invoice, their visits, and their check-in QR code. With Safepay connected, a fee that is due has a Pay now button.",
       "It works in any browser, with nothing to download. Members can add it to their phone's home screen, so it opens like an app. This is in every plan.",
-      "They change their own details, switch on two-step sign-in and download a copy of their data. That is a quieter front desk.",
+      "They change their own details, switch on two-step sign-in, turn off automatic card payments and download a copy of their data. That is a quieter front desk.",
     ],
     points: ["In every plan, in the browser", "Adds to the phone's home screen", "Their classes and PT sessions", "Every payment and invoice", "Check-in QR in the browser too"],
-    screens: ["Website → My account → Profile", "Website → My account → My classes, Personal training", "Website → My account → History, Recent visits", "Website → My account → Check-in QR"],
+    screens: ["Website → My account → Profile", "Website → My account → My classes, Personal training", "Website → My account → History, Recent visits", "Website → My account → Automatic payments", "Website → My account → Check-in QR"],
     related: ["app", "billing", "frontdesk"],
   },
   {
@@ -562,7 +566,7 @@ export const FEATURES: Feature[] = [
     text: "Email and push notifications, plus SMS and WhatsApp through your own provider account — most of it sent for you.",
     body: [
       "Four ways to reach a member. Email goes out through your own email account, which you connect once in Settings. Push notifications are switched on in Settings. SMS and WhatsApp go through a provider account that you open and pay for — Twilio or WhatsApp Business from Meta, for example — and GymsPilotPro sends through it.",
-      "Class reminders, renewal reminders, missed-you nudges, win-back offers and birthday messages go out by themselves. Write the wording once and GymsPilotPro sends it on time, every time.",
+      "Class reminders, renewal reminders, missed-you nudges, win-back offers and birthday messages go out by themselves. With Safepay connected, a fee reminder carries a link to pay by card, JazzCash, Easypaisa or a bank app. Write the wording once and GymsPilotPro sends it on time, every time.",
       "When you want to say something yourself, choose who hears it — everyone, members ending soon, lapsed members or one group — and members can opt out whenever they like.",
     ],
     points: ["Class and renewal reminders", "Missed-you and win-back nudges", "Everyone, or just one group", "Email through your own mailbox", "SMS and WhatsApp need your own provider account"],
@@ -596,11 +600,11 @@ export const FEATURES: Feature[] = [
     title: "Set it up your way",
     text: "Country, currency, colours and opening hours are all switches.",
     body: [
-      "A guided setup on day one, then everything is a setting: country, currency, time zone, opening hours, your logo, email and bank details.",
+      "A guided setup on day one, then everything is a setting: country, currency, time zone, opening hours, your logo, email, bank details and online payments.",
       "No code and no support ticket. Pick a currency and every price follows; pick a colour scheme and the website and the app both change.",
     ],
     points: ["Guided setup on day one", "Country and currency", "8 colour schemes", "Your logo, email and bank details"],
-    screens: ["Admin → Setup (first run)", "Settings → General (Business, Money & time, Website)", "Settings → Logo, Colour Scheme", "Settings → Stripe, SMTP, Banks, Messaging"],
+    screens: ["Admin → Setup (first run)", "Settings → General (Business, Money & time, Website)", "Settings → Logo, Colour Scheme", "Settings → Payments, SMTP, Banks, Messaging"],
     related: ["website", "security", "import"],
   },
   {
