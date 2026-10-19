@@ -15,6 +15,7 @@ import { trackActivity, trackConversion } from "@/lib/analytics";
 import { stagger } from "@/lib/motion";
 import { useAsyncAction } from "@/lib/useAsyncAction";
 import BusySpinner from "@/components/BusySpinner";
+import SearchableSelect from "@/components/SearchableSelect";
 import Reveal from "./Reveal";
 import SectionHeading from "./SectionHeading";
 import Glow from "./Glow";
@@ -115,13 +116,13 @@ export default function DemoForm({ contact = false }: { contact?: boolean }) {
               </label>
               <label className="block sm:col-span-1">
                 <span className="text-xs font-semibold text-slate-300">Gym size</span>
-                <select value={form.gymSize} onChange={set("gymSize")} className={`${input} mt-1.5 [&>option]:text-slate-900`}>
+                <SearchableSelect tone="dark" value={form.gymSize} onChange={set("gymSize")} className="mt-1.5">
                   {DEMO_FORM.sizes.map((s) => (
                     <option key={s} value={s}>
                       {s}
                     </option>
                   ))}
-                </select>
+                </SearchableSelect>
               </label>
               <label className="block sm:col-span-1">
                 <span className="text-xs font-semibold text-slate-300">City / country</span>
