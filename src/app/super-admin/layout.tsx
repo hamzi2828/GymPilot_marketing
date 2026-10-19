@@ -111,7 +111,7 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
     {
       heading: "System",
       items: [
-        { name: "Stripe", path: "/super-admin/stripe", icon: <FiCreditCard className="h-[18px] w-[18px]" /> },
+        { name: "Payments", path: "/super-admin/payments", icon: <FiCreditCard className="h-[18px] w-[18px]" /> },
         { name: "Audit log", path: "/super-admin/audit", icon: <FiList className="h-[18px] w-[18px]" /> },
         { name: "My account", path: "/super-admin/account", icon: <FiUser className="h-[18px] w-[18px]" /> },
       ],

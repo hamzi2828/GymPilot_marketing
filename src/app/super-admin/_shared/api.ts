@@ -4,7 +4,7 @@
 // a platform token lives under its own key, is sent only to /api/platform,
 // and is refused by every gym endpoint (and vice versa).
 
-import { PLATFORM_API } from "@/lib/api";
+import { API_BASE as API_BASE_URL, PLATFORM_API } from "@/lib/api";
 
 export { API_BASE, PLATFORM_API } from "@/lib/api";
 
@@ -79,7 +79,22 @@ export async function platformFetch<T>(path: string, init: { method?: "GET" | "P
     headers,
     body: init.body !== undefined ? JSON.stringify(init.body) : undefined,
   });
+  return readResponse<T>(res, path);
+}
 
+/**
+ * A file sent to the platform API as multipart form data (a QR code image).
+ * The browser writes the Content-Type with its boundary itself.
+ */
+export async function platformUpload<T>(path: string, form: FormData): Promise<T> {
+  const headers: Record<string, string> = {};
+  const token = getPlatformToken();
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  const res = await fetch(`${PLATFORM_API}${path}`, { method: "POST", headers, body: form });
+  return readResponse<T>(res, path);
+}
+
+async function readResponse<T>(res: Response, path: string): Promise<T> {
   let json: { success?: boolean; message?: string; code?: string } & Record<string, unknown> = {};
   try {
     json = await res.json();
@@ -261,6 +276,59 @@ export interface Overview {
   currency?: string;
   attention?: { renewing: GymBrief[]; past_due: GymBrief[]; suspended: GymBrief[] };
   demo_requests_new?: number;
+}
+
+// ---- How gyms pay GymsPilotPro (Payments, Payments to verify) -----------
+
+/** Which way gyms pay: one at a time. "generic" is a bank transfer with a receipt. */
+export type PlatformPayProvider = "none" | "stripe" | "safepay" | "generic";
+
+/** One field a gateway's form needs, as GET /settings/payment-gateways lists it. */
+export interface PlatformGatewayField {
+  name: string;
+  label: string;
+  type?: "text" | "secret" | "select" | "boolean";
+  required?: boolean;
+  options?: (string | { value: string; label: string })[];
+  help?: string;
+}
+
+export interface PlatformGateway {
+  id: string;
+  label: string;
+  description?: string;
+  configured?: boolean;
+  selected?: boolean;
+  config_fields?: PlatformGatewayField[];
+}
+
+/** One of GymsPilotPro's own bank accounts, shown to gyms that pay by transfer. */
+export interface PlatformBankAccount {
+  id: string;
+  _id?: string;
+  bankName: string;
+  accountTitle: string;
+  accountNumber: string;
+  iban: string;
+  qrCodeUrl: string;
+  active: boolean;
+}
+
+/** Whether a secret came back as the API's masked preview (dots and its last four). */
+export function isMaskedSecret(value: unknown): boolean {
+  return typeof value === "string" && value.includes("•");
+}
+
+/**
+ * Where to open a file the API stored: an https URL as it is (the Blob
+ * store), an /uploads path on the API itself (development); anything else
+ * is not shown.
+ */
+export function uploadUrl(value?: string | null): string {
+  const url = String(value || "").trim();
+  if (/^https?:\/\//i.test(url)) return url;
+  if (url.startsWith("/") && !url.startsWith("//")) return `${API_BASE_URL}${url}`;
+  return "";
 }
 
 export const DEMO_REQUEST_STATUSES = ["new", "contacted", "converted", "closed"] as const;

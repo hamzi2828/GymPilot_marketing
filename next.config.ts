@@ -20,6 +20,10 @@ import type { NextConfig } from "next";
 //               frame any of it.
 // Preview deployments also get Vercel's toolbar (vercel.live).
 //
+// The panel also shows pictures the API stored -- receipts gyms send and the
+// bank QR codes -- from the Blob store, or from the API's /uploads under
+// `next dev`; only PANEL_PATHS may load images from there.
+//
 // The panel and its sign-in pages (PANEL_PATHS) get the same policy without
 // the analytics hosts: the console that runs every gym, and the reset page
 // with its token in the address, never run a tracker's script or send it
@@ -47,7 +51,10 @@ const META = (process.env.NEXT_PUBLIC_META_PIXEL_ID || "").trim() !== "";
 // PANEL in components/marketing/Analytics.tsx.
 const PANEL_PATHS = ["/login", "/forgot", "/reset", "/super-admin", "/super-admin/:path*"];
 
-function contentSecurityPolicy({ analytics }: { analytics: boolean }): string {
+// Where stored files are served from (see helper/blobUpload.js on the API).
+const UPLOAD_HOSTS = [API_ORIGIN, "https://*.public.blob.vercel-storage.com"].filter(Boolean);
+
+function contentSecurityPolicy({ analytics, uploads = false }: { analytics: boolean; uploads?: boolean }): string {
   const ga = analytics && GA;
   const meta = analytics && META;
   const vercelLive = IS_PREVIEW ? ["https://vercel.live"] : [];
@@ -57,7 +64,7 @@ function contentSecurityPolicy({ analytics }: { analytics: boolean }): string {
     "script-src": ["'self'", "'unsafe-inline'", ...(IS_DEV ? ["'unsafe-eval'"] : []), ...(ga ? ["https://*.googletagmanager.com"] : []), ...(meta ? ["https://connect.facebook.net"] : []), ...vercelLive],
     "style-src": ["'self'", "'unsafe-inline'", ...vercelLive],
     "font-src": ["'self'", "data:", ...(IS_PREVIEW ? ["https://vercel.live", "https://assets.vercel.com"] : [])],
-    "img-src": ["'self'", "data:", "blob:", ...gaHosts, ...(meta ? ["https://www.facebook.com"] : []), ...(IS_PREVIEW ? ["https://vercel.live", "https://vercel.com"] : [])],
+    "img-src": ["'self'", "data:", "blob:", ...(uploads ? UPLOAD_HOSTS : []), ...gaHosts, ...(meta ? ["https://www.facebook.com"] : []), ...(IS_PREVIEW ? ["https://vercel.live", "https://vercel.com"] : [])],
     "connect-src": ["'self'", API_ORIGIN, ...gaHosts, ...(meta ? ["https://www.facebook.com", "https://connect.facebook.net"] : []), ...(IS_PREVIEW ? ["https://vercel.live", "wss://ws-us3.pusher.com"] : [])].filter(Boolean),
     "frame-src": ["'self'", ...(ga ? ["https://*.googletagmanager.com"] : []), ...vercelLive],
     "worker-src": ["'self'", "blob:"],
@@ -97,7 +104,7 @@ const nextConfig: NextConfig = {
       // later of two matching rules sets the header).
       ...PANEL_PATHS.map((source) => ({
         source,
-        headers: [{ key: "Content-Security-Policy", value: contentSecurityPolicy({ analytics: false }) }],
+        headers: [{ key: "Content-Security-Policy", value: contentSecurityPolicy({ analytics: false, uploads: true }) }],
       })),
       // The desk app installer the gym admin panel links to: always saved as
       // a file, never opened in the tab.
@@ -117,6 +124,8 @@ const nextConfig: NextConfig = {
       { source: "/super-admin/login", destination: "/login", permanent: true },
       { source: "/super-admin/forgot", destination: "/forgot", permanent: true },
       { source: "/super-admin/reset", destination: "/reset", permanent: true },
+      // System → Stripe became part of System → Payments.
+      { source: "/super-admin/stripe", destination: "/super-admin/payments", permanent: false },
     ];
   },
 };
