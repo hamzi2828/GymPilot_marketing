@@ -8,7 +8,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { FiAlertTriangle, FiCalendar, FiCopy, FiCreditCard, FiExternalLink, FiGlobe, FiLayers, FiMail, FiShield, FiUsers } from "react-icons/fi";
 import { PageHeader, Crumbs, Panel, StatCard, KeyValue, Button, Field, Input, Select, Textarea, Modal, Spinner, Alert, Pill, StatusPill, Avatar, useAsyncAction } from "../../_shared/ui";
 import { PaymentsPanel } from "./Payments";
-import { platformFetch, PlatformApiError, formatDate, formatMoney, DEFAULT_CURRENCY, SUBSCRIPTION_STATUSES, BILLING_CYCLES, type Addon, type DomainStatus, type Gym, type GymStats, type Plan } from "../../_shared/api";
+import { platformFetch, PlatformApiError, formatDate, formatMoney, addonsSoldWith, keepAddonsFor, DEFAULT_CURRENCY, SUBSCRIPTION_STATUSES, BILLING_CYCLES, type Addon, type DomainStatus, type Gym, type GymStats, type Plan } from "../../_shared/api";
 
 type Detail = Gym & { plan: Plan | null; stats: GymStats };
 type Admin = { id: string; name: string; email: string; is_active: boolean; last_login: string | null };
@@ -127,6 +127,8 @@ function GymDetail() {
   const [sub, setSub] = useState({ planId: "", status: "trialing", billingCycle: "monthly", amount: "", currency: "", currentPeriodEnd: "", notes: "" });
   const [addons, setAddons] = useState<Addon[]>([]);
   const [addonSlugs, setAddonSlugs] = useState<string[]>([]);
+  // Which add-ons the last change of plan took off, if any.
+  const [addonNote, setAddonNote] = useState<string | null>(null);
   const [resetOpen, setResetOpen] = useState(false);
   const [reset, setReset] = useState({ email: "", password: "" });
   // A refused reset is said inside its window, which stays open.
@@ -179,6 +181,7 @@ function GymDetail() {
       notes: g.subscription.notes || "",
     });
     setAddonSlugs((g.subscription.addons || []).map((a) => a.slug));
+    setAddonNote(null);
     setReset((r) => ({ ...r, email: g.owner.email || "" }));
   }, []);
 
@@ -211,23 +214,23 @@ function GymDetail() {
   const chosenPlan = plans.find((p) => p.id === sub.planId);
   const includedSlugs = chosenPlan?.includedAddons || [];
   const includedAddons = addons.filter((addon) => addon.isActive && includedSlugs.includes(addon.slug));
-  const sellableAddons = addons.filter(
-    (addon) =>
-      addon.isActive &&
-      !includedSlugs.includes(addon.slug) &&
-      (!addon.planSlugs.length || addon.planSlugs.includes(chosenPlan?.slug || "")) &&
-      (!chosenPlan || addon.price.currency === chosenPlan.price.currency)
-  );
+  const sellableAddons = addonsSoldWith(chosenPlan, addons);
 
   // Picking a plan (or a cycle) resets the amount to that plan's price for
   // the cycle, so a price typed for the old plan is never sent for the new.
-  const choosePlan = (planId: string) =>
+  // The add-ons the new plan does not sell come off, and the admin is told
+  // which: still ticked out of sight, they had the save refused.
+  const choosePlan = (planId: string) => {
+    const plan = plans.find((p) => p.id === planId);
     setSub((x) => {
-      const plan = plans.find((p) => p.id === planId);
       // A plan with no yearly price is sold monthly only.
       const billingCycle = plan && plan.price.yearly <= 0 ? "monthly" : x.billingCycle;
       return { ...x, planId, billingCycle, amount: planPrice(plan, billingCycle), currency: plan ? plan.price.currency : x.currency };
     });
+    const kept = keepAddonsFor(plan, addons, addonSlugs);
+    setAddonSlugs(kept.slugs);
+    setAddonNote(kept.message);
+  };
   const chooseCycle = (billingCycle: string) =>
     setSub((x) => {
       const plan = plans.find((p) => p.id === x.planId);
@@ -732,6 +735,7 @@ function GymDetail() {
                   )}
                 </div>
               </Field>
+              {addonNote && <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">{addonNote}</p>}
             </div>
 
             <div className="md:col-span-2 rounded-xl bg-slate-50 px-4 py-3 text-sm">

@@ -327,6 +327,39 @@ export interface DemoRequest {
   updatedAt: string;
 }
 
+/**
+ * What can be sold on top of `plan` (none: no plan): active, not already
+ * included in it, offered with it, and in its currency -- the API refuses
+ * any other add-on with "Not available on this plan".
+ */
+export function addonsSoldWith(plan: Plan | undefined, addons: Addon[]): Addon[] {
+  const included = plan?.includedAddons || [];
+  return addons.filter(
+    (a) => a.isActive && !included.includes(a.slug) && (!a.planSlugs.length || a.planSlugs.includes(plan?.slug || "")) && (!plan || a.price.currency === plan.price.currency)
+  );
+}
+
+/**
+ * Moving a selection of add-ons to another plan: the ones it still sells
+ * stay chosen, the rest come off -- sent anyway, they would have the whole
+ * save refused -- and `message` names them (null when none came off), so the
+ * admin knows the bill changed.
+ */
+export function keepAddonsFor(plan: Plan | undefined, addons: Addon[], slugs: string[]): { slugs: string[]; message: string | null } {
+  const sold = addonsSoldWith(plan, addons).map((a) => a.slug);
+  const kept = slugs.filter((slug) => sold.includes(slug));
+  const dropped = slugs.filter((slug) => !sold.includes(slug));
+  if (!dropped.length) return { slugs: kept, message: null };
+  const nameOf = (slug: string) => addons.find((a) => a.slug === slug)?.name || slug;
+  const included = dropped.filter((slug) => (plan?.includedAddons || []).includes(slug));
+  const notSold = dropped.filter((slug) => !included.includes(slug));
+  const parts = [
+    notSold.length ? `${notSold.map(nameOf).join(", ")} ${notSold.length === 1 ? "is" : "are"} not sold ${plan ? `with ${plan.name}` : "without a plan"}` : "",
+    included.length && plan ? `${included.map(nameOf).join(", ")} ${included.length === 1 ? "comes" : "come"} with ${plan.name} at no charge` : "",
+  ].filter(Boolean);
+  return { slugs: kept, message: `Removed from the add-ons: ${parts.join("; ")}.` };
+}
+
 export function planOf(gym: Gym): Plan | null {
   return gym.plan && typeof gym.plan === "object" ? (gym.plan as Plan) : null;
 }

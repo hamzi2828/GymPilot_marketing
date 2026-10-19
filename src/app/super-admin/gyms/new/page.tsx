@@ -9,7 +9,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FiDatabase, FiGlobe, FiUser } from "react-icons/fi";
 import { PageHeader, Crumbs, Panel, Button, Field, Input, Select, Textarea, Alert, useAsyncAction } from "../../_shared/ui";
-import { platformFetch, type Addon, type DemoRequest, type Plan, type Gym, type PlatformConfig } from "../../_shared/api";
+import { platformFetch, addonsSoldWith, keepAddonsFor, type Addon, type DemoRequest, type Plan, type Gym, type PlatformConfig } from "../../_shared/api";
 
 const COMMON_TIMEZONES = [
   "UTC",
@@ -110,6 +110,8 @@ function NewGymForm() {
   const [emailLocked, setEmailLocked] = useState(false);
   const [addons, setAddons] = useState<Addon[]>([]);
   const [addonSlugs, setAddonSlugs] = useState<string[]>([]);
+  // Which add-ons the last change of plan took off, if any.
+  const [addonNote, setAddonNote] = useState<string | null>(null);
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
   // The tail of the database name. Fixed for as long as the form is open.
   const [databaseId, setDatabaseId] = useState("");
@@ -253,15 +255,25 @@ function NewGymForm() {
   useEffect(() => {
     if (monthlyOnly) setBillingCycle("monthly");
   }, [monthlyOnly]);
-  const includedSlugs = selectedPlan?.includedAddons || [];
   // Only what the plan sells, in the plan's own currency: the API refuses a
   // PKR add-on on a USD plan.
-  const sellableAddons = addons.filter(
-    (a) =>
-      !includedSlugs.includes(a.slug) &&
-      (!a.planSlugs.length || a.planSlugs.includes(selectedPlan?.slug || "")) &&
-      (!selectedPlan || a.price.currency === selectedPlan.price.currency)
-  );
+  const sellableAddons = addonsSoldWith(selectedPlan, addons);
+  // Another plan keeps only the add-ons it sells too, and says which came
+  // off: a hidden one still sent would have the gym refused.
+  // (Without a plan no add-ons are sent at all, and until the add-on list has
+  // loaded there is nothing to check against.)
+  const choosePlan = (planId: string) => {
+    setForm((f) => ({ ...f, planId }));
+    setAddonNote(null);
+    if (!planId || !addons.length) return;
+    const kept = keepAddonsFor(
+      plans.find((p) => p.id === planId),
+      addons,
+      addonSlugs
+    );
+    setAddonSlugs(kept.slugs);
+    setAddonNote(kept.message);
+  };
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -485,7 +497,7 @@ function NewGymForm() {
                     : "For a gym you host without charging: no limits, no renewal date, nothing to bill. Pick a plan to put it on the price list."
                 }
               >
-                <Select value={form.planId} onChange={on("planId")}>
+                <Select value={form.planId} onChange={(e) => choosePlan(e.target.value)}>
                   <option value="">No plan (unlimited, no billing)</option>
                   {plans.map((p) => (
                     <option key={p.id} value={p.id}>
@@ -494,6 +506,7 @@ function NewGymForm() {
                   ))}
                 </Select>
               </Field>
+              {addonNote && <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">{addonNote}</p>}
 
               {form.planId && (
                 <>
