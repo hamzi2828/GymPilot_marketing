@@ -220,7 +220,7 @@ export const TESTIMONIALS: { quote: string; who: string; where: string; sample: 
 export const FAQ: { q: string; a: string; more?: boolean }[] = [
   {
     q: "How do members pay?",
-    a: "Online, you pick one way in Settings → Payments. Safepay, in Pakistan: card, JazzCash, Easypaisa or any bank app, with a reminder and a link to pay before the due date, on it and on the last day, and automatic card payments for members who agree, if you switch them on. Stripe: cards, where Stripe is available to your business. Generic, in any country: the member gets a link with your bank QR code and account details, sends a bank transfer and uploads a screenshot, and your staff approve it — no gateway fee, but each receipt is checked by hand. At the desk you record cash, bank transfer, wallet or card-machine payments, part payments included; these are recorded, not processed.",
+    a: "Online, you pick one way in Settings → Payments. Safepay, in Pakistan: card, JazzCash, Easypaisa or any bank app, with a reminder and a link to pay before the due date, on it and on the last day, and automatic card payments for members who agree, if you switch them on. Stripe: cards, where Stripe is available to your business. Generic, in any country: before the due date, on it and on the last day the member gets a link with your bank QR code and account details, sends a bank transfer and uploads a screenshot, and your staff approve it — no gateway fee, but each receipt is checked by hand. At the desk you record cash, bank transfer, wallet or card-machine payments, part payments included; these are recorded, not processed.",
   },
   {
     q: "Does the money go to my account?",
