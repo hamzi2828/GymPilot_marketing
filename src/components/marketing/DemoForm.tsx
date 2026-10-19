@@ -6,10 +6,10 @@
 // The same form is the contact page (/contact, `contact`): it needs nothing
 // but the API, so it is the way to reach us that is always there.
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FiArrowRight, FiCheckCircle } from "react-icons/fi";
-import { CONTACT, DEMO_FORM, SITE } from "@/content/site";
+import { CONTACT, DEMO_FORM, SITE, SUGGESTIONS } from "@/content/site";
 import { publicFetch } from "@/lib/api";
 import { trackConversion } from "@/lib/analytics";
 import { stagger } from "@/lib/motion";
@@ -26,6 +26,16 @@ export default function DemoForm({ contact = false }: { contact?: boolean }) {
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Opened from "Share a suggestion" (/contact?topic=suggestion): the message
+  // is started for them, and sending it is not counted as a demo request. Read
+  // from the address once the page is running, so the form stays in the
+  // page's static HTML (useSearchParams would take it out).
+  const [suggestion, setSuggestion] = useState(false);
+  useEffect(() => {
+    if (!contact || new URLSearchParams(window.location.search).get("topic") !== SUGGESTIONS.topic) return;
+    setSuggestion(true);
+    setForm((f) => (f.message ? f : { ...f, message: SUGGESTIONS.prefill }));
+  }, [contact]);
 
   const set = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
@@ -36,7 +46,7 @@ export default function DemoForm({ contact = false }: { contact?: boolean }) {
     try {
       await publicFetch("/demo-requests", { method: "POST", body: { ...form, source: typeof window !== "undefined" ? window.location.href : "landing" } });
       setDone(true);
-      trackConversion("demo_request");
+      if (!suggestion) trackConversion("demo_request");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not send your request. Please try again.");
     } finally {

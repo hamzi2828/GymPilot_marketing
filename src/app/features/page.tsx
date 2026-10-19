@@ -11,6 +11,7 @@ import FeatureCard from "@/components/marketing/FeatureCard";
 import Reveal from "@/components/marketing/Reveal";
 import Glow from "@/components/marketing/Glow";
 import FeatureGroupsGrid from "@/components/marketing/FeatureGroupsGrid";
+import Suggestions from "@/components/marketing/Suggestions";
 
 // For search results: one sentence, under 160 characters.
 const DESCRIPTION = `All ${FEATURES.length} ${SITE.name} features in plain English: fee collection, dues, check-in alerts, reports, the shop, classes, staff, messaging, your website and backups.`;
@@ -100,6 +101,9 @@ export default function FeaturesPage() {
             </section>
           );
         })}
+
+        {/* Missing something? Gyms tell us and we build it, free. */}
+        <Suggestions compact />
 
         {/* Everything is in every plan */}
         <section className="bg-white pb-2 pt-8">

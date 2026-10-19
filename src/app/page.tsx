@@ -4,6 +4,7 @@ import Hero from "@/components/marketing/Hero";
 import Benefits from "@/components/marketing/Benefits";
 import WhatYouGet from "@/components/marketing/WhatYouGet";
 import HowItWorks from "@/components/marketing/HowItWorks";
+import Suggestions from "@/components/marketing/Suggestions";
 import Pricing from "@/components/marketing/Pricing";
 import Testimonials from "@/components/marketing/Testimonials";
 import Faq from "@/components/marketing/Faq";
@@ -18,8 +19,9 @@ export const metadata: Metadata = {
 };
 
 // Written for a gym owner who has never heard of us: what it does for them,
-// what they get, how they start, what it costs, and how to talk to us. The
-// detail of each feature is on /features, not here.
+// what they get, how they start, that their ideas are built free, what it
+// costs, and how to talk to us. The detail of each feature is on /features,
+// not here.
 export default function LandingPage() {
   return (
     <>
@@ -30,6 +32,7 @@ export default function LandingPage() {
         <Benefits />
         <WhatYouGet />
         <HowItWorks />
+        <Suggestions />
         <Pricing />
         <Testimonials />
         <Faq />

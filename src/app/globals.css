@@ -185,6 +185,9 @@ details > summary::-webkit-details-marker {
 .a-scan { animation: m-scan 2.8s ease-in-out infinite; }
 .a-blink { animation: m-blink 1.6s ease-in-out infinite; }
 .a-halo { animation: m-halo 2.8s ease-in-out infinite; }
+/* A sparkle that grows, turns a little and fades: round the bulb in "Your ideas, built free". */
+@keyframes m-twinkle { 0%, 100% { opacity: 0; transform: scale(0.3) rotate(0deg); } 45%, 55% { opacity: 1; transform: scale(1) rotate(45deg); } }
+.a-twinkle { animation: m-twinkle 2.6s ease-in-out infinite both; }
 /* One-pixel gradient border, drawn with a mask so the middle stays clear. */
 .edge-glow { position: relative; }
 .edge-glow::before {
@@ -297,7 +300,7 @@ details[open] > summary ~ * { animation: m-rise 0.45s cubic-bezier(0.22, 1, 0.36
   .reveal.is-visible .v-draw, .reveal.is-visible .v-bubble-l, .reveal.is-visible .v-bubble-r,
   .reveal.is-visible .v-float,
   .edge-glow::before,
-  .a-drift, .a-drift-2, .a-spin-slow, .a-float, .a-float-2, .a-scan, .a-blink, .a-halo,
+  .a-drift, .a-drift-2, .a-spin-slow, .a-float, .a-float-2, .a-scan, .a-blink, .a-halo, .a-twinkle,
   .a-point-r, .a-point-l, .a-ping-ring, .btn-sweep::after, .btn-shine:hover::after, .a-menu,
   .a-wyg-node, .a-wyg-bar, .a-wyg-build, .a-wyg-type, .a-wyg-row, .a-wyg-tick,
   .a-bn-scan, .a-bn-draw, .a-bn-slide, .a-bn-ring, .a-bn-seat, .a-hw-step, .a-hw-fill,

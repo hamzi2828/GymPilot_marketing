@@ -147,6 +147,29 @@ export const STEPS = [
   },
 ];
 
+// The invitation to tell us what would make GymsPilotPro easier, on the
+// landing page and /features. It opens the contact form with the message
+// started (DemoForm reads ?topic=), and WhatsApp when a number is set.
+const SUGGESTION_TOPIC = "suggestion";
+export const SUGGESTIONS = {
+  eyebrow: "Built with you",
+  /** The heading; `highlight` follows it, drawn in colour. */
+  title: "Your ideas,",
+  highlight: "built free",
+  text: "We welcome your suggestions. If anything in GymsPilotPro could be simpler or friendlier for you, tell us — we are pleased to build improvements at no extra cost.",
+  points: [
+    { title: "Tell us what would help", text: "Message us about anything that could be simpler or quicker for you." },
+    { title: "We plan it with you", text: "We reply and work out the details, so it fits how your gym runs." },
+    { title: "Free for every gym", text: "When it is ready, every gym on GymsPilotPro gets it, with nothing added to your bill." },
+  ],
+  cta: { label: "Share a suggestion", href: `/contact?topic=${SUGGESTION_TOPIC}` },
+  topic: SUGGESTION_TOPIC,
+  /** What the contact form's message starts with when opened from here. */
+  prefill: "Suggestion: ",
+  whatsapp: "Suggest on WhatsApp",
+  whatsappUrl: SITE.whatsapp ? `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent("Hi GymsPilotPro, I have a suggestion: ")}` : "",
+};
+
 export const PRICING = {
   eyebrow: "Pricing",
   title: "One price. The whole product.",
