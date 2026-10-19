@@ -276,6 +276,8 @@ export interface Overview {
   currency?: string;
   attention?: { renewing: GymBrief[]; past_due: GymBrief[]; suspended: GymBrief[] };
   demo_requests_new?: number;
+  /** Receipts gyms have sent that wait for a look (Payments to verify). */
+  pending_count?: number;
 }
 
 // ---- How gyms pay GymsPilotPro (Payments, Payments to verify) -----------
@@ -313,6 +315,29 @@ export interface PlatformBankAccount {
   qrCodeUrl: string;
   active: boolean;
 }
+
+export interface PlatformPaymentRequest {
+  id: string;
+  gymId: string;
+  gymSlug: string;
+  gymName: string;
+  amount: number;
+  currency: string;
+  billingCycle: "monthly" | "yearly" | string;
+  receiptUrl: string;
+  reference: string;
+  note: string;
+  submittedAt: string;
+  submittedBy?: { id?: string; email?: string; name?: string } | null;
+  status: "pending" | "approved" | "rejected";
+  reason?: string;
+  reviewedAt?: string | null;
+  reviewedBy?: string | null;
+  paymentId?: string | null;
+}
+
+/** Said by Payments to verify after an approve or reject, so the sidebar's count catches up. */
+export const PAYMENT_REQUESTS_CHANGED = "platform:payment-requests-changed";
 
 /** Whether a secret came back as the API's masked preview (dots and its last four). */
 export function isMaskedSecret(value: unknown): boolean {

@@ -7,8 +7,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { FiCreditCard, FiExternalLink, FiGrid, FiHome, FiInbox, FiLayers, FiList, FiLogOut, FiMenu, FiPlus, FiUser, FiX } from "react-icons/fi";
-import { clearPlatformToken, getPlatformToken, platformFetch, type Overview, type PlatformAdmin } from "./_shared/api";
+import { FiCheckSquare, FiCreditCard, FiExternalLink, FiGrid, FiHome, FiInbox, FiLayers, FiList, FiLogOut, FiMenu, FiPlus, FiUser, FiX } from "react-icons/fi";
+import { PAYMENT_REQUESTS_CHANGED, clearPlatformToken, getPlatformToken, platformFetch, type Overview, type PlatformAdmin } from "./_shared/api";
 import { Avatar, BusySpinner, cx, useAsyncAction } from "./_shared/ui";
 import FullPageLink from "@/components/FullPageLink";
 
@@ -37,6 +37,7 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
   const [checked, setChecked] = useState(false);
   const [open, setOpen] = useState(false);
   const [newRequests, setNewRequests] = useState(0);
+  const [toVerify, setToVerify] = useState(0);
   const signingOut = useAsyncAction();
 
   useEffect(() => {
@@ -60,17 +61,24 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
     };
   }, [router]);
 
-  // The unread demo-request count in the sidebar; refreshed on navigation.
+  // The sidebar's counts (unread demo requests, payments to verify);
+  // refreshed on navigation and when Payments to verify approves or rejects.
   useEffect(() => {
     if (!admin) return;
     let cancelled = false;
-    platformFetch<{ data: Overview }>("/overview")
-      .then((res) => {
-        if (!cancelled) setNewRequests(res.data.demo_requests_new || 0);
-      })
-      .catch(() => {});
+    const refresh = () =>
+      platformFetch<{ data: Overview }>("/overview")
+        .then((res) => {
+          if (cancelled) return;
+          setNewRequests(res.data.demo_requests_new || 0);
+          setToVerify(res.data.pending_count || 0);
+        })
+        .catch(() => {});
+    refresh();
+    window.addEventListener(PAYMENT_REQUESTS_CHANGED, refresh);
     return () => {
       cancelled = true;
+      window.removeEventListener(PAYMENT_REQUESTS_CHANGED, refresh);
     };
   }, [admin, pathname]);
 
@@ -105,6 +113,7 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
         { name: "Overview", path: "/super-admin", icon: <FiHome className="h-[18px] w-[18px]" />, exact: true },
         { name: "Gyms", path: "/super-admin/gyms", icon: <FiGrid className="h-[18px] w-[18px]" /> },
         { name: "Plans", path: "/super-admin/plans", icon: <FiLayers className="h-[18px] w-[18px]" /> },
+        { name: "Payments to verify", path: "/super-admin/payment-requests", icon: <FiCheckSquare className="h-[18px] w-[18px]" />, badge: toVerify },
         { name: "Demo requests", path: "/super-admin/demo-requests", icon: <FiInbox className="h-[18px] w-[18px]" />, badge: newRequests },
       ],
     },
