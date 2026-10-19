@@ -68,7 +68,7 @@ export default function GymsTable({ title, compact = false }: { title?: string; 
           </div>
         )}
         <div className="flex flex-wrap items-center gap-2">
-          <div className="relative">
+          <div className="relative w-full sm:w-auto">
             <FiSearch className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
             <input
               value={search}
@@ -77,7 +77,7 @@ export default function GymsTable({ title, compact = false }: { title?: string; 
                 setSearch(e.target.value);
               }}
               placeholder="Search name, slug, domain, owner…"
-              className={cx(inputClass, "w-72 pl-9")}
+              className={cx(inputClass, "w-full pl-9 sm:w-72 xl:w-80")}
             />
           </div>
           <Select
@@ -86,7 +86,7 @@ export default function GymsTable({ title, compact = false }: { title?: string; 
               setPage(1);
               setStatus(e.target.value);
             }}
-            className="w-40"
+            className="w-[calc(50%_-_4px)] sm:w-40"
           >
             <option value="">Any status</option>
             <option value="active">Active</option>
@@ -98,7 +98,7 @@ export default function GymsTable({ title, compact = false }: { title?: string; 
               setPage(1);
               setSubscription(e.target.value);
             }}
-            className="w-44"
+            className="w-[calc(50%_-_4px)] sm:w-44"
           >
             <option value="">Any subscription</option>
             <option value="trialing">Trialing</option>

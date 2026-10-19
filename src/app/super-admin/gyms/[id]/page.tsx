@@ -389,7 +389,7 @@ function GymDetail() {
       {error && <Alert tone="error" onDismiss={() => setError(null)}>{error}</Alert>}
       {notice && <Alert tone="success" onDismiss={() => setNotice(null)}>{notice}</Alert>}
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-6">
         <StatCard label="Members" value={stats.error ? "—" : stats.members ?? "—"} tone="accent" icon={<FiUsers className="h-4 w-4" />} />
         <StatCard label="Active memberships" value={stats.error ? "—" : stats.active_memberships ?? "—"} tone="good" icon={<FiCreditCard className="h-4 w-4" />} />
         <StatCard label="Staff" value={stats.error ? "—" : stats.staff ?? "—"} />
@@ -399,7 +399,9 @@ function GymDetail() {
       </div>
       {stats.error && <p className="mt-2 text-xs text-rose-600">Could not read the gym&apos;s database: {stats.error}</p>}
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-2">
+      {/* Wide screens: the gym and its owner, its plan, and who runs it with
+          its domains, side by side; narrower, two columns and then one. */}
+      <div className="mt-6 grid items-start gap-6 lg:grid-cols-2 min-[1400px]:grid-cols-3">
         {/* Identity */}
         <Panel
           title="Gym & owner"
@@ -429,6 +431,7 @@ function GymDetail() {
           }
         >
           <KeyValue
+            columns="grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 min-[1800px]:grid-cols-4"
             items={[
               { label: "Slug", value: <span className="font-mono">{gym.slug}</span> },
               { label: "Database", value: <span className="font-mono">{gym.database.name}</span> },
@@ -436,7 +439,7 @@ function GymDetail() {
               { label: "Last visit", value: formatDate(stats.last_visit_at) },
             ]}
           />
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
+          <div className="mt-5 grid gap-4 md:grid-cols-2">
             <Field label="Gym name">
               <Input value={details.name} onChange={d("name")} />
             </Field>
@@ -467,145 +470,6 @@ function GymDetail() {
               </Field>
             </div>
           </div>
-        </Panel>
-
-        {/* Domains */}
-        <Panel
-          title={
-            <span className="flex items-center gap-2">
-              <FiGlobe className="h-4 w-4 text-neutral-400" /> Domains
-            </span>
-          }
-          description="Every domain that should show this gym's website. The first line is the primary, used in emails and redirects."
-          footer={
-            <>
-              <div className="flex flex-wrap gap-1.5">
-                {gym.domains.map((dom) => (
-                  <Pill key={dom.host} tone={dom.isPrimary ? "primary" : "neutral"} dot={false}>
-                    <span className="font-mono normal-case">{dom.host}</span>
-                    {dom.isPrimary ? " · primary" : ""}
-                  </Pill>
-                ))}
-                {!gym.domains.length && <span className="text-xs text-neutral-500">No domain yet</span>}
-              </div>
-              <Button
-                disabled={busy}
-                loading={action.pending === "domains"}
-                onClick={() =>
-                  run("domains", "Domains saved", async () => {
-                    const res = await platformFetch<{ hosting?: Hosting }>(`/gyms/${id}/domains`, {
-                      method: "PUT",
-                      body: {
-                        domains: domainsText
-                          .split(/[\s,]+/)
-                          .map((h) => h.trim())
-                          .filter(Boolean)
-                          .map((host, i) => ({ host, isPrimary: i === 0 })),
-                      },
-                    });
-                    setHosting(res.hosting || null);
-                  })
-                }
-              >
-                Save domains
-              </Button>
-            </>
-          }
-        >
-          <Field label="One domain per line">
-            <Textarea value={domainsText} onChange={(e) => setDomainsText(e.target.value)} placeholder={"ironworks.com\nwww.ironworks.com"} className="font-mono" />
-          </Field>
-          {hosting && hosting.added.length > 0 && (
-            <div className="mt-4 space-y-3 rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-xs text-neutral-700">
-              {hosting.added.map((h) => (
-                <div key={h.host}>
-                  <p className="flex flex-wrap items-center gap-2 font-semibold text-neutral-900">
-                    <span className="font-mono">{h.host}</span>
-                    <Pill tone={h.added ? (h.verified === false ? "warn" : "good") : h.skipped ? "neutral" : "bad"} dot={false}>
-                      {h.added ? (h.verified === false ? "awaiting verification" : "added to the website host") : h.skipped ? "not added automatically" : `could not be added`}
-                    </Pill>
-                    {h.error && <span className="text-rose-600">{h.error}</span>}
-                  </p>
-                  <p className="mt-1.5">
-                    DNS: add a <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{h.dns.type}</span> record for <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{h.dns.name}</span> pointing to <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{h.dns.value}</span>. {h.dns.note}
-                  </p>
-                  {(h.verification || []).map((v, i) => (
-                    <p key={i} className="mt-1">
-                      Verification: <span className="font-mono">{v.type}</span> record <span className="font-mono">{v.domain}</span> = <span className="break-all font-mono">{v.value}</span>
-                    </p>
-                  ))}
-                  {h.www && (
-                    <div className="mt-1.5">
-                      <p className="flex flex-wrap items-center gap-2">
-                        <span className="font-mono">{h.www.host}</span>
-                        <Pill tone={h.www.added ? (h.www.verified === false ? "warn" : "good") : "bad"} dot={false}>
-                          {h.www.added ? (h.www.verified === false ? "awaiting verification" : "added to the website host") : "could not be added"}
-                        </Pill>
-                        {h.www.error && <span className="text-rose-600">{h.www.error}</span>}
-                      </p>
-                      {h.www.dns && (
-                        <p className="mt-1">
-                          DNS: add a <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{h.www.dns.type}</span> record for <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{h.www.dns.name}</span> pointing to <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{h.www.dns.value}</span>.
-                        </p>
-                      )}
-                      {(h.www.verification || []).map((v, i) => (
-                        <p key={i} className="mt-1">
-                          Verification: <span className="font-mono">{v.type}</span> record <span className="font-mono">{v.domain}</span> = <span className="break-all font-mono">{v.value}</span>
-                        </p>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-              {!hosting.connected && <p className="text-neutral-500">Connect Vercel on the API (VERCEL_TOKEN, VERCEL_PROJECT_ID) to add domains to the website project automatically.</p>}
-            </div>
-          )}
-
-          {/* Where each domain stands on the website host: is DNS pointing
-              here yet, and what to add if not. */}
-          {domainStatus && domainStatus.data.length > 0 && (
-            <div className="mt-4">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-400">DNS &amp; verification</p>
-              <ul className="mt-2 divide-y divide-neutral-100 rounded-xl border border-neutral-200 text-xs">
-                {domainStatus.data.map((st) => {
-                  const tone = !domainStatus.connected ? "neutral" : st.error ? "bad" : !st.on_project ? "warn" : st.misconfigured ? "warn" : st.verified === false ? "warn" : "good";
-                  const label = !domainStatus.connected
-                    ? "not checked"
-                    : st.error
-                    ? "could not check"
-                    : !st.on_project
-                    ? "not on the website host"
-                    : st.verified === false
-                    ? "awaiting verification"
-                    : st.misconfigured
-                    ? "DNS not pointing here"
-                    : "live";
-                  return (
-                    <li key={st.host} className="px-3 py-2.5">
-                      <p className="flex flex-wrap items-center gap-2">
-                        <span className="font-mono text-neutral-900">{st.host}</span>
-                        <Pill tone={tone} dot={false}>
-                          {label}
-                        </Pill>
-                        {st.error && <span className="text-rose-600">{st.error}</span>}
-                      </p>
-                      {domainStatus.connected && label !== "live" && (
-                        <p className="mt-1 text-neutral-600">
-                          Add a <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{st.dns.type}</span> record for <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{st.dns.name}</span> pointing to <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{st.dns.value}</span>.
-                        </p>
-                      )}
-                      {(st.verification || []).map((v, i) => (
-                        <p key={i} className="mt-1 text-neutral-600">
-                          Verification: <span className="font-mono">{v.type}</span> record <span className="font-mono">{v.domain}</span> = <span className="break-all font-mono">{v.value}</span>
-                        </p>
-                      ))}
-                    </li>
-                  );
-                })}
-              </ul>
-              {!domainStatus.connected && <p className="mt-2 text-xs text-neutral-500">Vercel is not connected on the API, so DNS cannot be checked from here.</p>}
-            </div>
-          )}
         </Panel>
 
         {/* Subscription */}
@@ -769,7 +633,217 @@ function GymDetail() {
           </div>
         </Panel>
 
-        {/* Payments taken outside Stripe, and the form that records one. */}
+        <div className="grid items-start gap-6 lg:col-span-2 lg:grid-cols-2 min-[1400px]:col-span-1 min-[1400px]:grid-cols-1">
+          {/* Administrators */}
+          <Panel
+            title={
+              <span className="flex items-center gap-2">
+                <FiShield className="h-4 w-4 text-neutral-400" /> Administrators inside the gym
+              </span>
+            }
+            actions={
+              <>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  disabled={busy || !gym.owner.email}
+                  loading={action.pending === "invite"}
+                  onClick={() =>
+                    action.run("invite", async () => {
+                      const problem = await sendInvite(gym.owner.email);
+                      if (problem) setError(problem);
+                    })
+                  }
+                >
+                  <FiMail className="h-3.5 w-3.5" /> Resend owner invite
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => {
+                    setResetError(null);
+                    setResetOpen(true);
+                  }}
+                >
+                  Reset owner password
+                </Button>
+              </>
+            }
+            footer={
+              <span className="text-xs text-neutral-500">
+                The owner signs in at <span className="font-mono">{siteHost ? `${siteHost}/authentication` : "<domain>/authentication"}</span> and manages the gym at <span className="font-mono">/admin</span>. &quot;Resend owner invite&quot; emails {gym.owner.email || "the owner"} a link to set their password.
+              </span>
+            }
+            padded={false}
+          >
+            {invite && <InviteOutcomeNotice key={`${invite.email}-${invite.link}`} outcome={invite} onDismiss={() => setInvite(null)} />}
+            {admins === null ? (
+              <p className="px-5 py-5 text-xs text-neutral-500">Loading…</p>
+            ) : !admins.length ? (
+              <p className="px-5 py-5 text-xs text-neutral-500">No administrator account yet. Use &quot;Reset owner password&quot; to create one.</p>
+            ) : (
+              <ul className="divide-y divide-neutral-100">
+                {admins.map((a) => (
+                  <li key={a.id} className="flex items-center gap-3 px-5 py-3 text-sm">
+                    <Avatar name={a.name || a.email} size="sm" />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-medium text-neutral-900">{a.name || a.email}</p>
+                      <p className="truncate text-xs text-neutral-500">{a.email}</p>
+                    </div>
+                    <div className="text-right text-xs text-neutral-500">
+                      {a.is_active ? <Pill tone="good">active</Pill> : <Pill tone="bad">disabled</Pill>}
+                      <p className="mt-1">last login {formatDate(a.last_login)}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Panel>
+
+          {/* Domains */}
+          <Panel
+            title={
+              <span className="flex items-center gap-2">
+                <FiGlobe className="h-4 w-4 text-neutral-400" /> Domains
+              </span>
+            }
+            description="Every domain that should show this gym's website. The first line is the primary, used in emails and redirects."
+            footer={
+              <>
+                <div className="flex flex-wrap gap-1.5">
+                  {gym.domains.map((dom) => (
+                    <Pill key={dom.host} tone={dom.isPrimary ? "primary" : "neutral"} dot={false}>
+                      <span className="font-mono normal-case">{dom.host}</span>
+                      {dom.isPrimary ? " · primary" : ""}
+                    </Pill>
+                  ))}
+                  {!gym.domains.length && <span className="text-xs text-neutral-500">No domain yet</span>}
+                </div>
+                <Button
+                  disabled={busy}
+                  loading={action.pending === "domains"}
+                  onClick={() =>
+                    run("domains", "Domains saved", async () => {
+                      const res = await platformFetch<{ hosting?: Hosting }>(`/gyms/${id}/domains`, {
+                        method: "PUT",
+                        body: {
+                          domains: domainsText
+                            .split(/[\s,]+/)
+                            .map((h) => h.trim())
+                            .filter(Boolean)
+                            .map((host, i) => ({ host, isPrimary: i === 0 })),
+                        },
+                      });
+                      setHosting(res.hosting || null);
+                    })
+                  }
+                >
+                  Save domains
+                </Button>
+              </>
+            }
+          >
+            <Field label="One domain per line">
+              <Textarea value={domainsText} onChange={(e) => setDomainsText(e.target.value)} placeholder={"ironworks.com\nwww.ironworks.com"} className="font-mono" />
+            </Field>
+            {hosting && hosting.added.length > 0 && (
+              <div className="mt-4 space-y-3 rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-xs text-neutral-700">
+                {hosting.added.map((h) => (
+                  <div key={h.host}>
+                    <p className="flex flex-wrap items-center gap-2 font-semibold text-neutral-900">
+                      <span className="font-mono">{h.host}</span>
+                      <Pill tone={h.added ? (h.verified === false ? "warn" : "good") : h.skipped ? "neutral" : "bad"} dot={false}>
+                        {h.added ? (h.verified === false ? "awaiting verification" : "added to the website host") : h.skipped ? "not added automatically" : `could not be added`}
+                      </Pill>
+                      {h.error && <span className="text-rose-600">{h.error}</span>}
+                    </p>
+                    <p className="mt-1.5">
+                      DNS: add a <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{h.dns.type}</span> record for <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{h.dns.name}</span> pointing to <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{h.dns.value}</span>. {h.dns.note}
+                    </p>
+                    {(h.verification || []).map((v, i) => (
+                      <p key={i} className="mt-1">
+                        Verification: <span className="font-mono">{v.type}</span> record <span className="font-mono">{v.domain}</span> = <span className="break-all font-mono">{v.value}</span>
+                      </p>
+                    ))}
+                    {h.www && (
+                      <div className="mt-1.5">
+                        <p className="flex flex-wrap items-center gap-2">
+                          <span className="font-mono">{h.www.host}</span>
+                          <Pill tone={h.www.added ? (h.www.verified === false ? "warn" : "good") : "bad"} dot={false}>
+                            {h.www.added ? (h.www.verified === false ? "awaiting verification" : "added to the website host") : "could not be added"}
+                          </Pill>
+                          {h.www.error && <span className="text-rose-600">{h.www.error}</span>}
+                        </p>
+                        {h.www.dns && (
+                          <p className="mt-1">
+                            DNS: add a <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{h.www.dns.type}</span> record for <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{h.www.dns.name}</span> pointing to <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{h.www.dns.value}</span>.
+                          </p>
+                        )}
+                        {(h.www.verification || []).map((v, i) => (
+                          <p key={i} className="mt-1">
+                            Verification: <span className="font-mono">{v.type}</span> record <span className="font-mono">{v.domain}</span> = <span className="break-all font-mono">{v.value}</span>
+                          </p>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+                {!hosting.connected && <p className="text-neutral-500">Connect Vercel on the API (VERCEL_TOKEN, VERCEL_PROJECT_ID) to add domains to the website project automatically.</p>}
+              </div>
+            )}
+
+            {/* Where each domain stands on the website host: is DNS pointing
+                here yet, and what to add if not. */}
+            {domainStatus && domainStatus.data.length > 0 && (
+              <div className="mt-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-400">DNS &amp; verification</p>
+                <ul className="mt-2 divide-y divide-neutral-100 rounded-xl border border-neutral-200 text-xs">
+                  {domainStatus.data.map((st) => {
+                    const tone = !domainStatus.connected ? "neutral" : st.error ? "bad" : !st.on_project ? "warn" : st.misconfigured ? "warn" : st.verified === false ? "warn" : "good";
+                    const label = !domainStatus.connected
+                      ? "not checked"
+                      : st.error
+                      ? "could not check"
+                      : !st.on_project
+                      ? "not on the website host"
+                      : st.verified === false
+                      ? "awaiting verification"
+                      : st.misconfigured
+                      ? "DNS not pointing here"
+                      : "live";
+                    return (
+                      <li key={st.host} className="px-3 py-2.5">
+                        <p className="flex flex-wrap items-center gap-2">
+                          <span className="font-mono text-neutral-900">{st.host}</span>
+                          <Pill tone={tone} dot={false}>
+                            {label}
+                          </Pill>
+                          {st.error && <span className="text-rose-600">{st.error}</span>}
+                        </p>
+                        {domainStatus.connected && label !== "live" && (
+                          <p className="mt-1 text-neutral-600">
+                            Add a <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{st.dns.type}</span> record for <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{st.dns.name}</span> pointing to <span className="rounded bg-white px-1 font-mono ring-1 ring-neutral-200">{st.dns.value}</span>.
+                          </p>
+                        )}
+                        {(st.verification || []).map((v, i) => (
+                          <p key={i} className="mt-1 text-neutral-600">
+                            Verification: <span className="font-mono">{v.type}</span> record <span className="font-mono">{v.domain}</span> = <span className="break-all font-mono">{v.value}</span>
+                          </p>
+                        ))}
+                      </li>
+                    );
+                  })}
+                </ul>
+                {!domainStatus.connected && <p className="mt-2 text-xs text-neutral-500">Vercel is not connected on the API, so DNS cannot be checked from here.</p>}
+              </div>
+            )}
+          </Panel>
+        </div>
+      </div>
+
+      {/* Payments taken outside Stripe, and the form that records one: the
+          whole width, so its table has room. */}
+      <div className="mt-6">
         <PaymentsPanel
           gymId={id}
           gymName={gym.name}
@@ -780,80 +854,21 @@ function GymDetail() {
             setError(warnings.length ? warnings.join(" ") : null);
           }}
         />
-
-        {/* Administrators */}
-        <Panel
-          title={
-            <span className="flex items-center gap-2">
-              <FiShield className="h-4 w-4 text-neutral-400" /> Administrators inside the gym
-            </span>
-          }
-          actions={
-            <>
-              <Button
-                variant="secondary"
-                size="sm"
-                disabled={busy || !gym.owner.email}
-                loading={action.pending === "invite"}
-                onClick={() =>
-                  action.run("invite", async () => {
-                    const problem = await sendInvite(gym.owner.email);
-                    if (problem) setError(problem);
-                  })
-                }
-              >
-                <FiMail className="h-3.5 w-3.5" /> Resend owner invite
-              </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => {
-                  setResetError(null);
-                  setResetOpen(true);
-                }}
-              >
-                Reset owner password
-              </Button>
-            </>
-          }
-          footer={
-            <span className="text-xs text-neutral-500">
-              The owner signs in at <span className="font-mono">{siteHost ? `${siteHost}/authentication` : "<domain>/authentication"}</span> and manages the gym at <span className="font-mono">/admin</span>. &quot;Resend owner invite&quot; emails {gym.owner.email || "the owner"} a link to set their password.
-            </span>
-          }
-          padded={false}
-        >
-          {invite && <InviteOutcomeNotice key={`${invite.email}-${invite.link}`} outcome={invite} onDismiss={() => setInvite(null)} />}
-          {admins === null ? (
-            <p className="px-5 py-5 text-xs text-neutral-500">Loading…</p>
-          ) : !admins.length ? (
-            <p className="px-5 py-5 text-xs text-neutral-500">No administrator account yet. Use &quot;Reset owner password&quot; to create one.</p>
-          ) : (
-            <ul className="divide-y divide-neutral-100">
-              {admins.map((a) => (
-                <li key={a.id} className="flex items-center gap-3 px-5 py-3 text-sm">
-                  <Avatar name={a.name || a.email} size="sm" />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium text-neutral-900">{a.name || a.email}</p>
-                    <p className="truncate text-xs text-neutral-500">{a.email}</p>
-                  </div>
-                  <div className="text-right text-xs text-neutral-500">
-                    {a.is_active ? <Pill tone="good">active</Pill> : <Pill tone="bad">disabled</Pill>}
-                    <p className="mt-1">last login {formatDate(a.last_login)}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Panel>
       </div>
 
       {/* Danger zone */}
-      <Panel tone="danger" className="mt-6" title="Danger zone" description="Removing the gym takes it off the platform. Its database is kept unless you choose to drop it, in which case every member, payment and attendance record is gone for good.">
-        <Button variant="danger" onClick={() => setDeleteOpen(true)}>
-          Delete this gym
-        </Button>
-      </Panel>
+      <Panel
+        tone="danger"
+        className="mt-6"
+        title="Danger zone"
+        description="Removing the gym takes it off the platform. Its database is kept unless you choose to drop it, in which case every member, payment and attendance record is gone for good."
+        actions={
+          <Button variant="danger" onClick={() => setDeleteOpen(true)}>
+            Delete this gym
+          </Button>
+        }
+        padded={false}
+      />
 
       <Modal open={resetOpen} onClose={() => setResetOpen(false)} title="Reset owner password" size="sm">
         <p className="text-xs text-neutral-500">

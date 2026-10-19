@@ -377,8 +377,8 @@ function NewGymForm() {
 
       {error && <Alert tone="error" onDismiss={() => setError(null)}>{error}</Alert>}
 
-      <form onSubmit={submit} className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-        <div className="space-y-6">
+      <form onSubmit={submit} className="grid items-start gap-6 lg:grid-cols-[2fr_1fr]">
+        <div className="grid items-start gap-6 xl:grid-cols-2">
           <Panel
             title={
               <span className="flex items-center gap-2">

@@ -118,7 +118,7 @@ export default function PaymentRequestsPage() {
   const deciding = action.pending === "decide";
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div>
       <PageHeader
         eyebrow="Manage"
         title="Payments to verify"
@@ -146,9 +146,9 @@ export default function PaymentRequestsPage() {
       ) : rows.length === 0 ? (
         <EmptyState title="Nothing to verify" hint="Receipts gyms upload show up here." icon={<FiCheck className="h-5 w-5" />} />
       ) : (
-        <ul className="space-y-3">
+        <ul className="grid gap-4 lg:grid-cols-2 min-[1800px]:grid-cols-3">
           {rows.map((row) => (
-            <li key={row.id} className="rounded-xl border border-neutral-200 bg-white p-4 shadow-[0_1px_2px_rgba(16,24,40,0.04)] sm:p-5">
+            <li key={row.id} className="flex h-full flex-col rounded-xl border border-neutral-200 bg-white p-4 shadow-[0_1px_2px_rgba(16,24,40,0.04)] sm:p-5">
               <div className="flex gap-4">
                 <Receipt url={row.receiptUrl} />
                 <div className="min-w-0 flex-1">
@@ -179,7 +179,7 @@ export default function PaymentRequestsPage() {
                   {row.submittedBy?.email && <p className="mt-1 truncate text-[11px] text-neutral-400">By {row.submittedBy.name ? `${row.submittedBy.name} · ` : ""}{row.submittedBy.email}</p>}
                 </div>
               </div>
-              <div className="mt-4 grid grid-cols-2 gap-2 sm:flex sm:justify-end">
+              <div className="mt-auto grid grid-cols-2 gap-2 pt-4 sm:flex sm:justify-end">
                 <Button variant="danger" onClick={() => open(row, "reject")} disabled={action.busy}>
                   <FiX className="h-4 w-4" /> Reject
                 </Button>

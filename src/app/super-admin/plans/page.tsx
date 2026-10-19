@@ -195,7 +195,7 @@ export default function PlansPage() {
       ) : !plans.length ? (
         <EmptyState title="No plans yet" hint="Create the plans you sell to gyms. New gyms start on a plan's trial period." action={<Button onClick={openNew}>Create the first plan</Button>} />
       ) : (
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 min-[1700px]:grid-cols-4">
           {plans.map((plan) => (
             <Panel
               key={plan.id}
@@ -223,7 +223,7 @@ export default function PlansPage() {
                 </div>
                 {!plan.isActive && <Pill tone="neutral">inactive</Pill>}
               </div>
-              <p className="mt-4 text-3xl font-semibold tracking-tight text-neutral-900">
+              <p className="mt-3 text-2xl font-bold tracking-tight text-neutral-900">
                 {plan.price.monthly === 0 ? "Free" : formatMoney(plan.price.monthly, plan.price.currency)}
                 {plan.price.monthly > 0 && <span className="text-sm font-normal text-neutral-500"> /month</span>}
               </p>
@@ -240,7 +240,7 @@ export default function PlansPage() {
                 {plan.trialDays}-day trial
               </p>
               {plan.description && <p className="mt-3 text-sm text-neutral-600">{plan.description}</p>}
-              <dl className="mt-5 grid grid-cols-2 gap-3">
+              <dl className="mt-4 grid grid-cols-2 gap-2">
                 {[
                   ["Members", plan.limits.maxMembers],
                   ["Staff", plan.limits.maxStaff],

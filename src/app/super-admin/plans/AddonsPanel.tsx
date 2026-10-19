@@ -126,9 +126,9 @@ export default function AddonsPanel({ plans, addons, onChanged }: { plans: Plan[
 
   return (
     <>
-      <div className="mb-4 mt-12 flex items-end justify-between gap-4">
+      <div className="mb-4 mt-10 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold text-neutral-900">Add-ons</h2>
+          <h2 className="text-base font-semibold text-neutral-900">Add-ons</h2>
           <p className="mt-1 text-sm text-neutral-500">
             Sold beside a plan and added to the gym&apos;s bill. Switch one on for a gym under Gyms → the gym → Plan &amp; subscription.
           </p>
@@ -149,7 +149,7 @@ export default function AddonsPanel({ plans, addons, onChanged }: { plans: Plan[
           <p className="text-sm text-neutral-500">Nothing sold beside the plans yet.</p>
         </Panel>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 min-[1700px]:grid-cols-4">
           {addons.map((addon) => (
             <Panel
               key={addon.id}
@@ -180,7 +180,7 @@ export default function AddonsPanel({ plans, addons, onChanged }: { plans: Plan[
                   {addon.isActive && !addon.isPublic && <Pill tone="neutral">not listed</Pill>}
                 </div>
               </div>
-              <p className="mt-3 text-2xl font-semibold tracking-tight text-neutral-900">
+              <p className="mt-3 text-2xl font-bold tracking-tight text-neutral-900">
                 +{formatMoney(addon.price.monthly, addon.price.currency)}
                 <span className="text-sm font-normal text-neutral-500"> /month</span>
               </p>

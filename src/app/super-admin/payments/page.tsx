@@ -691,7 +691,7 @@ export default function PlatformPaymentsPage() {
   const selectedCopy = selected ? copyFor(selected) : COPY[NONE];
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div>
       <PageHeader eyebrow="System" title="Payments" description="How gyms pay GymsPilotPro for their plan." />
 
       {error && (
@@ -705,7 +705,7 @@ export default function PlatformPaymentsPage() {
         <Card>
           <CardHead step={1} title="How gyms pay you" line="Pick one." />
           <div className="px-4 py-5 sm:px-6">
-            <div role="radiogroup" aria-label="How gyms pay you" className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div role="radiogroup" aria-label="How gyms pay you" className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
               {options.map((o, index) => {
                 const active = o.id === provider;
                 const Icon = o.icon;
@@ -750,109 +750,113 @@ export default function PlatformPaymentsPage() {
           </div>
         </Card>
 
-        {/* ---- 2. Connect the chosen way ---- */}
-        {selected && (
+        {/* Connect and Reminders side by side on a wide screen; Reminders
+            alone (no way chosen) keeps a readable width. */}
+        <div className={cx("grid items-start gap-6", selected ? "xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]" : "xl:grid-cols-2")}>
+          {/* ---- 2. Connect the chosen way ---- */}
+          {selected && (
+            <Card>
+              {bankOption ? (
+                <>
+                  <CardHead
+                    step={2}
+                    title="Your bank accounts"
+                    line="Gyms see these and the QR code when they pay."
+                    aside={<Tag tone={banksReady ? "good" : "warn"}>{banksReady ? "Ready" : "Add a bank account"}</Tag>}
+                  />
+                  <div className="px-4 py-5 sm:px-6">
+                    <BankAccounts accounts={banks} onChange={(next) => setServer((s) => (s ? { ...s, bankAccounts: next } : s))} />
+                  </div>
+                  <CardFoot>
+                    <Link href="/super-admin/payment-requests" className="text-sm font-semibold text-indigo-600 underline-offset-4 hover:text-indigo-700 hover:underline">
+                      Payments to verify →
+                    </Link>
+                  </CardFoot>
+                </>
+              ) : (
+                <>
+                  <CardHead
+                    step={2}
+                    title={`Connect ${selectedCopy.short}`}
+                    line="Paste the keys, then Save."
+                    aside={<Tag tone={configured(selected) ? "good" : "neutral"}>{configured(selected) ? "Ready" : "Needs setup"}</Tag>}
+                  />
+                  {keysForm(selected)}
+                </>
+              )}
+            </Card>
+          )}
+
+          {/* ---- 3. Reminders to gym owners ---- */}
           <Card>
-            {bankOption ? (
-              <>
-                <CardHead
-                  step={2}
-                  title="Your bank accounts"
-                  line="Gyms see these and the QR code when they pay."
-                  aside={<Tag tone={banksReady ? "good" : "warn"}>{banksReady ? "Ready" : "Add a bank account"}</Tag>}
-                />
-                <div className="px-4 py-5 sm:px-6">
-                  <BankAccounts accounts={banks} onChange={(next) => setServer((s) => (s ? { ...s, bankAccounts: next } : s))} />
+            <CardHead step={remindersStep} title="Reminders to gym owners" line="Emailed before and after the due date." />
+            <div className="space-y-5 px-4 py-5 sm:px-6">
+              <div>
+                <div className="flex flex-wrap items-center gap-2 text-sm text-neutral-800">
+                  <span>Send a reminder</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={daysText}
+                    onChange={(e) => {
+                      // What is typed stays as typed (commas and all); the list
+                      // is kept once it reads as one.
+                      const v = e.target.value;
+                      setDaysText(v);
+                      const days = parseDays(v);
+                      if (days) setReminders({ daysBefore: days });
+                    }}
+                    placeholder="3"
+                    aria-label="Days before the due date"
+                    title="One or more days, separated by commas (for example 7, 3)"
+                    aria-invalid={parsedDays === null || undefined}
+                    className={cx(
+                      "h-9 w-16 rounded-lg border bg-white px-2 text-center text-base focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 sm:text-sm",
+                      parsedDays === null ? "border-rose-400" : "border-neutral-200"
+                    )}
+                  />
+                  <span>days before the due date</span>
                 </div>
-                <CardFoot>
-                  <Link href="/super-admin/payment-requests" className="text-sm font-semibold text-indigo-600 underline-offset-4 hover:text-indigo-700 hover:underline">
-                    Payments to verify →
-                  </Link>
-                </CardFoot>
-              </>
-            ) : (
-              <>
-                <CardHead
-                  step={2}
-                  title={`Connect ${selectedCopy.short}`}
-                  line="Paste the keys, then Save."
-                  aside={<Tag tone={configured(selected) ? "good" : "neutral"}>{configured(selected) ? "Ready" : "Needs setup"}</Tag>}
-                />
-                {keysForm(selected)}
-              </>
-            )}
+                {parsedDays === null && (
+                  <p role="alert" className="mt-1 text-xs text-rose-700">
+                    Use whole days from 0 to 30, like 7, 3.
+                  </p>
+                )}
+              </div>
+
+              <Toggle label="Also on the due date" checked={form.reminders.onDueDay} onChange={(v) => setReminders({ onDueDay: v })} />
+
+              <div>
+                <div className="flex flex-wrap items-center gap-2 text-sm text-neutral-800">
+                  <span>Final reminder</span>
+                  <input
+                    type="number"
+                    min={0}
+                    max={60}
+                    value={Number.isFinite(lastDay) ? lastDay : ""}
+                    onChange={(e) => setReminders({ lastDayAfterDue: e.target.value.trim() === "" ? 0 : Number(e.target.value) })}
+                    aria-label="Days after the due date"
+                    aria-invalid={lastDayBad || undefined}
+                    className={cx(
+                      "h-9 w-16 rounded-lg border bg-white px-2 text-center text-base focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 sm:text-sm",
+                      lastDayBad ? "border-rose-400" : "border-neutral-200"
+                    )}
+                  />
+                  <span>days after</span>
+                  <span className="text-xs text-neutral-400">(0 = off)</span>
+                </div>
+                {lastDayBad && (
+                  <p role="alert" className="mt-1 text-xs text-rose-700">
+                    Use a whole number from 0 to 60.
+                  </p>
+                )}
+              </div>
+
+              <p className="rounded-lg bg-neutral-50 px-3 py-2.5 text-sm text-neutral-700">{exampleLine(parsedDays ?? form.reminders.daysBefore, form.reminders.onDueDay, lastDayBad ? 0 : lastDay)}</p>
+              <p className="text-xs text-neutral-500">Sent only when platform email (SMTP) is set up on the server.</p>
+            </div>
           </Card>
-        )}
-
-        {/* ---- 3. Reminders to gym owners ---- */}
-        <Card>
-          <CardHead step={remindersStep} title="Reminders to gym owners" line="Emailed before and after the due date." />
-          <div className="space-y-5 px-4 py-5 sm:px-6">
-            <div>
-              <div className="flex flex-wrap items-center gap-2 text-sm text-neutral-800">
-                <span>Send a reminder</span>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={daysText}
-                  onChange={(e) => {
-                    // What is typed stays as typed (commas and all); the list
-                    // is kept once it reads as one.
-                    const v = e.target.value;
-                    setDaysText(v);
-                    const days = parseDays(v);
-                    if (days) setReminders({ daysBefore: days });
-                  }}
-                  placeholder="3"
-                  aria-label="Days before the due date"
-                  title="One or more days, separated by commas (for example 7, 3)"
-                  aria-invalid={parsedDays === null || undefined}
-                  className={cx(
-                    "h-9 w-16 rounded-lg border bg-white px-2 text-center text-base focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 sm:text-sm",
-                    parsedDays === null ? "border-rose-400" : "border-neutral-200"
-                  )}
-                />
-                <span>days before the due date</span>
-              </div>
-              {parsedDays === null && (
-                <p role="alert" className="mt-1 text-xs text-rose-700">
-                  Use whole days from 0 to 30, like 7, 3.
-                </p>
-              )}
-            </div>
-
-            <Toggle label="Also on the due date" checked={form.reminders.onDueDay} onChange={(v) => setReminders({ onDueDay: v })} />
-
-            <div>
-              <div className="flex flex-wrap items-center gap-2 text-sm text-neutral-800">
-                <span>Final reminder</span>
-                <input
-                  type="number"
-                  min={0}
-                  max={60}
-                  value={Number.isFinite(lastDay) ? lastDay : ""}
-                  onChange={(e) => setReminders({ lastDayAfterDue: e.target.value.trim() === "" ? 0 : Number(e.target.value) })}
-                  aria-label="Days after the due date"
-                  aria-invalid={lastDayBad || undefined}
-                  className={cx(
-                    "h-9 w-16 rounded-lg border bg-white px-2 text-center text-base focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 sm:text-sm",
-                    lastDayBad ? "border-rose-400" : "border-neutral-200"
-                  )}
-                />
-                <span>days after</span>
-                <span className="text-xs text-neutral-400">(0 = off)</span>
-              </div>
-              {lastDayBad && (
-                <p role="alert" className="mt-1 text-xs text-rose-700">
-                  Use a whole number from 0 to 60.
-                </p>
-              )}
-            </div>
-
-            <p className="rounded-lg bg-neutral-50 px-3 py-2.5 text-sm text-neutral-700">{exampleLine(parsedDays ?? form.reminders.daysBefore, form.reminders.onDueDay, lastDayBad ? 0 : lastDay)}</p>
-            <p className="text-xs text-neutral-500">Sent only when platform email (SMTP) is set up on the server.</p>
-          </div>
-        </Card>
+        </div>
 
         {/* ---- Save: one Save for the choice, the keys and the reminders ---- */}
         <div className="sticky bottom-0 z-10 pb-3">

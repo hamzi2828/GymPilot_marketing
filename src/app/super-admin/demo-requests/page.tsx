@@ -152,8 +152,8 @@ export default function DemoRequestsPage() {
           onRowClick={(i) => openRow(rows[i])}
           rows={rows.map((r) => [
             <div key="w">
-              <p className="text-sm text-neutral-800">{relativeTime(r.createdAt)}</p>
-              <p className="text-[11px] text-neutral-400">{new Date(r.createdAt).toLocaleString()}</p>
+              <p className="whitespace-nowrap text-sm text-neutral-800">{relativeTime(r.createdAt)}</p>
+              <p className="whitespace-nowrap text-[11px] text-neutral-400">{new Date(r.createdAt).toLocaleString()}</p>
             </div>,
             <div key="c" className="flex items-center gap-2.5">
               <Avatar name={r.name} size="sm" />
@@ -185,7 +185,7 @@ export default function DemoRequestsPage() {
                   : [r.gymSize, r.country].filter(Boolean).join(" · ")}
               </p>
             </div>,
-            <p key="m" className="max-w-md truncate text-xs text-neutral-600" title={r.message}>
+            <p key="m" className="max-w-[16rem] truncate text-xs text-neutral-600 xl:max-w-md 2xl:max-w-xl" title={r.message}>
               {r.message || <span className="text-neutral-300">—</span>}
             </p>,
             <div key="s" className="space-y-1">

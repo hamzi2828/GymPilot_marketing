@@ -56,8 +56,8 @@ export default function AuditPage() {
           empty="Nothing recorded yet"
           rows={rows.map((row) => [
             <div key="w">
-              <p className="text-sm text-neutral-800">{relativeTime(row.createdAt)}</p>
-              <p className="text-[11px] text-neutral-400">{new Date(row.createdAt).toLocaleString()}</p>
+              <p className="whitespace-nowrap text-sm text-neutral-800">{relativeTime(row.createdAt)}</p>
+              <p className="whitespace-nowrap text-[11px] text-neutral-400">{new Date(row.createdAt).toLocaleString()}</p>
             </div>,
             <div key="a" className="flex items-center gap-2.5">
               <Avatar name={row.actorEmail} size="sm" />
@@ -77,7 +77,7 @@ export default function AuditPage() {
             ) : (
               <span key="g" className="text-neutral-300">—</span>
             ),
-            <span key="m" className="block max-w-md break-all font-mono text-[11px] leading-relaxed text-neutral-500">
+            <span key="m" className="block max-w-md break-all font-mono text-[11px] leading-relaxed text-neutral-500 2xl:max-w-2xl">
               {row.meta ? JSON.stringify(row.meta) : ""}
               {row.ip && <span className="block text-neutral-400">from {row.ip}</span>}
             </span>,
