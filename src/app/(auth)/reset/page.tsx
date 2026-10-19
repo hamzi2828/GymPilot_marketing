@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { platformFetch } from "@/app/super-admin/_shared/api";
 import AuthShell, { AuthButton, authInput } from "@/app/super-admin/_shared/AuthShell";
+import { useAsyncAction } from "@/app/super-admin/_shared/ui";
 
 function ResetForm() {
   const router = useRouter();
@@ -14,24 +15,25 @@ function ResetForm() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const { busy, run } = useAsyncAction();
 
-  const submit = async (e: React.FormEvent) => {
+  const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirm) {
       setError("The passwords do not match");
       return;
     }
-    setBusy(true);
-    setError(null);
-    try {
-      await platformFetch("/auth/reset-password", { method: "POST", body: { email, token, password } });
-      router.replace("/login");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not reset the password");
-    } finally {
-      setBusy(false);
-    }
+    run("save", async (leave) => {
+      setError(null);
+      try {
+        await platformFetch("/auth/reset-password", { method: "POST", body: { email, token, password } });
+        // Busy until the sign-in page has taken over.
+        leave();
+        router.replace("/login");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Could not reset the password");
+      }
+    });
   };
 
   return (
@@ -55,7 +57,9 @@ function ResetForm() {
           <input type="password" required autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)} className={`${authInput} mt-1.5`} />
         </label>
         {error && <p className="rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700">{error}</p>}
-        <AuthButton disabled={busy || !token}>{busy ? "Saving…" : "Set password"}</AuthButton>
+        <AuthButton loading={busy} disabled={!token}>
+          {busy ? "Saving…" : "Set password"}
+        </AuthButton>
       </form>
     </AuthShell>
   );

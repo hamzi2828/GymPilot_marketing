@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { FiZap } from "react-icons/fi";
 import { platformFetch, setPlatformToken } from "@/app/super-admin/_shared/api";
 import AuthShell, { AuthButton, authInput } from "@/app/super-admin/_shared/AuthShell";
+import { useAsyncAction } from "@/app/super-admin/_shared/ui";
 
 // One-tap sign-in for the super admin account during local development.
 // Nothing is inlined into the page: arriving with ?quick=1 asks the app's own
@@ -28,7 +29,7 @@ function LoginForm() {
   const [code, setCode] = useState("");
   const [challenge, setChallenge] = useState<{ challengeId: string; message: string; method: "email" | "app" } | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const { busy, run } = useAsyncAction();
   const [quick, setQuick] = useState<QuickAccount | null>(null);
 
   // Arriving with ?quick=1 pre-fills the account, when the dev route has one.
@@ -56,35 +57,39 @@ function LoginForm() {
     router.replace("/super-admin");
   };
 
-  const submit = async (e: React.FormEvent) => {
+  const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    setBusy(true);
-    setError(null);
-    try {
-      if (challenge) {
-        // An app sign-in also takes a backup code (letters and a dash), so only an emailed code is cut to digits.
-        const sent = challenge.method === "app" ? code.trim() : code.replace(/\D/g, "");
-        const res = await platformFetch<{ token: string }>("/auth/login/2fa", { method: "POST", body: { challengeId: challenge.challengeId, code: sent } });
-        finish(res.token);
-        return;
+    // Signed in, the button stays busy until the panel has replaced this page.
+    run("sign-in", async (leave) => {
+      setError(null);
+      try {
+        if (challenge) {
+          // An app sign-in also takes a backup code (letters and a dash), so only an emailed code is cut to digits.
+          const sent = challenge.method === "app" ? code.trim() : code.replace(/\D/g, "");
+          const res = await platformFetch<{ token: string }>("/auth/login/2fa", { method: "POST", body: { challengeId: challenge.challengeId, code: sent } });
+          leave();
+          finish(res.token);
+          return;
+        }
+        const res = await platformFetch<{ token?: string; requires2fa?: boolean; method?: "email" | "app"; challengeId?: string; message?: string }>("/auth/login", { method: "POST", body: { email, password } });
+        if (res.requires2fa && res.challengeId) {
+          const method = res.method === "app" ? "app" : "email";
+          setChallenge({
+            challengeId: res.challengeId,
+            method,
+            message: res.message || (method === "app" ? "Enter the code from your authenticator app." : "Enter the code we emailed you."),
+          });
+          setPassword("");
+          return;
+        }
+        if (res.token) {
+          leave();
+          finish(res.token);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Sign in failed");
       }
-      const res = await platformFetch<{ token?: string; requires2fa?: boolean; method?: "email" | "app"; challengeId?: string; message?: string }>("/auth/login", { method: "POST", body: { email, password } });
-      if (res.requires2fa && res.challengeId) {
-        const method = res.method === "app" ? "app" : "email";
-        setChallenge({
-          challengeId: res.challengeId,
-          method,
-          message: res.message || (method === "app" ? "Enter the code from your authenticator app." : "Enter the code we emailed you."),
-        });
-        setPassword("");
-        return;
-      }
-      if (res.token) finish(res.token);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Sign in failed");
-    } finally {
-      setBusy(false);
-    }
+    });
   };
 
   return (
@@ -162,7 +167,9 @@ function LoginForm() {
 
         {error && <p className="rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700">{error}</p>}
 
-        <AuthButton disabled={busy || (challenge ? !codeReady(code, challenge.method) : false)}>{busy ? "Please wait…" : challenge ? "Verify" : "Sign in"}</AuthButton>
+        <AuthButton loading={busy} disabled={challenge ? !codeReady(code, challenge.method) : false}>
+          {busy ? "Please wait…" : challenge ? "Verify" : "Sign in"}
+        </AuthButton>
       </form>
     </AuthShell>
   );

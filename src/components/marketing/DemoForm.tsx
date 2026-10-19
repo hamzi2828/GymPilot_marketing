@@ -13,6 +13,8 @@ import { CONTACT, DEMO_FORM, SITE, SUGGESTIONS } from "@/content/site";
 import { publicFetch } from "@/lib/api";
 import { trackConversion } from "@/lib/analytics";
 import { stagger } from "@/lib/motion";
+import { useAsyncAction } from "@/lib/useAsyncAction";
+import BusySpinner from "@/components/BusySpinner";
 import Reveal from "./Reveal";
 import SectionHeading from "./SectionHeading";
 import Glow from "./Glow";
@@ -23,7 +25,7 @@ const input = "h-11 w-full rounded-xl border border-white/10 bg-white/[0.05] px-
 export default function DemoForm({ contact = false }: { contact?: boolean }) {
   const copy = contact ? CONTACT : DEMO_FORM;
   const [form, setForm] = useState({ name: "", email: "", phone: "", gymName: "", gymSize: DEMO_FORM.sizes[0], country: "", message: "", website: "" });
-  const [busy, setBusy] = useState(false);
+  const { busy, run } = useAsyncAction();
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Opened from "Share a suggestion" (/contact?topic=suggestion): the message
@@ -39,19 +41,18 @@ export default function DemoForm({ contact = false }: { contact?: boolean }) {
 
   const set = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
-  const submit = async (e: React.FormEvent) => {
+  const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    setBusy(true);
-    setError(null);
-    try {
-      await publicFetch("/demo-requests", { method: "POST", body: { ...form, source: typeof window !== "undefined" ? window.location.href : "landing" } });
-      setDone(true);
-      if (!suggestion) trackConversion("demo_request");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not send your request. Please try again.");
-    } finally {
-      setBusy(false);
-    }
+    run("send", async () => {
+      setError(null);
+      try {
+        await publicFetch("/demo-requests", { method: "POST", body: { ...form, source: typeof window !== "undefined" ? window.location.href : "landing" } });
+        setDone(true);
+        if (!suggestion) trackConversion("demo_request");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Could not send your request. Please try again.");
+      }
+    });
   };
 
   return (
@@ -148,8 +149,9 @@ export default function DemoForm({ contact = false }: { contact?: boolean }) {
                   </Link>
                   .
                 </p>
-                <button type="submit" disabled={busy || !form.name.trim() || !form.email.trim() || !form.gymName.trim()} className="btn-shine btn-shine-dark group inline-flex h-11 items-center justify-center gap-2 rounded-full bg-white px-6 text-sm font-semibold text-slate-900 transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50">
-                  {busy ? "Sending…" : contact ? "Send message" : "Book my demo"} <FiArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                <button type="submit" disabled={busy || !form.name.trim() || !form.email.trim() || !form.gymName.trim()} aria-busy={busy || undefined} className="btn-shine btn-shine-dark group inline-flex h-11 items-center justify-center gap-2 rounded-full bg-white px-6 text-sm font-semibold text-slate-900 transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50">
+                  {busy ? "Sending…" : contact ? "Send message" : "Book my demo"}
+                  {busy ? <BusySpinner /> : <FiArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />}
                 </button>
               </div>
             </form>

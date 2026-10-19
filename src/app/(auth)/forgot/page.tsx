@@ -4,25 +4,25 @@ import { useState } from "react";
 import Link from "next/link";
 import { platformFetch } from "@/app/super-admin/_shared/api";
 import AuthShell, { AuthButton, authInput } from "@/app/super-admin/_shared/AuthShell";
+import { useAsyncAction } from "@/app/super-admin/_shared/ui";
 
 export default function SuperAdminForgotPage() {
   const [email, setEmail] = useState("");
   const [done, setDone] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const { busy, run } = useAsyncAction();
 
-  const submit = async (e: React.FormEvent) => {
+  const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    setBusy(true);
-    setError(null);
-    try {
-      const res = await platformFetch<{ message: string }>("/auth/forgot-password", { method: "POST", body: { email } });
-      setDone(res.message);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Request failed");
-    } finally {
-      setBusy(false);
-    }
+    run("send", async () => {
+      setError(null);
+      try {
+        const res = await platformFetch<{ message: string }>("/auth/forgot-password", { method: "POST", body: { email } });
+        setDone(res.message);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Request failed");
+      }
+    });
   };
 
   return (
@@ -44,7 +44,7 @@ export default function SuperAdminForgotPage() {
             <input type="email" required autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} className={`${authInput} mt-1.5`} />
           </label>
           {error && <p className="rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700">{error}</p>}
-          <AuthButton disabled={busy}>{busy ? "Sending…" : "Send reset link"}</AuthButton>
+          <AuthButton loading={busy}>{busy ? "Sending…" : "Send reset link"}</AuthButton>
         </form>
       )}
     </AuthShell>

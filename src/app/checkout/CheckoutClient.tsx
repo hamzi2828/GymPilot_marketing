@@ -30,6 +30,8 @@ import {
 import { trackConversion } from "@/lib/analytics";
 import { PRICING } from "@/content/site";
 import { stagger } from "@/lib/motion";
+import { useAsyncAction } from "@/lib/useAsyncAction";
+import BusySpinner from "@/components/BusySpinner";
 import SiteFooter from "@/components/marketing/SiteFooter";
 import Brand from "@/components/marketing/Brand";
 import Glow from "@/components/marketing/Glow";
@@ -93,10 +95,24 @@ export default function CheckoutClient() {
   const [touchedAddress, setTouchedAddress] = useState(false);
   const [message, setMessage] = useState("");
   const [website, setWebsite] = useState(""); // honeypot
-  const [busy, setBusy] = useState(false);
+  // Held from the click until the answer, or until the page has left for
+  // Stripe; let go again if Back brings the page back from the browser's cache.
+  const { busy, run } = useAsyncAction();
   const [error, setError] = useState<string | null>(null);
   // The web address was taken; `suggestion` is a free one to offer instead.
   const [addressError, setAddressError] = useState<{ message: string; suggestion: string } | null>(null);
+  // Bumped each time a problem is shown, even one that reads the same as the
+  // last: the button is at the foot of the form and the message near its top,
+  // so the page brings the message into view rather than seem to do nothing.
+  const [problem, setProblem] = useState(0);
+  const errorRef = useRef<HTMLParagraphElement>(null);
+  const addressRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (!problem) return;
+    const target = errorRef.current || addressRef.current;
+    target?.scrollIntoView({ block: "center" });
+    target?.focus({ preventScroll: true });
+  }, [problem]);
   // Back from Stripe without paying.
   const cancelled = params.get("cancelled") === "1";
   // Add-ons from a draft, applied once the plan's add-ons have loaded (see below).
@@ -216,71 +232,71 @@ export default function CheckoutClient() {
   const currency = plan?.price.currency || "PKR";
   const per = cycle === "yearly" ? "year" : "month";
 
-  const submit = async () => {
+  const submit = () => {
     if (!plan) return;
     const missing = FIELDS.filter((f) => f.required && !form[f.key].trim());
     if (missing.length) {
       setError(`${missing[0].label} is required.`);
+      setProblem((n) => n + 1);
       return;
     }
-    setBusy(true);
-    setError(null);
-    setAddressError(null);
-    const details = {
-      ...form,
-      // The record keeps one name; the form asks for both halves because
-      // that is how the owner's account inside the gym is created.
-      name: `${form.firstName} ${form.lastName}`.trim(),
-      message,
-      website, // honeypot: a person never fills this
-      preferredSlug: webAddress || slugify(form.gymName),
-      planSlug: plan.slug,
-      billingCycle: cycle,
-      addonSlugs: chosenAddons,
-      source: typeof window !== "undefined" ? window.location.href : "",
-    };
-    // Set when the page is on its way to Stripe: the button stays busy.
-    let leaving = false;
-    try {
-      if (selfServe) {
-        try {
-          const res = await publicFetch<SignupStarted>("/signup", {
-            method: "POST",
-            // The browser's clock is the best guess at the gym's timezone.
-            body: { ...details, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "" },
-          });
-          if (res.url) {
-            try {
-              const draft: Draft = { form, webAddress, message, chosenAddons };
-              window.sessionStorage.setItem(CHECKOUT_DRAFT_KEY, JSON.stringify(draft));
-            } catch {
-              /* storage blocked: "back" from Stripe just starts the form again */
+    run("submit", async (leave) => {
+      setError(null);
+      setAddressError(null);
+      const details = {
+        ...form,
+        // The record keeps one name; the form asks for both halves because
+        // that is how the owner's account inside the gym is created.
+        name: `${form.firstName} ${form.lastName}`.trim(),
+        message,
+        website, // honeypot: a person never fills this
+        preferredSlug: webAddress || slugify(form.gymName),
+        planSlug: plan.slug,
+        billingCycle: cycle,
+        addonSlugs: chosenAddons,
+        source: typeof window !== "undefined" ? window.location.href : "",
+      };
+      try {
+        if (selfServe) {
+          try {
+            const res = await publicFetch<SignupStarted>("/signup", {
+              method: "POST",
+              // The browser's clock is the best guess at the gym's timezone.
+              body: { ...details, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "" },
+            });
+            if (res.url) {
+              try {
+                const draft: Draft = { form, webAddress, message, chosenAddons };
+                window.sessionStorage.setItem(CHECKOUT_DRAFT_KEY, JSON.stringify(draft));
+              } catch {
+                /* storage blocked: "back" from Stripe just starts the form again */
+              }
+              // On its way to Stripe: the button stays busy.
+              leave();
+              window.location.assign(res.url);
+              return;
             }
-            leaving = true;
-            window.location.assign(res.url);
-            return;
+          } catch (e) {
+            // Paying online was switched off since this page loaded: send the
+            // details the way it always worked instead of failing.
+            if (!(e instanceof ApiError && e.code === "SELF_SERVE_UNAVAILABLE")) throw e;
+            setSelfServe(false);
           }
-        } catch (e) {
-          // Paying online was switched off since this page loaded: send the
-          // details the way it always worked instead of failing.
-          if (!(e instanceof ApiError && e.code === "SELF_SERVE_UNAVAILABLE")) throw e;
-          setSelfServe(false);
         }
+        const sent = await publicFetch<{ emailed?: boolean }>("/demo-requests", { method: "POST", body: { kind: "trial", ...details } });
+        setEmailed(sent?.emailed !== false);
+        setDone(true);
+        trackConversion("signup_completed", { plan: plan.slug, value: total, currency, method: "request" });
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } catch (e) {
+        if (e instanceof ApiError && e.code === "SLUG_TAKEN") {
+          setAddressError({ message: e.message, suggestion: typeof e.body.suggestion === "string" ? e.body.suggestion : "" });
+        } else {
+          setError(e instanceof Error ? e.message : "Could not send that. Please try again.");
+        }
+        setProblem((n) => n + 1);
       }
-      const sent = await publicFetch<{ emailed?: boolean }>("/demo-requests", { method: "POST", body: { kind: "trial", ...details } });
-      setEmailed(sent?.emailed !== false);
-      setDone(true);
-      trackConversion("signup_completed", { plan: plan.slug, value: total, currency, method: "request" });
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } catch (e) {
-      if (e instanceof ApiError && e.code === "SLUG_TAKEN") {
-        setAddressError({ message: e.message, suggestion: typeof e.body.suggestion === "string" ? e.body.suggestion : "" });
-      } else {
-        setError(e instanceof Error ? e.message : "Could not send that. Please try again.");
-      }
-    } finally {
-      if (!leaving) setBusy(false);
-    }
+    });
   };
 
   /* ------------------------------ the receipt ----------------------------- */
@@ -410,7 +426,11 @@ export default function CheckoutClient() {
               <div className="order-2 rounded-3xl border border-slate-200 bg-white p-6 shadow-card sm:p-8 lg:order-1">
                 <h2 className="font-display text-lg font-bold text-slate-900">Your details</h2>
 
-                {error && <p className="mt-4 rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</p>}
+                {error && (
+                  <p ref={errorRef} tabIndex={-1} role="alert" className="mt-4 rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-700 focus:outline-none">
+                    {error}
+                  </p>
+                )}
 
                 <div className="mt-5 grid gap-4 sm:grid-cols-2">
                   {FIELDS.map((f) => (
@@ -438,6 +458,7 @@ export default function CheckoutClient() {
                       <span className="text-sm font-semibold text-slate-700">Your web address</span>
                       <div className="mt-1.5 flex items-center rounded-xl border border-slate-200 bg-white pr-4 focus-within:border-brand-400 focus-within:ring-4 focus-within:ring-brand-100">
                         <input
+                          ref={addressRef}
                           value={webAddress}
                           onChange={(e) => {
                             setTouchedAddress(true);
@@ -549,6 +570,7 @@ export default function CheckoutClient() {
                   type="button"
                   onClick={submit}
                   disabled={busy || !plan}
+                  aria-busy={busy || undefined}
                   className="btn-shine group mt-3 inline-flex h-13 w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-600 via-violet-600 to-fuchsia-600 py-4 text-base font-bold text-white shadow-lift transition-transform duration-300 hover:-translate-y-0.5 disabled:opacity-60"
                 >
                   {busy
@@ -562,7 +584,7 @@ export default function CheckoutClient() {
                     : selfServe
                     ? "Continue to payment"
                     : "Send my details"}
-                  <FiArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  {busy ? <BusySpinner className="h-5 w-5" /> : <FiArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />}
                 </button>
 
                 {/* Said before they click, not discovered on Stripe's page: when the card is charged, and how much. */}
