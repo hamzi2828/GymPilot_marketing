@@ -11,7 +11,8 @@ function Frame({ children, className = "" }: { children: React.ReactNode; classN
 }
 
 // The payment link a member gets before the due date: the local ways to pay,
-// into the gym's own Safepay account, then what happened next.
+// into the gym's own Safepay account, then what happened next -- including a
+// bank transfer whose screenshot waits for staff to approve it.
 function BillingPicture() {
   return (
     <Frame className="flex h-full flex-col justify-center">
@@ -42,8 +43,8 @@ function BillingPicture() {
       </div>
       <div className="mt-3 space-y-1.5 text-[11px]">
         {[
-          ["Reminder with pay link", "Sent 3 days before", "text-slate-500"],
           ["Invoice #1042 · Easypaisa", "Paid", "text-emerald-600"],
+          ["Bank transfer screenshot", "Staff to approve", "text-amber-600"],
           ["Auto-pay · Visa •••• 4821", "Member agreed", "text-brand-600"],
         ].map(([a, b, c], i) => (
           <div key={a} className="v-rise flex items-center justify-between rounded-lg bg-white px-3 py-1.5 ring-1 ring-slate-100" style={stagger(9 + i)}>

@@ -101,7 +101,7 @@ export const BENEFITS: { eyebrow: string; title: string; text: string; items: { 
   title: "What changes for your gym",
   text: "Less chasing and less paperwork. More members and fuller classes.",
   items: [
-    { key: "renewals", title: "Get paid on time", text: "See who has paid and who owes. Members get a payment link and pay by card, JazzCash, Easypaisa or their bank app." },
+    { key: "renewals", title: "Get paid on time", text: "See who has paid and who owes. Members get a payment link and pay by card, JazzCash, Easypaisa or bank transfer." },
     { key: "alerts", title: "No more unpaid visits", text: "Members check in by QR code or fingerprint, and the desk hears “Fee expired” when a lapsed member walks in." },
     { key: "website", title: "Win new members", text: "Your own website with your classes, trainers and prices, where people sign up." },
     { key: "booking", title: "Fill your classes", text: "Members book classes and personal training from their phone and get a reminder." },
@@ -220,11 +220,11 @@ export const TESTIMONIALS: { quote: string; who: string; where: string; sample: 
 export const FAQ: { q: string; a: string; more?: boolean }[] = [
   {
     q: "How do members pay?",
-    a: "Online by card, JazzCash, Easypaisa or any bank app, through your gym's own Safepay account. Before the due date, on the due date and on the last day, members get a reminder with a link to pay. If you switch it on, a member who wants to can also save a card and pay automatically, and turn that off at any time. At the desk you record cash, bank transfer, wallet or card-machine payments, part payments included, and the balance is tracked; these are recorded, not processed, so that money reaches you as it always has. Members can also send a bank transfer and upload the receipt for you to check. Outside Pakistan, cards online can go through your own Stripe account instead, where Stripe is available to your business.",
+    a: "Online, you pick one way in Settings → Payments. Safepay, in Pakistan: card, JazzCash, Easypaisa or any bank app, with a reminder and a link to pay before the due date, on it and on the last day, and automatic card payments for members who agree, if you switch them on. Stripe: cards, where Stripe is available to your business. Generic, in any country: the member gets a link with your bank QR code and account details, sends a bank transfer and uploads a screenshot, and your staff approve it — no gateway fee, but each receipt is checked by hand. At the desk you record cash, bank transfer, wallet or card-machine payments, part payments included; these are recorded, not processed.",
   },
   {
     q: "Does the money go to my account?",
-    a: "Yes, straight to your gym. Online payments go through your own Safepay account into your own bank account. GymsPilotPro never holds the money and takes no cut of it. Safepay takes its fee on each payment; a bank transfer or Raast payment straight to you has no Safepay fee. To open a Safepay account you need your CNIC, an NTN from FBR and a bank account certificate.",
+    a: "Yes, straight to your gym, whichever way you pick. Safepay and Stripe pay into your own account with them, and on to your bank; a Generic bank transfer goes straight to your bank account. GymsPilotPro never holds the money and takes no cut of it. Safepay and Stripe take their own fee on each payment; a bank transfer has no gateway fee. To open a Safepay account you need your CNIC, an NTN from FBR and a bank account certificate.",
   },
   {
     q: "Can I bring my existing members across?",

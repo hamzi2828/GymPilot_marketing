@@ -322,7 +322,7 @@ const PRIVACY: LegalDoc = {
           ],
         },
         "Passwords are stored only as a one-way hash. Nobody can read them, including us.",
-        `Card numbers are never stored by ${NAME}. Members pay online on the page of the gym's own payment provider: Safepay, or Stripe.`,
+        `Card numbers are never stored by ${NAME}. Members pay by card on the page of the gym's own payment provider, Safepay or Stripe, not on ours.`,
         "For staff and trainers the gym can also keep rotas, leave, pay and payslips.",
       ],
     },

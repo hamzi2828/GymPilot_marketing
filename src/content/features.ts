@@ -9,9 +9,10 @@
 // Honesty rule: every claim here is something the product does today. Money
 // taken at the desk (cash, card terminal, bank transfer, JazzCash, Easypaisa,
 // other wallets) is *recorded* as how the member paid -- GymsPilotPro is not a
-// payment gateway for those. Online payments go through the gym's own account
-// with a payment provider -- Safepay in Pakistan (card, JazzCash, Easypaisa,
-// bank apps), or Stripe for cards elsewhere -- straight to the gym, never
+// payment gateway for those. Online, each gym picks one way: its own Safepay
+// account in Pakistan (card, JazzCash, Easypaisa, bank apps), its own Stripe
+// account (cards), or Generic (a bank transfer with a receipt that staff
+// approve, in any country) -- the money goes straight to the gym, never
 // through GymsPilotPro. Automatic card payments are the member's choice and
 // are never promised to go through: a declined card gets the payment link.
 //
@@ -284,16 +285,17 @@ export const FEATURES: Feature[] = [
     slug: "online-payments",
     group: "money",
     name: "Payments",
-    short: "Card, JazzCash, Easypaisa or a bank app.",
+    short: "Card, JazzCash, Easypaisa or bank transfer.",
     title: "Get paid, however your members pay",
-    text: "Members pay online by card, JazzCash, Easypaisa or any bank app, straight to your gym through your own Safepay account — and the desk records cash and transfers as it always has.",
+    text: "Members pay straight into your gym's own account: by card, JazzCash, Easypaisa or a bank app through Safepay, by card through Stripe, or by bank transfer with a receipt, in any country.",
     body: [
-      "Members pay online by card, JazzCash, Easypaisa or any bank app, on Safepay's secure page. You connect your own Safepay account in Settings → Payments, so every payment goes into your gym's bank account and never through GymsPilotPro. Safepay takes its fee on each payment. GymsPilotPro marks the membership paid and sends the invoice and receipt. To open a Safepay account you need your CNIC, an NTN from FBR and a bank account certificate.",
-      "Nobody has to chase. Before the due date, on the due date and on the last day to pay, the member gets a reminder with a link to pay — by email and phone notification, and by SMS or WhatsApp through your own provider account. You choose how many days before, and when the last day falls. Once you have added your bank and Raast details, each reminder shows them too, for members who would rather send a transfer with no Safepay fee.",
-      "Members who want to can save a card and pay automatically on each due date. It is their choice: they tick a box that says what will be charged and when, and they can turn it off at any time in their account. Safepay keeps the card, not GymsPilotPro. If a card is declined, the member gets the payment link instead. You switch automatic payments on once Safepay has enabled them for your account.",
-      "At the desk, record cash, bank transfer, JazzCash, Easypaisa, another wallet or a card on your own terminal: GymsPilotPro records how the member paid, and the money reaches you as it always has. Members can also send a bank transfer from your website and upload the receipt for you to check. Outside Pakistan, cards online can go through your own Stripe account instead, where Stripe is available to your business.",
+      "Pick how members pay online in Settings → Payments: Safepay in Pakistan, for card, JazzCash, Easypaisa and bank apps; Stripe, for cards where Stripe is available to your business; or Generic, a bank transfer with a receipt, which works in any country. Whichever you pick, the money goes straight to your gym's own account and never through GymsPilotPro.",
+      "With Safepay, members pay on Safepay's secure page, and the membership is marked paid with the invoice and receipt sent. Before the due date, on it and on the last day, they get a reminder with a link to pay, and your bank and Raast details as a no-fee option if you have added them — by email and phone notification, and by SMS or WhatsApp through your own provider account. Safepay takes its fee on each payment, and opening an account needs your CNIC, an NTN from FBR and a bank account certificate.",
+      "Members who want to can also save a card with Safepay and pay automatically on each due date. It is their choice — a box they tick that says what will be charged and when — and they can turn it off at any time. Safepay keeps the card, not GymsPilotPro, and a declined card gets the payment link instead. You switch this on once Safepay has enabled it for your account.",
+      "With Generic, the member gets the package details and a link by email, and by WhatsApp if you have connected it. The link shows your bank QR code and account details; they send the transfer, upload a screenshot, and your staff check it and approve it. There is no gateway fee and it works anywhere, but someone has to check each receipt.",
+      "At the desk, record cash, bank transfer, JazzCash, Easypaisa, another wallet or a card on your own terminal. GymsPilotPro records how the member paid, and the money reaches you as it always has.",
     ],
-    points: ["Card, JazzCash, Easypaisa or any bank app", "Straight to your account through Safepay", "Reminders with a payment link, up to the last day", "Automatic card payments, if the member agrees", "Cash, bank and wallets recorded at the desk"],
+    points: ["Safepay: card, JazzCash, Easypaisa, bank apps", "Stripe: cards, where Stripe is available", "Generic: bank transfer and receipt, anywhere", "Money straight to your own account", "Pay-link reminders, optional auto-pay"],
     screens: ["Settings → Payments", "Settings → Banks", "Admin → Package Orders → Payment link", "Admin → Registrations", "Website → Checkout, Payment link", "Website → My account → Automatic payments", "Member app → Membership"],
     related: ["renewals", "messaging", "dues"],
   },
