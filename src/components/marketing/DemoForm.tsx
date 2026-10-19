@@ -11,7 +11,7 @@ import Link from "next/link";
 import { FiArrowRight, FiCheckCircle } from "react-icons/fi";
 import { CONTACT, DEMO_FORM, SITE, SUGGESTIONS } from "@/content/site";
 import { publicFetch } from "@/lib/api";
-import { trackConversion } from "@/lib/analytics";
+import { trackActivity, trackConversion } from "@/lib/analytics";
 import { stagger } from "@/lib/motion";
 import { useAsyncAction } from "@/lib/useAsyncAction";
 import BusySpinner from "@/components/BusySpinner";
@@ -29,13 +29,11 @@ export default function DemoForm({ contact = false }: { contact?: boolean }) {
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Opened from "Share a suggestion" (/contact?topic=suggestion): the message
-  // is started for them, and sending it is not counted as a demo request. Read
-  // from the address once the page is running, so the form stays in the
-  // page's static HTML (useSearchParams would take it out).
-  const [suggestion, setSuggestion] = useState(false);
+  // is started for them (like any contact message, sending it is not counted
+  // as a demo request). Read from the address once the page is running, so
+  // the form stays in the page's static HTML (useSearchParams would take it out).
   useEffect(() => {
     if (!contact || new URLSearchParams(window.location.search).get("topic") !== SUGGESTIONS.topic) return;
-    setSuggestion(true);
     setForm((f) => (f.message ? f : { ...f, message: SUGGESTIONS.prefill }));
   }, [contact]);
 
@@ -48,7 +46,10 @@ export default function DemoForm({ contact = false }: { contact?: boolean }) {
       try {
         await publicFetch("/demo-requests", { method: "POST", body: { ...form, source: typeof window !== "undefined" ? window.location.href : "landing" } });
         setDone(true);
-        if (!suggestion) trackConversion("demo_request");
+        // Only the demo form books demos. A message from the contact page
+        // (a question, a suggestion) is counted, but never as a conversion.
+        if (contact) trackActivity("contact_message");
+        else trackConversion("demo_request");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Could not send your request. Please try again.");
       }

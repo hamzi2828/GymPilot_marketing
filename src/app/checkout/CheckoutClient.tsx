@@ -286,7 +286,9 @@ export default function CheckoutClient() {
         const sent = await publicFetch<{ emailed?: boolean }>("/demo-requests", { method: "POST", body: { kind: "trial", ...details } });
         setEmailed(sent?.emailed !== false);
         setDone(true);
-        trackConversion("signup_completed", { plan: plan.slug, value: total, currency, method: "request" });
+        // A trial asked for, not a sign-up: nobody has paid, and the card
+        // sign-up (checkout/success) is the one counted as signup_completed.
+        trackConversion("trial_requested", { plan: plan.slug, value: total, currency, method: "request" });
         window.scrollTo({ top: 0, behavior: "smooth" });
       } catch (e) {
         if (e instanceof ApiError && e.code === "SLUG_TAKEN") {
