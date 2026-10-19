@@ -44,7 +44,7 @@ const EVENTS: { type: string; effect: string }[] = [
   {
     type: "checkout.session.completed",
     effect:
-      "records the Stripe customer and subscription, marks the gym active (or trialing) and sets its period end; for an online sign-up from the website, it first creates the gym and emails the owner their set-password link",
+      "records the Stripe customer and subscription, marks the gym active (or trialing) and sets its period end; for an online sign-up from the website, it first creates the gym and sends the owner their set-password link by email, when platform email is set up",
   },
   { type: "invoice.paid", effect: "extends the period end and marks the gym active" },
   { type: "invoice.payment_failed", effect: "marks the gym past due" },

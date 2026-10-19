@@ -250,7 +250,7 @@ export const FAQ: { q: string; a: string; more?: boolean }[] = [
   },
   {
     q: "I am already a customer. Where do I sign in?",
-    a: "At your gym's own web address, not on this site. It is in your welcome email: open it and press Sign in. Lost it? Message us and we will send it again.",
+    a: "At your gym's own web address, not on this site. We send it to you when your gym is set up: open it and press Sign in. Lost it? Message us and we will send it again.",
     more: true,
   },
 ];
@@ -271,7 +271,7 @@ export const CONTACT = {
   whatsapp: "Message us on WhatsApp",
   // A gym's staff and members sign in on the gym's own website. This site
   // only has the platform's sign-in, which is no use to them.
-  existing: "Already a customer? Sign in at your gym's own web address, not here. It is in your welcome email.",
+  existing: "Already a customer? Sign in at your gym's own web address, not here. Lost it? Message us and we will send it again.",
 };
 
 export const FOOTER = {

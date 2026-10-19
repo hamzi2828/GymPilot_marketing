@@ -8,7 +8,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { FiAlertTriangle, FiArrowRight, FiCheckCircle, FiExternalLink, FiMail } from "react-icons/fi";
+import { FiAlertTriangle, FiArrowRight, FiCheckCircle, FiExternalLink, FiMail, FiMessageCircle } from "react-icons/fi";
 import ContactLinks from "@/components/marketing/ContactLinks";
 import { ApiError, CHECKOUT_DRAFT_KEY, publicFetch, type SignupStatus } from "@/lib/api";
 import { trackConversionOnce } from "@/lib/analytics";
@@ -96,8 +96,10 @@ export default function SuccessClient() {
     : "Confirming your payment…";
 
   const text = missing
-    ? "If you have just paid, your gym is still being set up and the email with your sign-in link will reach you shortly. There is no need to pay again."
+    ? "If you have just paid, your gym is still being set up and your sign-in link will reach you shortly, by email or from our team. There is no need to pay again."
     : state?.message || "One moment while we check with Stripe.";
+  // Their inbox only when the API says the set-password email went.
+  const emailed = ready && state?.inviteSent === true;
 
   const trialEnds = ready && state?.trialEndsAt ? new Date(state.trialEndsAt).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" }) : null;
 
@@ -134,8 +136,8 @@ export default function SuccessClient() {
         {working && slow && (
           <>
             <p className="mt-3 text-sm text-slate-400">
-              This is taking longer than usual. You can close this page — there is no need to pay again, and the email with your sign-in link
-              arrives the moment your gym is ready.
+              This is taking longer than usual. You can close this page — there is no need to pay again, and your sign-in link reaches you, by
+              email or from our team, once your gym is ready.
             </p>
             <ContactLinks layout="row" className="mt-5" />
           </>
@@ -144,12 +146,17 @@ export default function SuccessClient() {
         {ready && (
           <>
             <div className="a-rise mt-8 space-y-3 rounded-2xl border border-white/10 bg-white/5 p-5 text-left text-sm text-slate-300" style={stagger(3)}>
-              <p className="flex items-start gap-2.5">
-                <FiMail className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
-                <span>
-                  Look for an email with your set-password link. Nothing in a few minutes? Check your spam folder.
-                </span>
-              </p>
+              {emailed ? (
+                <p className="flex items-start gap-2.5">
+                  <FiMail className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+                  <span>Look for an email with your set-password link. Nothing in a few minutes? Check your spam folder.</span>
+                </p>
+              ) : (
+                <p className="flex items-start gap-2.5">
+                  <FiMessageCircle className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+                  <span>Our team will contact you with the link to set your password, usually within one working day.</span>
+                </p>
+              )}
               {trialEnds && (
                 <p className="text-xs text-emerald-400">
                   Your free trial runs until {trialEnds}. Your card is first charged then, unless you cancel before.

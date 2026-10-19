@@ -24,7 +24,8 @@ const SIGNUP_STATE: Record<SignupState, { label: string; tone: string; help: str
     help: "Went to pay but has not finished. Nothing to do unless you want to follow up — if they pay, the gym sets itself up.",
   },
   provisioning: { label: "setting up", tone: "primary", help: "Paid; the gym is being set up right now." },
-  ready: { label: "live", tone: "good", help: "Paid and set up automatically. The owner was sent their set-password email." },
+  // Whether the owner's set-password email went is said beside it (inviteSent).
+  ready: { label: "live", tone: "good", help: "Paid and set up automatically." },
   failed: {
     label: "needs attention",
     tone: "bad",
@@ -235,9 +236,14 @@ export default function DemoRequestsPage() {
                     {open.signup.attempts > 1 ? ` (attempt ${open.signup.attempts})` : ""}
                   </p>
                 )}
-                {open.signup.state === "ready" && !open.signup.inviteSent && (
-                  <p className="mt-2 text-sm font-medium text-amber-800">The set-password email did not go out: resend it from the gym page.</p>
-                )}
+                {open.signup.state === "ready" &&
+                  (open.signup.inviteSent ? (
+                    <p className="mt-2 text-sm text-slate-700">The owner was emailed their set-password link.</p>
+                  ) : (
+                    <p className="mt-2 text-sm font-medium text-amber-800">
+                      The set-password email did not go out: open the gym and use Resend owner invite, or Reset owner password to set one by hand.
+                    </p>
+                  ))}
                 {(open.warnings || []).length > 0 && (
                   <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-slate-600">
                     {(open.warnings || []).map((w) => (

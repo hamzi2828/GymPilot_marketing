@@ -81,6 +81,11 @@ export interface SignupStatus {
   siteUrl?: string | null;
   /** When the free trial ends and the card is first charged; null when not on a trial. */
   trialEndsAt?: string | null;
+  /**
+   * Once ready: whether the owner's set-password email went. Only `true`
+   * points the buyer at their inbox; otherwise our team sends the link.
+   */
+  inviteSent?: boolean;
 }
 
 /** Sold beside a plan. `planSlugs` empty means it goes with any of them. */

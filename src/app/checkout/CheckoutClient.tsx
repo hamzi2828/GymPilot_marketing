@@ -541,7 +541,7 @@ export default function CheckoutClient() {
                     <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-700">What happens next</p>
                     <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-sm leading-relaxed text-slate-700">
                       <li>You send this form. No card, and nothing to pay today.</li>
-                      <li>Our team sets your gym up and emails you your web address and a link to set your password, usually within one working day.</li>
+                      <li>Our team sets your gym up and sends you your web address and a link to set your password, by email or phone, usually within one working day.</li>
                       <li>
                         {plan?.trialDays ? `Your ${plan.trialDays}-day free trial starts then. ` : ""}
                         We contact you with payment details before anything is due: bank transfer, JazzCash or Easypaisa.
