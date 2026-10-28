@@ -48,17 +48,15 @@ export default function FeaturesPage() {
           <Glow className="left-1/3 top-0 h-[560px] w-[1000px] -translate-x-1/2 -translate-y-1/2" color="rgb(var(--gp-mint) / 0.12)" drift="a" />
           <Glow className="-right-32 top-32 h-[420px] w-[520px]" color="rgb(var(--gp-ember) / 0.09)" drift="b" />
           <div className="relative mx-auto max-w-7xl px-4 sm:px-8">
-            <div className="max-w-3xl">
+            {/* One centred hook in place of a title and paragraph (owner's request). */}
+            <div className="mx-auto max-w-3xl text-center">
               <p className="a-rise inline-flex items-center gap-2 text-[13px] text-gp-mint" style={stagger(0)}>
                 <span className="a-blink h-1.5 w-1.5 rounded-full bg-gp-mint" aria-hidden="true" />
                 {FEATURES.length} features · {FEATURE_GROUPS.length} areas · all in every plan
               </p>
-              <h1 className="a-rise mt-3.5 text-[38px] font-medium leading-[1.02] tracking-[-0.045em] [text-wrap:balance] sm:text-5xl lg:text-[68px]" style={stagger(1)}>
-                <span className="gp-shine gp-shine-in">All features</span>
+              <h1 className="a-rise mt-3.5 text-[34px] font-medium leading-[1.05] tracking-[-0.04em] [text-wrap:balance] sm:text-5xl lg:text-[60px]" style={stagger(1)}>
+                <span className="gp-shine gp-shine-in">Everything your gym runs on, in one system.</span>
               </h1>
-              <p className="a-rise mt-4 max-w-[520px] text-base text-gp-slate sm:text-lg" style={stagger(2)}>
-                {FEATURES_PAGE.title} {SITE.name}: open any feature to read how it works and see it in action. Search, or pick an area.
-              </p>
             </div>
 
             {/* The eight areas at a glance, numbered; each card jumps to its row below. */}

@@ -1,14 +1,15 @@
 "use client";
 
-// The /features list: a sticky bar to search every feature (press "/" to
-// jump to it) and pick an area, then one block per area with a card for each
-// feature leading to its own page. ?area=<n> or ?area=<groupKey> opens the
-// page on one area. Cards keep the feature's slug as their id so
+// The /features list: a sticky row of area tabs (the one for the area on
+// screen is lit, with a sliding pill), then one block per area with a card for each
+// feature leading to its own page. The area chips jump to an area and light
+// up for the area on screen; ?area=<n> or ?area=<groupKey> opens the page
+// scrolled to one area. Cards keep the feature's slug as their id so
 // /features#<slug> from the header's menu still lands on (and lights) them.
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import { FiArrowRight, FiChevronLeft, FiChevronRight, FiSearch } from "react-icons/fi";
+import { FiArrowRight, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { FEATURES, FEATURE_GROUPS, featureHref, type GroupKey } from "@/content/features";
 import { FEATURE_ICONS } from "./featureIcons";
 import { AREA_ICONS, featuresLabel, shortLabel, tintVars } from "./featureAreas";
@@ -25,7 +26,6 @@ function areaFromQuery(value: string | null): Area {
   return FEATURE_GROUPS.find((g) => g.key === value)?.key ?? "all";
 }
 
-const norm = (t: string) => t.toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "");
 
 // One area's cards as a carousel: arrows either side move a page at a time,
 // dots below show (and jump to) each page. Touch and trackpad swipe still
@@ -97,30 +97,82 @@ function Row({ label, resetKey, children }: { label: string; resetKey: string; c
 }
 
 export default function AllFeatures() {
+  // The chips no longer filter: every area stays on the page, a chip scrolls
+  // to its area, and the chip of the area on screen is lit (scroll-spy).
   const [area, setArea] = useState<Area>("all");
-  const [query, setQuery] = useState("");
-  const input = useRef<HTMLInputElement>(null);
+  const root = useRef<HTMLDivElement>(null);
+  const bar = useRef<HTMLDivElement>(null);
+  const chips = useRef<HTMLDivElement>(null);
+  // While a chip's smooth scroll runs, the spy keeps that chip lit.
+  const lockUntil = useRef(0);
 
-  // Read ?area= after mounting, so the page itself stays static.
-  useEffect(() => {
-    setArea(areaFromQuery(new URLSearchParams(window.location.search).get("area")));
+  const still = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const scrollToArea = useCallback((next: Area, smooth: boolean) => {
+    const behavior: ScrollBehavior = smooth && !still() ? "smooth" : "auto";
+    if (next === "all") {
+      const top = (root.current?.getBoundingClientRect().top ?? 0) + window.scrollY - 96;
+      window.scrollTo({ top: Math.max(0, top), behavior });
+    } else {
+      document.getElementById(next)?.scrollIntoView({ behavior, block: "start" });
+    }
   }, []);
 
-  // "/" anywhere on the page (outside a field) focuses the search.
+  // ?area= opens the page scrolled to that area.
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
-      const el = document.activeElement as HTMLElement | null;
-      if (el && (/^(input|textarea|select)$/i.test(el.tagName) || el.isContentEditable)) return;
-      e.preventDefault();
-      input.current?.focus();
+    const first = areaFromQuery(new URLSearchParams(window.location.search).get("area"));
+    if (first !== "all") {
+      setArea(first);
+      lockUntil.current = performance.now() + 600;
+      requestAnimationFrame(() => scrollToArea(first, false));
+    }
+  }, [scrollToArea]);
+
+  // Scroll-spy: the last area whose top has passed just under the sticky bar.
+  useEffect(() => {
+    let raf = 0;
+    const read = () => {
+      raf = 0;
+      if (performance.now() < lockUntil.current) return;
+      const line = (bar.current?.getBoundingClientRect().bottom ?? 0) + 40;
+      let current: Area = "all";
+      for (const g of FEATURE_GROUPS) {
+        const el = document.getElementById(g.key);
+        if (el && el.getBoundingClientRect().top <= line) current = g.key;
+      }
+      setArea(current);
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    const kick = () => {
+      if (!raf) raf = requestAnimationFrame(read);
+    };
+    read();
+    window.addEventListener("scroll", kick, { passive: true });
+    window.addEventListener("resize", kick);
+    return () => {
+      window.removeEventListener("scroll", kick);
+      window.removeEventListener("resize", kick);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, []);
+
+  // A pill slides under the lit chip, and the chip row scrolls sideways to
+  // keep it in view.
+  const [pill, setPill] = useState<{ left: number; width: number } | null>(null);
+  useEffect(() => {
+    const row = chips.current;
+    const chip = row?.querySelector<HTMLElement>('[aria-pressed="true"]');
+    if (!row || !chip) return;
+    setPill({ left: chip.offsetLeft, width: chip.offsetWidth });
+    const left = chip.offsetLeft;
+    if (left < row.scrollLeft || left + chip.offsetWidth > row.scrollLeft + row.clientWidth) {
+      row.scrollTo({ left: left - 12, behavior: still() ? "auto" : "smooth" });
+    }
+  }, [area]);
 
   const pick = (next: Area) => {
     setArea(next);
+    lockUntil.current = performance.now() + 900;
+    scrollToArea(next, true);
     const url = new URL(window.location.href);
     if (next === "all") url.searchParams.delete("area");
     else url.searchParams.set("area", next);
@@ -128,55 +180,16 @@ export default function AllFeatures() {
     window.history.replaceState(window.history.state, "", url);
   };
 
-  const groups = useMemo(() => {
-    const words = norm(query).split(/\s+/).filter(Boolean);
-    return FEATURE_GROUPS.filter((g) => area === "all" || g.key === area)
-      .map((g) => ({
-        group: g,
-        items: FEATURES.filter((f) => f.group === g.key).filter((f) => {
-          if (!words.length) return true;
-          const hay = norm(`${f.name} ${f.short} ${f.title} ${g.label}`);
-          return words.every((w) => hay.includes(w));
-        }),
-      }))
-      .filter((x) => x.items.length);
-  }, [area, query]);
+  const groups = useMemo(() => FEATURE_GROUPS.map((g) => ({ group: g, items: FEATURES.filter((f) => f.group === g.key) })), []);
 
   const shown = groups.reduce((n, x) => n + x.items.length, 0);
   const counts = useMemo(() => Object.fromEntries(FEATURE_GROUPS.map((g) => [g.key, FEATURES.filter((f) => f.group === g.key).length])), []);
   let k = 0;
 
   return (
-    <div className={s.root}>
-      <div className={s.bar}>
-        <div className={s.q} role="search">
-          <FiSearch className={s.qIcon} aria-hidden="true" />
-          <input
-            ref={input}
-            type="search"
-            className={s.input}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Escape") {
-                setQuery("");
-                e.currentTarget.blur();
-              }
-            }}
-            placeholder={`Search ${FEATURES.length} features — fees, check-in, receipts…`}
-            aria-label="Search features"
-            autoComplete="off"
-            spellCheck={false}
-          />
-          {query ? (
-            <button type="button" className={s.clear} onClick={() => { setQuery(""); input.current?.focus(); }}>
-              Clear
-            </button>
-          ) : (
-            <kbd className={s.kbd} aria-hidden="true">/</kbd>
-          )}
-        </div>
-        <div className={s.chips} role="group" aria-label="Feature areas">
+    <div ref={root} className={s.root}>
+      <div ref={bar} className={s.bar}>
+        <div ref={chips} className={s.chips} role="group" aria-label="Jump to an area">
           <button type="button" className={s.chip} aria-pressed={area === "all"} onClick={() => pick("all")}>
             All<span>{FEATURES.length}</span>
           </button>
@@ -185,11 +198,12 @@ export default function AllFeatures() {
               {shortLabel(g.label)}<span>{counts[g.key]}</span>
             </button>
           ))}
+          {pill && <span className={s.pill} style={{ transform: `translateX(${pill.left}px)`, width: pill.width }} aria-hidden="true" />}
         </div>
       </div>
 
-      <p className={s.status} aria-live="polite">
-        {query || area !== "all" ? `Showing ${featuresLabel(shown)}` : `Every feature, by area · ${featuresLabel(shown)}`}
+      <p className={s.status}>
+        {`Every feature, by area · ${featuresLabel(shown)}`}
       </p>
 
       {groups.map(({ group, items }) => {
@@ -205,7 +219,7 @@ export default function AllFeatures() {
                 <p>{group.text}</p>
               </div>
             </div>
-            <Row key={`${area}|${query}`} resetKey={`${area}|${query}`} label={group.label}>
+            <Row resetKey={group.key} label={group.label}>
               {items.map((f) => {
                 const Icon = FEATURE_ICONS[f.key];
                 return (
@@ -229,15 +243,6 @@ export default function AllFeatures() {
         );
       })}
 
-      {!shown && (
-        <div className={s.empty}>
-          <b>Nothing matches “{query}”</b>
-          <p>Try another word, or look through every area.</p>
-          <button type="button" onClick={() => { setQuery(""); pick("all"); input.current?.focus(); }}>
-            Show every feature
-          </button>
-        </div>
-      )}
     </div>
   );
 }
