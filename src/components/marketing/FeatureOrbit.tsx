@@ -12,6 +12,7 @@ import { FiChevronRight, FiLock } from "react-icons/fi";
 import { LuCrown, LuFingerprint } from "react-icons/lu";
 import { FEATURE_GROUPS, FEATURES, featuresIn, type GroupKey } from "@/content/features";
 import { AREA_ICONS, featuresLabel, numberWord, shortLabel, tintVars } from "./featureAreas";
+import ViewAllFeaturesButton from "./ViewAllFeaturesButton";
 import s from "./FeatureOrbit.module.css";
 
 const AREAS = FEATURE_GROUPS.map((g) => ({ ...g, count: featuresIn(g.key).length }));
@@ -224,10 +225,12 @@ export default function FeatureOrbit() {
     <section ref={sectionRef} id="areas" aria-labelledby="areas-title" className={`${s.orbit} ${flat ? s.flat : ""}`} style={{ "--steps": LAST } as CSSProperties}>
       <div className={s.stage}>
         <div className={s.head}>
-          <h2 id="areas-title" className="gp-shine">
+          {/* The owner wanted the "View all features" button here instead of a
+              visible heading; the heading stays for screen readers. */}
+          <h2 id="areas-title" className="sr-only">
             {FEATURES.length} features in {numberWord(AREAS.length)} areas
           </h2>
-          <p>{flat ? "Swipe through them, or pick one below." : "Turn through them, or pick one below."}</p>
+          <ViewAllFeaturesButton size="lg" count={FEATURES.length} />
         </div>
 
         <div ref={trackRef} className={s.track}>

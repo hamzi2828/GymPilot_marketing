@@ -7,8 +7,8 @@
 // /features#<slug> from the header's menu still lands on (and lights) them.
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import { FiArrowRight, FiSearch } from "react-icons/fi";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { FiArrowRight, FiChevronLeft, FiChevronRight, FiSearch } from "react-icons/fi";
 import { FEATURES, FEATURE_GROUPS, featureHref, type GroupKey } from "@/content/features";
 import { FEATURE_ICONS } from "./featureIcons";
 import { AREA_ICONS, featuresLabel, shortLabel, tintVars } from "./featureAreas";
@@ -26,6 +26,75 @@ function areaFromQuery(value: string | null): Area {
 }
 
 const norm = (t: string) => t.toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "");
+
+// One area's cards as a carousel: arrows either side move a page at a time,
+// dots below show (and jump to) each page. Touch and trackpad swipe still
+// work; the scrollbar itself is hidden.
+function Row({ label, resetKey, children }: { label: string; resetKey: string; children: ReactNode }) {
+  const track = useRef<HTMLDivElement>(null);
+  const [pages, setPages] = useState(1);
+  const [page, setPage] = useState(0);
+
+  const measure = useCallback(() => {
+    const el = track.current;
+    if (!el) return;
+    const w = el.clientWidth || 1;
+    const n = Math.max(1, Math.ceil((el.scrollWidth - 4) / w));
+    const atEnd = el.scrollLeft + w >= el.scrollWidth - 4;
+    setPages(n);
+    setPage(atEnd ? n - 1 : Math.min(n - 1, Math.round(el.scrollLeft / w)));
+  }, []);
+
+  useEffect(() => {
+    const el = track.current;
+    if (!el) return;
+    el.scrollLeft = 0;
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    el.addEventListener("scroll", measure, { passive: true });
+    return () => {
+      ro.disconnect();
+      el.removeEventListener("scroll", measure);
+    };
+  }, [measure, resetKey]);
+
+  const go = (i: number) => {
+    const el = track.current;
+    if (!el) return;
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const target = Math.max(0, Math.min(pages - 1, i));
+    el.scrollTo({ left: target * el.clientWidth, behavior: still ? "auto" : "smooth" });
+  };
+
+  const multi = pages > 1;
+  return (
+    <div className={s.row} role="region" aria-roledescription="carousel" aria-label={label}>
+      <div className={s.rowIn}>
+        {multi && (
+          <button type="button" className={`${s.arrow} ${s.prev}`} onClick={() => go(page - 1)} disabled={page === 0} aria-label={`Previous ${label} features`}>
+            <FiChevronLeft aria-hidden="true" />
+          </button>
+        )}
+        <div ref={track} className={`${s.grid} ${s.in}`}>
+          {children}
+        </div>
+        {multi && (
+          <button type="button" className={`${s.arrow} ${s.next}`} onClick={() => go(page + 1)} disabled={page === pages - 1} aria-label={`Next ${label} features`}>
+            <FiChevronRight aria-hidden="true" />
+          </button>
+        )}
+      </div>
+      {multi && (
+        <div className={s.dots}>
+          {Array.from({ length: pages }, (_, i) => (
+            <button key={i} type="button" className={i === page ? s.dotOn : s.dot} onClick={() => go(i)} aria-label={`${label}: page ${i + 1} of ${pages}`} aria-current={i === page ? "true" : undefined} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function AllFeatures() {
   const [area, setArea] = useState<Area>("all");
@@ -136,7 +205,7 @@ export default function AllFeatures() {
                 <p>{group.text}</p>
               </div>
             </div>
-            <div key={`${area}|${query}`} className={`${s.grid} ${s.in}`}>
+            <Row key={`${area}|${query}`} resetKey={`${area}|${query}`} label={group.label}>
               {items.map((f) => {
                 const Icon = FEATURE_ICONS[f.key];
                 return (
@@ -155,7 +224,7 @@ export default function AllFeatures() {
                   </Link>
                 );
               })}
-            </div>
+            </Row>
           </section>
         );
       })}

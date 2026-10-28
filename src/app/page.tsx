@@ -4,8 +4,6 @@ import Hero from "@/components/marketing/Hero";
 import ConvergeHeadline from "@/components/marketing/ConvergeHeadline";
 import GymPulse from "@/components/marketing/GymPulse";
 import FeatureOrbit from "@/components/marketing/FeatureOrbit";
-import ViewAllFeaturesButton from "@/components/marketing/ViewAllFeaturesButton";
-import { FEATURES } from "@/content/features";
 import Benefits from "@/components/marketing/Benefits";
 import WhatYouGet from "@/components/marketing/WhatYouGet";
 import HowItWorks from "@/components/marketing/HowItWorks";
@@ -39,10 +37,6 @@ export default function LandingPage() {
         <Benefits />
         <WhatYouGet />
         <FeatureOrbit />
-        {/* Under the carousel: the same "View all features" button as the header's Features menu. */}
-        <div className="flex justify-center px-4 pb-6 pt-10">
-          <ViewAllFeaturesButton size="lg" count={FEATURES.length} />
-        </div>
         <HowItWorks />
         <Suggestions />
         <Pricing />
