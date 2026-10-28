@@ -2,8 +2,10 @@
 
 // "31 features in eight areas": a sticky, scroll-driven 3D carousel with one
 // card per feature area. Scrolling through the section turns the carousel;
-// the tabs at the bottom jump to an area. On phones, and for anyone who asks
-// for less motion, it lays flat: a swipeable row (phones) or a grid.
+// the tabs at the bottom jump to an area. Phones get the same pinned, scrolling
+// carousel, sized as the reference sizes it at <=640px. Only for
+// anyone who asks for less motion does it lay flat: a swipeable row on phones
+// or a grid on wider screens.
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -34,21 +36,17 @@ export default function FeatureOrbit() {
   const [reduced, setReduced] = useState(false);
   const [active, setActive] = useState(0);
 
-  // Phones and reduced motion get the flat layout.
+  // The scroll carousel renders by default (no layout jump on load); only
+  // reduced motion switches to the flat layout after mount.
   useEffect(() => {
     const rm = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const phone = window.matchMedia("(max-width: 640px)");
     const update = () => {
       setReduced(rm.matches);
-      setFlat(rm.matches || phone.matches);
+      setFlat(rm.matches);
     };
     update();
     rm.addEventListener("change", update);
-    phone.addEventListener("change", update);
-    return () => {
-      rm.removeEventListener("change", update);
-      phone.removeEventListener("change", update);
-    };
+    return () => rm.removeEventListener("change", update);
   }, []);
 
   // The 3D carousel, driven by how far the section has scrolled.
@@ -142,7 +140,7 @@ export default function FeatureOrbit() {
     };
   }, [flat]);
 
-  // In the flat row (phones), the tab follows the card swiped into view.
+  // In the flat row (reduced motion on phones), the tab follows the card swiped into view.
   useEffect(() => {
     if (!flat) return;
     const track = trackRef.current;
@@ -216,6 +214,8 @@ export default function FeatureOrbit() {
     }
   };
   const onCardMove = (e: PointerEvent<HTMLElement>) => {
+    // The glow follows a mouse; touches are page scrolls, so skip the work.
+    if (e.pointerType !== "mouse") return;
     const r = e.currentTarget.getBoundingClientRect();
     e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
     e.currentTarget.style.setProperty("--my", `${e.clientY - r.top}px`);
