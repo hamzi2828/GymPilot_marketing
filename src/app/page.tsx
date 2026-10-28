@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import SiteHeader from "@/components/marketing/SiteHeader";
 import Hero from "@/components/marketing/Hero";
+import ConvergeHeadline from "@/components/marketing/ConvergeHeadline";
+import GymPulse from "@/components/marketing/GymPulse";
+import FeatureOrbit from "@/components/marketing/FeatureOrbit";
 import Benefits from "@/components/marketing/Benefits";
 import WhatYouGet from "@/components/marketing/WhatYouGet";
 import HowItWorks from "@/components/marketing/HowItWorks";
@@ -29,8 +32,11 @@ export default function LandingPage() {
       <SiteHeader />
       <main>
         <Hero />
+        <ConvergeHeadline />
+        <GymPulse />
         <Benefits />
         <WhatYouGet />
+        <FeatureOrbit />
         <HowItWorks />
         <Suggestions />
         <Pricing />
