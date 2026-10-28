@@ -7,24 +7,19 @@ import { CONTACT, SITE } from "@/content/site";
 // and phone when they are set, and the contact form, which is always there.
 // So a page that shows this never leaves a visitor with nobody to ask.
 export default function ContactLinks({
-  tone = "dark",
   layout = "column",
   form = true,
   className = "",
 }: {
-  /** "dark" on the slate-950 sections, "light" on white ones. */
+  /** Kept for callers; both tones follow the site theme (gp tokens). */
   tone?: "dark" | "light";
   layout?: "column" | "row";
   /** Leave the form link out where the form itself is on the page. */
   form?: boolean;
   className?: string;
 }) {
-  const link = `inline-flex items-center gap-2 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 ${
-    tone === "dark" ? "text-slate-300 hover:text-white" : "text-slate-600 hover:text-slate-900"
-  }`;
-  const whatsapp = `inline-flex items-center gap-2 rounded font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 ${
-    tone === "dark" ? "text-emerald-300 hover:text-emerald-200" : "text-emerald-700 hover:text-emerald-800"
-  }`;
+  const link = "inline-flex items-center gap-2 rounded text-gp-mist transition-colors hover:text-gp-bone focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gp-mint";
+  const whatsapp = "inline-flex items-center gap-2 rounded font-semibold text-gp-mint transition-colors hover:text-gp-mint/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gp-mint";
 
   return (
     <div className={`flex text-sm ${layout === "row" ? "flex-wrap items-center justify-center gap-x-5 gap-y-2" : "flex-col gap-2"} ${className}`}>

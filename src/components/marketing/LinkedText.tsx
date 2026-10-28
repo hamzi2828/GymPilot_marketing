@@ -15,7 +15,7 @@ export default function LinkedText({ item }: { item: Linked }) {
   return (
     <Link
       href={featureHref(item.feature)}
-      className="rounded-sm underline decoration-slate-300 decoration-dotted underline-offset-4 transition-colors hover:text-slate-950 hover:decoration-brand-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+      className="rounded-sm underline decoration-gp-slate decoration-dotted underline-offset-4 transition-colors hover:text-gp-bone hover:decoration-gp-mint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gp-mint"
     >
       {item.text}
     </Link>

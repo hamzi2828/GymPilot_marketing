@@ -5,12 +5,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import IncludedCard from "./IncludedCard";
 import { FiArrowRight, FiCheck, FiPlus, FiRefreshCw, FiSmartphone } from "react-icons/fi";
 import { PRICING } from "@/content/site";
 import { formatMoney, publicFetch, recommendedPlanIndex, yearlySaving, type PublicAddon, type PublicPlan } from "@/lib/api";
 import { stagger } from "@/lib/motion";
-import LinkedText, { linkedKey } from "./LinkedText";
-import Reveal from "./Reveal";
 import SectionHeading from "./SectionHeading";
 
 // A sleeping API answers on the second or third knock: the prices are asked
@@ -49,21 +48,21 @@ function AddonTile({
   return (
     <div
       className={`edge-glow group/addon relative overflow-hidden rounded-2xl p-3.5 transition-transform duration-300 hover:-translate-y-0.5 ${
-        isPopular ? "bg-white/[0.07]" : included ? "bg-gradient-to-br from-emerald-50 to-teal-50" : "bg-gradient-to-br from-brand-50 to-fuchsia-50"
+        isPopular ? "bg-gp-bone/[0.07]" : included ? "bg-gradient-to-br from-gp-mint/[0.12] to-gp-mint/[0.04]" : "bg-gradient-to-br from-gp-ember/[0.12] to-gp-ember/[0.04]"
       } ${included ? "edge-glow-free" : ""}`}
     >
       <div className="flex items-center gap-2.5">
         <span
           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-transform duration-300 group-hover/addon:-rotate-6 group-hover/addon:scale-110 ${
-            isPopular ? "bg-white/10 text-white" : included ? "bg-white text-emerald-600 shadow-card" : "bg-white text-brand-600 shadow-card"
+            isPopular ? "bg-gp-bone/10 text-gp-bone" : included ? "bg-gp-panel text-gp-mint shadow-card" : "bg-gp-panel text-gp-ember shadow-card"
           }`}
         >
           <Icon className="h-[18px] w-[18px]" />
         </span>
-        <p className={`min-w-0 flex-1 text-sm font-bold leading-tight ${isPopular ? "text-white" : "text-slate-900"}`}>{addon.name}</p>
+        <p className="min-w-0 flex-1 text-sm font-bold leading-tight text-gp-bone">{addon.name}</p>
         <span
           className={`shrink-0 rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.06em] ${
-            isPopular ? "bg-white/10 text-slate-300" : included ? "bg-emerald-600 text-white" : "bg-white/80 text-brand-700"
+            isPopular ? "bg-gp-bone/10 text-gp-mist" : included ? "bg-gp-mint text-gp-ink" : "bg-gp-panel/80 text-gp-ember"
           }`}
         >
           {included ? "Included" : "Add-on"}
@@ -71,24 +70,24 @@ function AddonTile({
       </div>
 
       {addon.description && (
-        <p className={`mt-2 line-clamp-2 text-xs leading-snug ${isPopular ? "text-slate-400" : "text-slate-600"}`}>{addon.description}</p>
+        <p className={`mt-2 line-clamp-2 text-xs leading-snug ${isPopular ? "text-gp-slate" : "text-gp-mist"}`}>{addon.description}</p>
       )}
 
       <p className="mt-2.5 flex flex-wrap items-baseline gap-x-1.5">
         {included ? (
           <>
-            <span className={`font-display text-xl font-extrabold tracking-tight ${isPopular ? "text-white" : "text-emerald-700"}`}>Free</span>
-            <span className={`text-xs ${isPopular ? "text-slate-400" : "text-slate-500"}`}>
+            <span className={`font-gp text-xl font-extrabold tracking-tight ${isPopular ? "text-gp-bone" : "text-gp-mint"}`}>Free</span>
+            <span className="text-xs text-gp-slate">
               on this plan · normally{" "}
               <span className="line-through">{formatMoney(perMonth, addon.price.currency)}</span>
             </span>
           </>
         ) : (
           <>
-            <span className={`font-display text-xl font-extrabold tracking-tight ${isPopular ? "text-white" : "text-slate-900"}`}>
+            <span className="font-gp text-xl font-extrabold tracking-tight text-gp-bone">
               +{formatMoney(perMonth, addon.price.currency)}
             </span>
-            <span className={`text-xs ${isPopular ? "text-slate-400" : "text-slate-500"}`}>/ month</span>
+            <span className="text-xs text-gp-slate">/ month</span>
           </>
         )}
       </p>
@@ -166,24 +165,24 @@ export default function Pricing() {
   const bestSaving = plans ? Math.max(0, ...plans.map((p) => yearlySaving(p.price))) : 0;
 
   return (
-    <section id="pricing" className="relative bg-slate-50 py-24 sm:py-28">
-      <div className="bg-grid-light absolute inset-0 [mask-image:radial-gradient(ellipse_at_top,black_10%,transparent_60%)]" aria-hidden="true" />
+    <section id="pricing" className="relative bg-gp-graphite py-24 sm:py-28">
+      <div className="bg-grid-dark absolute inset-0 [mask-image:radial-gradient(ellipse_at_top,black_10%,transparent_60%)]" aria-hidden="true" />
       <div className="relative mx-auto max-w-7xl px-5 sm:px-8">
         <SectionHeading eyebrow={PRICING.eyebrow} title={PRICING.title} text={PRICING.text} />
 
         {anyYearly && (
           <div className="a-rise mt-10 flex justify-center">
-            <div className="inline-flex items-center rounded-full border border-slate-200 bg-white p-1 text-sm shadow-card" role="group" aria-label="Billing period">
+            <div className="inline-flex items-center rounded-full border border-gp-edge-2 bg-gp-panel p-1 text-sm shadow-card" role="group" aria-label="Billing period">
               {[
                 ["monthly", "Monthly"],
                 ["yearly", "Yearly"],
               ].map(([key, label]) => {
                 const active = (key === "yearly") === yearly;
                 return (
-                  <button key={key} type="button" onClick={() => setYearly(key === "yearly")} aria-pressed={active} className={`rounded-full px-4 py-1.5 font-semibold transition-all duration-300 ${active ? "bg-slate-900 text-white shadow" : "text-slate-600 hover:text-slate-900"}`}>
+                  <button key={key} type="button" onClick={() => setYearly(key === "yearly")} aria-pressed={active} className={`rounded-full px-4 py-1.5 font-semibold transition-all duration-300 ${active ? "bg-gp-bone text-gp-ink shadow" : "text-gp-mist hover:text-gp-bone"}`}>
                     {label}
                     {key === "yearly" && bestSaving > 0 && (
-                      <span className={`ml-1.5 text-[11px] ${active ? "text-emerald-300" : "text-emerald-600"}`}>save up to {bestSaving}%</span>
+                      <span className={`ml-1.5 text-[11px] ${active ? "text-gp-ink/70" : "text-gp-mint"}`}>save up to {bestSaving}%</span>
                     )}
                   </button>
                 );
@@ -196,20 +195,20 @@ export default function Pricing() {
           {plans === null && !failed && (
             <div className="grid gap-5 md:grid-cols-3">
               {[0, 1, 2].map((i) => (
-                <div key={i} className="h-[420px] animate-pulse rounded-3xl border border-slate-200 bg-white" />
+                <div key={i} className="h-[420px] animate-pulse rounded-3xl border border-gp-edge-2 bg-gp-panel" />
               ))}
             </div>
           )}
 
           {/* The prices would not load: say so, and offer another go. */}
           {failed && (
-            <div className="mx-auto max-w-xl rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center" role="status">
-              <p className="text-base text-slate-600">{PRICING.unavailable}</p>
+            <div className="mx-auto max-w-xl rounded-3xl border border-dashed border-gp-edge-2 bg-gp-panel p-10 text-center" role="status">
+              <p className="text-base text-gp-mist">{PRICING.unavailable}</p>
               <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                <button type="button" onClick={retry} className="btn-shine inline-flex h-11 items-center gap-2 rounded-full bg-slate-900 px-6 text-sm font-semibold text-white">
+                <button type="button" onClick={retry} className="btn-shine inline-flex h-11 items-center gap-2 rounded-full bg-gp-bone px-6 text-sm font-semibold text-gp-ink">
                   <FiRefreshCw className="h-4 w-4" /> Try again
                 </button>
-                <a href="#demo" className="inline-flex h-11 items-center gap-2 rounded-full border border-slate-300 px-6 text-sm font-semibold text-slate-700 hover:border-slate-400">
+                <a href="#demo" className="inline-flex h-11 items-center gap-2 rounded-full border border-gp-edge-2 px-6 text-sm font-semibold text-gp-mist hover:border-gp-bone/40">
                   Ask us for the prices <FiArrowRight className="h-4 w-4" />
                 </a>
               </div>
@@ -218,9 +217,9 @@ export default function Pricing() {
 
           {/* Loaded, and there is nothing on sale yet. */}
           {!failed && plans && plans.length === 0 && (
-            <div className="mx-auto max-w-xl rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center">
-              <p className="text-base text-slate-600">{PRICING.fallback}</p>
-              <a href="#demo" className="btn-shine mt-6 inline-flex h-11 items-center gap-2 rounded-full bg-slate-900 px-6 text-sm font-semibold text-white">
+            <div className="mx-auto max-w-xl rounded-3xl border border-dashed border-gp-edge-2 bg-gp-panel p-10 text-center">
+              <p className="text-base text-gp-mist">{PRICING.fallback}</p>
+              <a href="#demo" className="btn-shine mt-6 inline-flex h-11 items-center gap-2 rounded-full bg-gp-bone px-6 text-sm font-semibold text-gp-ink">
                 Book a demo <FiArrowRight className="h-4 w-4" />
               </a>
             </div>
@@ -246,36 +245,36 @@ export default function Pricing() {
                 // plan goes to checkout monthly whatever the toggle says.
                 const cycle = yearly && plan.price.yearly > 0 ? "yearly" : "monthly";
                 return (
-                  <article key={plan.id} className={`a-rise relative flex flex-col rounded-3xl border p-7 transition-transform duration-300 hover:-translate-y-1 ${isPopular ? "border-brand-500 bg-slate-950 text-white shadow-glow" : "border-slate-200 bg-white text-slate-900 shadow-card hover:shadow-lift"}`} style={stagger(i * 2)}>
-                    {isPopular && <span className="absolute -top-3 left-7 animate-pulse-soft rounded-full bg-gradient-to-r from-brand-500 to-purple-500 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white">Recommended</span>}
-                    <h3 className="font-display text-xl font-semibold">{plan.name}</h3>
-                    {plan.description && <p className={`mt-1.5 text-sm ${isPopular ? "text-slate-300" : "text-slate-500"}`}>{plan.description}</p>}
+                  <article key={plan.id} className={`a-rise relative flex flex-col rounded-3xl border p-7 transition-transform duration-300 hover:-translate-y-1 ${isPopular ? "border-gp-mint/60 bg-gp-raised text-gp-bone shadow-[0_0_0_1px_rgb(var(--gp-mint)/0.25),0_20px_60px_-20px_rgb(var(--gp-mint)/0.45)]" : "border-gp-edge-2 bg-gp-panel text-gp-bone shadow-card hover:shadow-lift"}`} style={stagger(i * 2)}>
+                    {isPopular && <span className="absolute -top-3 left-7 animate-pulse-soft rounded-full bg-gradient-to-r from-gp-mint to-gp-ember px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-gp-ink">Recommended</span>}
+                    <h3 className="font-gp text-xl font-semibold">{plan.name}</h3>
+                    {plan.description && <p className={`mt-1.5 text-sm ${isPopular ? "text-gp-mist" : "text-gp-slate"}`}>{plan.description}</p>}
                     <p key={yearly ? "yearly" : "monthly"} className="a-pop mt-6 flex origin-left items-baseline gap-1.5">
-                      <span className="font-display text-4xl font-extrabold tracking-tight">{perMonth === 0 ? "Free" : formatMoney(perMonth, plan.price.currency)}</span>
-                      {perMonth > 0 && <span className={`text-sm ${isPopular ? "text-slate-400" : "text-slate-500"}`}>/ month</span>}
+                      <span className="font-gp text-4xl font-extrabold tracking-tight">{perMonth === 0 ? "Free" : formatMoney(perMonth, plan.price.currency)}</span>
+                      {perMonth > 0 && <span className="text-sm text-gp-slate">/ month</span>}
                     </p>
-                    <p className={`mt-1 text-xs ${isPopular ? "text-slate-400" : "text-slate-500"}`}>
+                    <p className="mt-1 text-xs text-gp-slate">
                       {yearly && plan.price.yearly > 0 ? `${formatMoney(plan.price.yearly, plan.price.currency)} billed yearly${saving > 0 ? ` · save ${saving}%` : ""}` : plan.price.yearly > 0 ? `or ${formatMoney(plan.price.yearly, plan.price.currency)} / year` : "billed monthly"}
                       {plan.trialDays > 0 ? ` · ${plan.trialDays}-day free trial` : ""}
                     </p>
 
                     <Link
                       href={`/checkout?plan=${plan.slug}&cycle=${cycle}`}
-                      className={`btn-shine mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-full text-sm font-semibold transition-transform hover:-translate-y-0.5 ${isPopular ? "btn-shine-dark bg-white text-slate-900" : "bg-slate-900 text-white"}`}
+                      className={`btn-shine mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-full text-sm font-semibold transition-transform hover:-translate-y-0.5 ${isPopular ? "btn-shine-dark bg-gp-bone text-gp-ink" : "bg-gp-bone/[0.08] text-gp-bone ring-1 ring-inset ring-gp-bone/15"}`}
                     >
                       {plan.trialDays > 0 ? "Start free trial" : "Get started"} <FiArrowRight className="h-4 w-4" />
                     </Link>
 
-                    <dl className={`mt-6 grid grid-cols-2 gap-2 text-xs ${isPopular ? "text-slate-300" : "text-slate-600"}`}>
+                    <dl className="mt-6 grid grid-cols-2 gap-2 text-xs text-gp-mist">
                       {[
                         ["Members", plan.limits.maxMembers],
                         ["Staff", plan.limits.maxStaff],
                         ["Trainers", plan.limits.maxTrainers],
                         ["Classes", plan.limits.maxClasses],
                       ].map(([l, n], j) => (
-                        <div key={String(l)} className={`a-pop rounded-xl px-3 py-2 ${isPopular ? "bg-white/[0.06]" : "bg-slate-50"}`} style={stagger(i * 2 + 3 + j)}>
+                        <div key={String(l)} className={`a-pop rounded-xl px-3 py-2 ${isPopular ? "bg-gp-bone/[0.06]" : "bg-gp-bone/5"}`} style={stagger(i * 2 + 3 + j)}>
                           <dt className="text-[10px] font-semibold uppercase tracking-wider opacity-70">{l}</dt>
-                          <dd className={`text-sm font-semibold ${isPopular ? "text-white" : "text-slate-900"}`}>{limit(Number(n))}</dd>
+                          <dd className="text-sm font-semibold text-gp-bone">{limit(Number(n))}</dd>
                         </div>
                       ))}
                     </dl>
@@ -294,10 +293,10 @@ export default function Pricing() {
                       </div>
                     )}
                     {plan.features.length > 0 && (
-                      <ul className={`mt-6 space-y-2 text-sm ${isPopular ? "text-slate-200" : "text-slate-700"}`}>
+                      <ul className={`mt-6 space-y-2 text-sm ${isPopular ? "text-gp-bone" : "text-gp-mist"}`}>
                         {plan.features.map((f, j) => (
                           <li key={f} className="a-rise flex items-start gap-2" style={stagger(i * 2 + 6 + j)}>
-                            <FiCheck className={`mt-0.5 h-4 w-4 shrink-0 ${isPopular ? "text-emerald-400" : "text-emerald-500"}`} /> {f}
+                            <FiCheck className="mt-0.5 h-4 w-4 shrink-0 text-gp-mint" /> {f}
                           </li>
                         ))}
                       </ul>
@@ -311,29 +310,13 @@ export default function Pricing() {
           {/* The add-on is on the cards with a price, so the cards' own page
               says where it stands today. */}
           {plans && plans.length > 0 && addons.some((a) => a.slug.includes("app")) && (
-            <p className="mx-auto mt-6 max-w-2xl text-center text-xs leading-relaxed text-slate-500">{PRICING.appNote}</p>
+            <p className="mx-auto mt-6 max-w-2xl text-center text-xs leading-relaxed text-gp-slate">{PRICING.appNote}</p>
           )}
         </div>
 
-        <Reveal className="mx-auto mt-14 max-w-5xl">
-          <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-card">
-            <p className="v-rise text-center text-xs font-semibold uppercase tracking-[0.18em] text-slate-400" style={stagger(0)}>
-              Included in every plan
-            </p>
-            <ul className="mt-5 grid gap-x-6 gap-y-2.5 text-sm text-slate-700 sm:grid-cols-2 lg:grid-cols-3">
-              {PRICING.included.map((f, i) => (
-                <li key={linkedKey(f)} className="v-rise flex items-center gap-2" style={stagger(1 + i)}>
-                  <FiCheck className="h-4 w-4 shrink-0 text-emerald-500" /> <LinkedText item={f} />
-                </li>
-              ))}
-            </ul>
-            <p className="v-rise mt-6 text-center" style={stagger(14)}>
-              <Link href="/features" className="group inline-flex items-center gap-1.5 rounded text-sm font-semibold text-brand-600 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
-                See every feature <FiArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </Link>
-            </p>
-          </div>
-        </Reveal>
+        <div className="mt-14">
+          <IncludedCard />
+        </div>
       </div>
     </section>
   );

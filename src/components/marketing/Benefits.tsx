@@ -12,7 +12,7 @@ import SectionHeading from "./SectionHeading";
 // to the full list on /features, where each feature has its own page.
 export default function Benefits() {
   return (
-    <section id="features" className="relative bg-white py-20 sm:py-24">
+    <section id="helps" className="relative py-20 sm:py-24">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <SectionHeading eyebrow={BENEFITS.eyebrow} title={BENEFITS.title} text={BENEFITS.text} />
 
@@ -22,20 +22,20 @@ export default function Benefits() {
             const Scene = BENEFIT_SCENES[item.key];
             return (
               <Reveal key={item.key} delay={(i % 3) * 80} as="li">
-                <div className="relative h-full rounded-2xl border border-slate-200 bg-slate-50 p-6">
+                <div className="relative h-full rounded-2xl border border-gp-edge-2 bg-gp-panel p-6">
                   {/* The outcome, acted out in a small loop above the words. */}
                   {Scene && (
-                    <div className="mb-5 h-28 overflow-hidden rounded-xl bg-white ring-1 ring-inset ring-slate-200" aria-hidden="true">
+                    <div className="mb-5 h-28 overflow-hidden rounded-xl bg-gp-void ring-1 ring-inset ring-gp-bone/10" aria-hidden="true">
                       <Scene />
                     </div>
                   )}
                   <span className={`v-pop inline-flex h-11 w-11 items-center justify-center rounded-xl ring-1 ring-inset ${FEATURE_TINTS[item.key]}`} style={stagger(0)}>
                     <Icon className="h-5 w-5" />
                   </span>
-                  <h3 className="v-rise mt-4 font-display text-xl font-semibold tracking-tight text-slate-900" style={stagger(1)}>
+                  <h3 className="v-rise mt-4 font-gp text-xl font-semibold tracking-tight text-gp-bone" style={stagger(1)}>
                     {item.title}
                   </h3>
-                  <p className="v-rise mt-2 text-base leading-relaxed text-slate-600" style={stagger(2)}>
+                  <p className="v-rise mt-2 text-base leading-relaxed text-gp-mist" style={stagger(2)}>
                     {item.text}
                   </p>
                 </div>
