@@ -29,11 +29,16 @@ function areaFromQuery(value: string | null): Area {
 
 // One area's cards as a carousel: arrows either side move a page at a time,
 // dots below show (and jump to) each page. Touch and trackpad swipe still
-// work; the scrollbar itself is hidden.
+// work; the scrollbar itself is hidden. So people can tell a row moves, the
+// first time it comes into view it peeks sideways and back, the next arrow
+// pulses until it is used, and the edges fade where more cards are hidden.
 function Row({ label, resetKey, children }: { label: string; resetKey: string; children: ReactNode }) {
+  const wrap = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
   const [pages, setPages] = useState(1);
   const [page, setPage] = useState(0);
+  const [touched, setTouched] = useState(false);
+  const [seen, setSeen] = useState(false);
 
   const measure = useCallback(() => {
     const el = track.current;
@@ -59,28 +64,59 @@ function Row({ label, resetKey, children }: { label: string; resetKey: string; c
     };
   }, [measure, resetKey]);
 
+  // The one-time peek when the row is first well in view.
+  useEffect(() => {
+    const box = wrap.current;
+    const el = track.current;
+    if (!box || !el || pages < 2 || seen) return;
+    let timers: number[] = [];
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        io.disconnect();
+        setSeen(true);
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || el.scrollLeft > 0) return;
+        const snap = el.style.scrollSnapType;
+        el.style.scrollSnapType = "none";
+        timers = [
+          window.setTimeout(() => el.scrollTo({ left: Math.min(90, el.clientWidth * 0.12), behavior: "smooth" }), 350),
+          window.setTimeout(() => el.scrollTo({ left: 0, behavior: "smooth" }), 950),
+          window.setTimeout(() => (el.style.scrollSnapType = snap), 1600),
+        ];
+      },
+      { threshold: 0.6 }
+    );
+    io.observe(box);
+    return () => {
+      io.disconnect();
+      timers.forEach((t) => window.clearTimeout(t));
+    };
+  }, [pages, seen]);
+
   const go = (i: number) => {
     const el = track.current;
     if (!el) return;
+    setTouched(true);
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const target = Math.max(0, Math.min(pages - 1, i));
     el.scrollTo({ left: target * el.clientWidth, behavior: still ? "auto" : "smooth" });
   };
 
   const multi = pages > 1;
+  const edges = multi ? `${page > 0 ? s.fadeL : ""} ${page < pages - 1 ? s.fadeR : ""}` : "";
   return (
-    <div className={s.row} role="region" aria-roledescription="carousel" aria-label={label}>
+    <div ref={wrap} className={`${s.row} ${seen || !multi ? s.seen : ""}`} role="region" aria-roledescription="carousel" aria-label={label}>
       <div className={s.rowIn}>
         {multi && (
           <button type="button" className={`${s.arrow} ${s.prev}`} onClick={() => go(page - 1)} disabled={page === 0} aria-label={`Previous ${label} features`}>
             <FiChevronLeft aria-hidden="true" />
           </button>
         )}
-        <div ref={track} className={`${s.grid} ${s.in}`}>
+        <div ref={track} className={`${s.grid} ${s.in} ${edges}`} onPointerDown={() => setTouched(true)} onWheel={(e) => Math.abs(e.deltaX) > 2 && setTouched(true)}>
           {children}
         </div>
         {multi && (
-          <button type="button" className={`${s.arrow} ${s.next}`} onClick={() => go(page + 1)} disabled={page === pages - 1} aria-label={`Next ${label} features`}>
+          <button type="button" className={`${s.arrow} ${s.next} ${!touched && page === 0 ? s.call : ""}`} onClick={() => go(page + 1)} disabled={page === pages - 1} aria-label={`Next ${label} features`}>
             <FiChevronRight aria-hidden="true" />
           </button>
         )}
@@ -90,6 +126,9 @@ function Row({ label, resetKey, children }: { label: string; resetKey: string; c
           {Array.from({ length: pages }, (_, i) => (
             <button key={i} type="button" className={i === page ? s.dotOn : s.dot} onClick={() => go(i)} aria-label={`${label}: page ${i + 1} of ${pages}`} aria-current={i === page ? "true" : undefined} />
           ))}
+          <span className={s.count} aria-hidden="true">
+            {page + 1} / {pages}
+          </span>
         </div>
       )}
     </div>

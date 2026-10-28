@@ -1,21 +1,22 @@
 import Link from "next/link";
 import type { IconType } from "react-icons";
-import { FiBarChart2, FiCalendar, FiCreditCard, FiGlobe, FiShield, FiShoppingBag, FiUsers, FiZap } from "react-icons/fi";
-import { FEATURE_GROUPS, featuresIn, type GroupKey } from "@/content/features";
+import { AREA_ICONS } from "./featureAreas";
+import { FEATURE_ICONS } from "./featureIcons";
+import { FEATURE_GROUPS, featuresIn, type FeatureKey, type GroupKey } from "@/content/features";
 import { stagger } from "@/lib/motion";
 
 const FOCUS = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gp-mint focus-visible:ring-offset-2 focus-visible:ring-offset-gp-void";
 
 // Each group's own colour and icon, for the card look on /features.
 const LOOK: Record<GroupKey, { icon: IconType; badge: string; edge: string; glow: string }> = {
-  desk: { icon: FiCreditCard, badge: "bg-gp-mint/10 text-gp-mint ring-1 ring-inset ring-gp-mint/30", edge: "from-gp-mint/70", glow: "hover:shadow-gp-mint/10" },
-  checkin: { icon: FiZap, badge: "bg-gp-mint/10 text-gp-mint ring-1 ring-inset ring-gp-mint/30", edge: "from-gp-mint/70", glow: "hover:shadow-gp-mint/10" },
-  money: { icon: FiBarChart2, badge: "bg-gp-ember/10 text-gp-ember ring-1 ring-inset ring-gp-ember/30", edge: "from-gp-ember/70", glow: "hover:shadow-gp-ember/10" },
-  shop: { icon: FiShoppingBag, badge: "bg-gp-ember/10 text-gp-ember ring-1 ring-inset ring-gp-ember/30", edge: "from-gp-ember/70", glow: "hover:shadow-gp-ember/10" },
-  classes: { icon: FiCalendar, badge: "bg-gp-mint/10 text-gp-mint ring-1 ring-inset ring-gp-mint/30", edge: "from-gp-mint/70", glow: "hover:shadow-gp-mint/10" },
-  team: { icon: FiUsers, badge: "bg-gp-ember/10 text-gp-ember ring-1 ring-inset ring-gp-ember/30", edge: "from-gp-ember/70", glow: "hover:shadow-gp-ember/10" },
-  reach: { icon: FiGlobe, badge: "bg-gp-mint/10 text-gp-mint ring-1 ring-inset ring-gp-mint/30", edge: "from-gp-mint/70", glow: "hover:shadow-gp-mint/10" },
-  control: { icon: FiShield, badge: "bg-gp-mint/10 text-gp-mint ring-1 ring-inset ring-gp-mint/30", edge: "from-gp-mint/70", glow: "hover:shadow-gp-mint/10" },
+  desk: { icon: AREA_ICONS.desk, badge: "bg-gp-mint/10 text-gp-mint ring-1 ring-inset ring-gp-mint/30", edge: "from-gp-mint/70", glow: "hover:shadow-gp-mint/10" },
+  checkin: { icon: AREA_ICONS.checkin, badge: "bg-gp-mint/10 text-gp-mint ring-1 ring-inset ring-gp-mint/30", edge: "from-gp-mint/70", glow: "hover:shadow-gp-mint/10" },
+  money: { icon: AREA_ICONS.money, badge: "bg-gp-ember/10 text-gp-ember ring-1 ring-inset ring-gp-ember/30", edge: "from-gp-ember/70", glow: "hover:shadow-gp-ember/10" },
+  shop: { icon: AREA_ICONS.shop, badge: "bg-gp-ember/10 text-gp-ember ring-1 ring-inset ring-gp-ember/30", edge: "from-gp-ember/70", glow: "hover:shadow-gp-ember/10" },
+  classes: { icon: AREA_ICONS.classes, badge: "bg-gp-mint/10 text-gp-mint ring-1 ring-inset ring-gp-mint/30", edge: "from-gp-mint/70", glow: "hover:shadow-gp-mint/10" },
+  team: { icon: AREA_ICONS.team, badge: "bg-gp-ember/10 text-gp-ember ring-1 ring-inset ring-gp-ember/30", edge: "from-gp-ember/70", glow: "hover:shadow-gp-ember/10" },
+  reach: { icon: AREA_ICONS.reach, badge: "bg-gp-mint/10 text-gp-mint ring-1 ring-inset ring-gp-mint/30", edge: "from-gp-mint/70", glow: "hover:shadow-gp-mint/10" },
+  control: { icon: AREA_ICONS.control, badge: "bg-gp-mint/10 text-gp-mint ring-1 ring-inset ring-gp-mint/30", edge: "from-gp-mint/70", glow: "hover:shadow-gp-mint/10" },
 };
 
 // Every group, numbered, with how many features it has and each feature under
@@ -25,6 +26,11 @@ const LOOK: Record<GroupKey, { icon: IconType; badge: string; edge: string; glow
 // Features menu shows the plain list; the top of /features shows the same
 // list as a card per group (`variant="cards"`), each in its own colour. The
 // groups come in one after another (a-rise), whenever the grid is shown.
+function FeatureIcon({ k }: { k: FeatureKey }) {
+  const Icon = FEATURE_ICONS[k];
+  return <Icon className="h-4 w-4" />;
+}
+
 export default function FeatureGroupsGrid({ onNavigate, currentPath = "", className = "", variant = "plain" }: { onNavigate?: () => void; currentPath?: string; className?: string; variant?: "plain" | "cards" }) {
   const cards = variant === "cards";
   return (
@@ -70,9 +76,16 @@ export default function FeatureGroupsGrid({ onNavigate, currentPath = "", classN
                       aria-current={here ? "page" : undefined}
                       className={`group flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-sm transition-colors ${FOCUS} ${here ? "bg-gp-bone/10 text-gp-bone" : "text-gp-mist hover:bg-gp-bone/5 hover:text-gp-bone"}`}
                     >
-                      <span className="w-7 shrink-0 font-mono text-[11px] font-medium tabular-nums text-gp-slate transition-colors group-hover:text-gp-mint">
-                        {gi + 1}.{fi + 1}
-                      </span>
+                      {cards ? (
+                        // The feature's own icon (the reference's Lucide set) in the area's colour.
+                        <span className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${look.badge} transition-transform duration-300 group-hover:scale-110 motion-reduce:transition-none`} aria-hidden="true">
+                          <FeatureIcon k={f.key} />
+                        </span>
+                      ) : (
+                        <span className="w-7 shrink-0 font-mono text-[11px] font-medium tabular-nums text-gp-slate transition-colors group-hover:text-gp-mint">
+                          {gi + 1}.{fi + 1}
+                        </span>
+                      )}
                       <span className="min-w-0 flex-1">{f.name}</span>
                       {cards && <span className="text-gp-slate opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-gp-mint group-hover:opacity-100" aria-hidden="true">→</span>}
                     </Link>

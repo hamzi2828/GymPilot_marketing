@@ -2,7 +2,7 @@
 // (a dark/light pair) and a short tab label. Used by FeatureOrbit.
 
 import type { IconType } from "react-icons";
-import { LuCalendarDays, LuChartLine, LuConciergeBell, LuMessagesSquare, LuScanFace, LuShieldCheck, LuStore, LuUsers } from "react-icons/lu";
+import { LuCalendarDays, LuChartLine, LuConciergeBell, LuLock, LuMegaphone, LuScanFace, LuStore, LuUsersRound } from "react-icons/lu";
 import type { GroupKey } from "@/content/features";
 
 export const AREA_ICONS: Record<GroupKey, IconType> = {
@@ -11,9 +11,9 @@ export const AREA_ICONS: Record<GroupKey, IconType> = {
   money: LuChartLine,
   shop: LuStore,
   classes: LuCalendarDays,
-  team: LuUsers,
-  reach: LuMessagesSquare,
-  control: LuShieldCheck,
+  team: LuUsersRound,
+  reach: LuMegaphone,
+  control: LuLock,
 };
 
 // Mint and ember, with a few muted variants between them. `dark` is the soft
