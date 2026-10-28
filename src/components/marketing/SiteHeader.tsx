@@ -252,7 +252,7 @@ export default function SiteHeader() {
     // site look.
     <header className="gp-site gp-top-fade pointer-events-none fixed inset-x-0 top-0 z-50 h-[calc(84px+env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] font-gp">
       <div className="flex h-[84px] items-center justify-between gap-3 px-4 sm:px-7">
-        <Brand className="pointer-events-auto shrink-0" />
+        <Brand markOnlyOnPhone className="pointer-events-auto shrink-0" />
 
         <div className="pointer-events-auto flex items-center gap-1.5">
           {SITE.whatsappUrl && (

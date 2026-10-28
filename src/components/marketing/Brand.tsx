@@ -34,22 +34,24 @@ export function GMark({ className = "mk" }: { className?: string }) {
 }
 
 /** The wordmark: the G mark, "gymspılot" in Tektur with a mint dot on the i, then a boxed PRO. */
-export function Wordmark({ className = "", mark = true, light = false }: { className?: string; mark?: boolean; light?: boolean }) {
+/** `markOnlyOnPhone`: below 640px show just the G (the header uses it). */
+export function Wordmark({ className = "", mark = true, light = false, markOnlyOnPhone = false }: { className?: string; mark?: boolean; light?: boolean; markOnlyOnPhone?: boolean }) {
+  const text = markOnlyOnPhone ? "max-sm:hidden" : "";
   return (
     <span className={`gp-logo ${light ? "on-light" : ""} ${className}`}>
-      {mark && <GMark />}
-      <span aria-hidden="true">
+      {mark && <GMark className={markOnlyOnPhone ? "mk max-sm:!h-7 max-sm:!w-7" : "mk"} />}
+      <span className={text} aria-hidden="true">
         gymsp<span className="i">ı</span>lot
       </span>
-      <span className="pro" aria-hidden="true">PRO</span>
+      <span className={`pro ${text}`} aria-hidden="true">PRO</span>
     </span>
   );
 }
 
-export default function Brand({ dark = true, href = "/", className = "" }: { dark?: boolean; href?: string; className?: string }) {
+export default function Brand({ dark = true, href = "/", className = "", markOnlyOnPhone = false }: { dark?: boolean; href?: string; className?: string; markOnlyOnPhone?: boolean }) {
   return (
     <Link href={href} className={`group inline-flex items-center ${className}`} aria-label={`${SITE.name} home`}>
-      <Wordmark light={!dark} className="transition-opacity duration-300 group-hover:opacity-85" />
+      <Wordmark light={!dark} markOnlyOnPhone={markOnlyOnPhone} className="transition-opacity duration-300 group-hover:opacity-85" />
     </Link>
   );
 }
