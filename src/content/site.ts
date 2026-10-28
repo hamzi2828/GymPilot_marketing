@@ -89,7 +89,7 @@ export const HERO = {
   title: ["Run your whole", "gym from", "one place."],
   lead: "Collect fees on time, check members in, fill your classes and get your own gym website. One simple system, set up for you in a day.",
   primary: { label: "Book a demo", href: "#demo" },
-  secondary: { label: "See how it helps", href: "#features" },
+  secondary: { label: "See how it helps", href: "#helps" },
   trust: ["Free trial on every plan", "Set up for you", "Cancel any time"],
 };
 

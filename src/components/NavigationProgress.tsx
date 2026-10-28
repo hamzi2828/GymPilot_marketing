@@ -86,9 +86,11 @@ export default function NavigationProgress() {
     if (waiting.current) finish();
   }, [pathname, search, finish]);
 
+  // The panel keeps its indigo bar; the public site (any page with .gp-site)
+  // gets mint to amber.
   return (
     <div aria-hidden="true" className="pointer-events-none fixed inset-x-0 top-0 z-[100] h-0.5">
-      <div data-phase={phase} className="nav-progress h-full bg-gradient-to-r from-brand-500 via-purple-500 to-fuchsia-500" />
+      <div data-phase={phase} className="nav-progress h-full bg-gradient-to-r from-brand-500 via-purple-500 to-fuchsia-500 [body:has(.gp-site)_&]:from-gp-mint [body:has(.gp-site)_&]:via-gp-bone [body:has(.gp-site)_&]:to-gp-ember" />
     </div>
   );
 }

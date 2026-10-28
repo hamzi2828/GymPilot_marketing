@@ -12,19 +12,19 @@ export default function ViewAllFeaturesButton({ size = "md", count, revealed = f
   const big = size === "lg";
   return (
     <span className={`relative inline-flex ${revealed ? "v-cta-in" : "a-cta-in"} ${className}`}>
-      <span className="a-ping-ring pointer-events-none absolute inset-0 rounded-full bg-fuchsia-500/40" aria-hidden="true" />
+      <span className="a-ping-ring pointer-events-none absolute inset-0 rounded-xl bg-gp-mint/25" aria-hidden="true" />
       <Link
         href="/features"
         onClick={onClick}
         {...rest}
-        className={`btn-sweep group relative inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-brand-600 via-purple-600 to-fuchsia-600 font-bold text-white transition-all duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 motion-reduce:transition-none ${big ? "h-14 gap-3 px-8 text-base shadow-xl shadow-brand-600/30 ring-4 ring-brand-500/15 hover:shadow-2xl hover:shadow-brand-600/40" : "gap-2.5 px-6 py-2.5 text-sm shadow-lg shadow-brand-600/30"}`}
+        className={`btn-sweep group relative inline-flex w-full items-center justify-center rounded-xl gp-btn-dark border border-gp-edge-2 font-medium text-gp-bone transition-all duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gp-mint focus-visible:ring-offset-2 focus-visible:ring-offset-gp-void motion-reduce:transition-none ${big ? "h-14 gap-3 px-8 text-base" : "h-[38px] gap-2.5 px-5 text-sm"}`}
       >
-        <FaHandPointRight className={`a-point-r shrink-0 text-amber-300 ${big ? "h-5 w-5" : "h-4 w-4"}`} aria-hidden="true" />
+        <FaHandPointRight className={`a-point-r shrink-0 text-gp-ember ${big ? "h-5 w-5" : "h-4 w-4"}`} aria-hidden="true" />
         <span>
           {BENEFITS.cta}
           {count ? ` (${count})` : ""}
         </span>
-        <FaHandPointLeft className={`a-point-l shrink-0 text-amber-300 ${big ? "h-5 w-5" : "h-4 w-4"}`} aria-hidden="true" />
+        <FaHandPointLeft className={`a-point-l shrink-0 text-gp-ember ${big ? "h-5 w-5" : "h-4 w-4"}`} aria-hidden="true" />
       </Link>
     </span>
   );

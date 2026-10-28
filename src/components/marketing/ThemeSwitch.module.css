@@ -1,0 +1,101 @@
+/* The barbell theme switch, after the reference (.tg): a knurled rod, a
+   collar at each end and one plate that springs from the left (dark) to the
+   right (light). Its own light look comes from <html data-gp-theme="light">. */
+.tg {
+  position: relative;
+  width: 86px;
+  height: 34px;
+  flex: none;
+  border-radius: 10px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.tg:focus-visible {
+  outline: 2px solid rgb(var(--gp-mint));
+  outline-offset: 3px;
+}
+.rod {
+  position: absolute;
+  left: 7px;
+  right: 7px;
+  top: 50%;
+  height: 4px;
+  margin-top: -2px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(90deg, #4a5251 0 2px, #2a3130 2px 4px);
+  transition: background 0.5s;
+}
+.col {
+  position: absolute;
+  top: 50%;
+  width: 5px;
+  height: 14px;
+  margin-top: -7px;
+  border-radius: 2px;
+  background: #59615f;
+  transition: background 0.5s;
+}
+.colL { left: 2px; }
+.colR { right: 2px; }
+.pl {
+  position: absolute;
+  top: 0;
+  left: 10px;
+  width: 16px;
+  height: 34px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #0b0f0f, #1f2827 45%, #0b0f0f);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: left 467ms cubic-bezier(0.34, 1.45, 0.64, 1), transform 0.2s, background 0.5s, border-color 0.5s;
+  /* The reference's spring, where the browser knows linear(). */
+  transition: left 467ms linear(0, 0.0673, 0.1641, 0.2815, 0.406, 0.528, 0.6409, 0.7407, 0.8255, 0.8947, 0.949, 0.9897, 1.0186, 1.0374, 1.0482, 1.0529, 1.0529, 1.0497, 1.0445, 1.0382, 1.0316, 1.0251, 1.0191, 1.0138, 1.0093, 1.0056, 1.0027, 1.0005, 1), transform 0.2s, background 0.5s, border-color 0.5s;
+}
+.pl::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  border-radius: 50%;
+  background: rgb(var(--gp-mint));
+  transition: background 0.5s;
+}
+.tg:hover .pl { border-color: rgb(var(--gp-mint)); }
+.tg:active .pl { transform: scaleY(0.92); }
+
+:global(html[data-gp-theme="light"]) .pl {
+  left: 60px;
+  background: linear-gradient(90deg, #e1e4df, #fff 45%, #e1e4df);
+  border-color: rgba(0, 0, 0, 0.18);
+}
+:global(html[data-gp-theme="light"]) .tg:hover .pl { border-color: rgb(var(--gp-mint)); }
+:global(html[data-gp-theme="light"]) .pl::after { background: rgb(var(--gp-ember)); }
+:global(html[data-gp-theme="light"]) .rod { background: repeating-linear-gradient(90deg, #b9bdb7 0 2px, #d4d7d1 2px 4px); }
+:global(html[data-gp-theme="light"]) .col { background: #9aa09b; }
+
+@media (max-width: 640px) {
+  .tg { width: 70px; }
+  :global(html[data-gp-theme="light"]) .pl { left: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pl, .rod, .col, .pl::after { transition: none; }
+}
+
+/* The plate rim that rolls the new theme out from the switch (only while a
+   view transition runs; see ThemeSwitch.tsx). */
+.plateOv {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  pointer-events: none;
+  view-transition-name: gp-plate;
+}
+.plateOv svg { position: absolute; inset: 0; overflow: visible; }
+.plateOv circle { fill: none; }
+.p1 { stroke: rgb(var(--gp-mint)); stroke-width: 3; filter: drop-shadow(0 0 10px rgb(var(--gp-mint) / 0.75)); }
+.p2 { stroke: rgb(var(--gp-mint) / 0.22); stroke-width: 14; }
+.p3 { stroke: rgb(var(--gp-mint) / 0.55); stroke-width: 2; stroke-dasharray: 2 14; transform-origin: 0 0; }
+:global(html[data-gp-theme="light"]) .p1 { filter: drop-shadow(0 0 8px rgb(var(--gp-mint) / 0.45)); }
+:global(html[data-gp-theme="light"]) .p2 { stroke: rgb(var(--gp-mint) / 0.16); }

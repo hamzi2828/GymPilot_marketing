@@ -19,10 +19,10 @@ const CHECKINS = ["AR", "MK", "SJ", "DL", "PT", "+9"];
 
 function Stat({ label, value, delta, index, up = true }: { label: string; value: React.ReactNode; delta: string; index: number; up?: boolean }) {
   return (
-    <div className="a-pop rounded-xl border border-white/[0.06] bg-white/[0.03] p-3" style={stagger(index)}>
-      <p className="text-[10px] font-medium uppercase tracking-wider text-slate-500">{label}</p>
-      <p className="mt-1 font-display text-lg font-semibold text-white">{value}</p>
-      <p className={`mt-0.5 text-[10px] font-semibold ${up ? "text-emerald-400" : "text-rose-400"}`}>{delta}</p>
+    <div className="a-pop rounded-xl border border-gp-edge bg-gp-bone/[0.03] p-3" style={stagger(index)}>
+      <p className="text-[10px] font-medium uppercase tracking-wider text-gp-slate">{label}</p>
+      <p className="mt-1 font-gp-brand text-lg font-medium text-gp-bone">{value}</p>
+      <p className={`mt-0.5 text-[10px] font-semibold ${up ? "text-gp-mint" : "text-rose-400"}`}>{delta}</p>
     </div>
   );
 }
@@ -30,11 +30,11 @@ function Stat({ label, value, delta, index, up = true }: { label: string; value:
 function Event({ icon, tint, title, text, className, style, turn }: { icon: React.ReactNode; tint: string; title: string; text: string; className: string; style?: React.CSSProperties; turn: number }) {
   return (
     <div className={`absolute hidden md:block ${className}`} style={style}>
-      <div className="a-hero-event flex items-center gap-2.5 rounded-xl border border-white/10 bg-slate-900/95 p-3 shadow-lift ring-1 ring-white/5" style={{ animationDelay: `${0.8 + turn * 3}s` }}>
+      <div className="a-hero-event flex items-center gap-2.5 rounded-xl border border-gp-edge-2 bg-gp-panel/95 p-3 shadow-2xl shadow-gp-void/60 ring-1 ring-gp-bone/5" style={{ animationDelay: `${0.8 + turn * 3}s` }}>
         <span className={`flex h-8 w-8 items-center justify-center rounded-lg ${tint}`}>{icon}</span>
         <div>
-          <p className="text-xs font-semibold text-white">{title}</p>
-          <p className="text-[11px] text-slate-400">{text}</p>
+          <p className="text-xs font-medium text-gp-bone">{title}</p>
+          <p className="text-[11px] text-gp-slate">{text}</p>
         </div>
       </div>
     </div>
@@ -43,26 +43,26 @@ function Event({ icon, tint, title, text, className, style, turn }: { icon: Reac
 
 export default function ProductMock() {
   return (
-    <div className="relative mx-auto w-full max-w-[640px]">
+    <div className="relative mx-auto w-full max-w-[640px] text-left font-gp">
       {/* glow */}
-      <div className="absolute -inset-16 -z-10 rounded-[3rem]" style={{ background: "radial-gradient(closest-side, rgba(99,102,241,0.35), rgba(168,85,247,0.15) 60%, transparent 100%)" }} aria-hidden="true" />
+      <div className="absolute -inset-16 -z-10 rounded-[3rem]" style={{ background: "radial-gradient(closest-side, rgb(var(--gp-mint) / 0.14), rgb(var(--gp-ember) / 0.06) 60%, transparent 100%)" }} aria-hidden="true" />
 
-      <div className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/90 shadow-lift ring-1 ring-white/5">
+      <div className="overflow-hidden rounded-2xl border border-gp-edge-2 bg-gp-panel/90 shadow-2xl shadow-gp-void/60 ring-1 ring-gp-bone/5">
         {/* browser bar */}
-        <div className="flex items-center gap-2 border-b border-white/[0.06] bg-slate-950/60 px-4 py-2.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-rose-400/80" />
-          <span className="h-2.5 w-2.5 rounded-full bg-amber-400/80" />
-          <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/80" />
-          <span className="ml-3 flex-1 rounded-md bg-white/[0.05] px-3 py-1 text-[11px] text-slate-400">
-            <span className="text-emerald-400">https://</span>ironworks.fit/admin
+        <div className="flex items-center gap-2 border-b border-gp-edge bg-gp-void/40 px-4 py-2.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-gp-bone/15" />
+          <span className="h-2.5 w-2.5 rounded-full bg-gp-bone/15" />
+          <span className="h-2.5 w-2.5 rounded-full bg-gp-bone/15" />
+          <span className="ml-3 flex-1 rounded-md bg-gp-bone/[0.05] px-3 py-1 text-[11px] text-gp-slate">
+            <span className="text-gp-mint">https://</span>ironworks.fit/admin
           </span>
         </div>
 
         <div className="flex">
           {/* sidebar */}
-          <aside className="hidden w-12 flex-col items-center gap-1 border-r border-white/[0.06] bg-slate-950/40 py-3 sm:flex">
+          <aside className="hidden w-12 flex-col items-center gap-1 border-r border-gp-edge bg-gp-void/30 py-3 sm:flex">
             {[FiGrid, FiUsers, FiCalendar, FiCreditCard, FiMessageSquare, FiBarChart2, FiSettings].map((Icon, i) => (
-              <span key={i} className={`a-pop flex h-8 w-8 items-center justify-center rounded-lg ${i === 0 ? "bg-brand-500/20 text-brand-300" : "text-slate-500"}`} style={stagger(i, 200)}>
+              <span key={i} className={`a-pop flex h-8 w-8 items-center justify-center rounded-lg ${i === 0 ? "bg-gp-mint/10 text-gp-mint" : "text-gp-slate"}`} style={stagger(i, 200)}>
                 <Icon className="h-4 w-4" />
               </span>
             ))}
@@ -71,11 +71,11 @@ export default function ProductMock() {
           <div className="flex-1 p-4">
             <div className="a-rise flex items-center justify-between" style={stagger(2)}>
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-slate-500">Iron Works Fitness</p>
-                <p className="font-display text-sm font-semibold text-white">Good morning, Aisha</p>
+                <p className="text-[10px] uppercase tracking-wider text-gp-slate">Iron Works Fitness</p>
+                <p className="text-sm font-medium text-gp-bone">Good morning, Aisha</p>
               </div>
-              <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300 ring-1 ring-inset ring-emerald-500/30">
-                <span className="a-blink mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden="true" />
+              <span className="inline-flex items-center rounded-full bg-gp-mint/10 px-2 py-0.5 text-[10px] font-medium text-gp-mint ring-1 ring-inset ring-gp-mint/30">
+                <span className="a-blink mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-gp-mint" aria-hidden="true" />
                 <CountUp value={312} duration={1600} />&nbsp;in today
               </span>
             </div>
@@ -88,54 +88,54 @@ export default function ProductMock() {
 
             <div className="mt-3 grid gap-2 sm:grid-cols-5">
               {/* chart */}
-              <div className="a-rise rounded-xl border border-white/[0.06] bg-white/[0.03] p-3 sm:col-span-3" style={stagger(6)}>
+              <div className="a-rise rounded-xl border border-gp-edge bg-gp-bone/[0.03] p-3 sm:col-span-3" style={stagger(6)}>
                 <div className="flex items-center justify-between">
-                  <p className="text-[10px] font-medium uppercase tracking-wider text-slate-500">Revenue · 12 months</p>
-                  <FiActivity className="h-3.5 w-3.5 text-brand-300" />
+                  <p className="text-[10px] font-medium uppercase tracking-wider text-gp-slate">Revenue · 12 months</p>
+                  <FiActivity className="h-3.5 w-3.5 text-gp-mint" />
                 </div>
                 <div className="mt-3 flex h-24 items-end gap-1.5">
                   {BARS.map((h, i) => (
-                    <div key={i} className="flex-1 origin-bottom animate-grow rounded-sm bg-gradient-to-t from-brand-600 to-purple-400" style={{ height: `${h}%`, animationDelay: `${700 + i * 60}ms` }} />
+                    <div key={i} className="flex-1 origin-bottom animate-grow rounded-sm bg-gradient-to-t from-gp-mint/25 to-gp-mint" style={{ height: `${h}%`, animationDelay: `${700 + i * 60}ms` }} />
                   ))}
                 </div>
               </div>
               {/* check-ins */}
-              <div className="a-rise rounded-xl border border-white/[0.06] bg-white/[0.03] p-3 sm:col-span-2" style={stagger(7)}>
-                <p className="text-[10px] font-medium uppercase tracking-wider text-slate-500">Checked in now</p>
+              <div className="a-rise rounded-xl border border-gp-edge bg-gp-bone/[0.03] p-3 sm:col-span-2" style={stagger(7)}>
+                <p className="text-[10px] font-medium uppercase tracking-wider text-gp-slate">Checked in now</p>
                 <div className="mt-3 flex -space-x-2">
                   {/* Someone new walks in every few seconds. */}
-                  <span className="a-wyg-build flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 text-[9px] font-bold text-white ring-2 ring-slate-900" style={{ animationDelay: "2.5s" }}>
+                  <span className="a-wyg-build flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-gp-mint to-gp-ember text-[9px] font-semibold text-gp-ink ring-2 ring-gp-panel" style={{ animationDelay: "2.5s" }}>
                     NA
                   </span>
                   {CHECKINS.map((c, i) => (
-                    <span key={c} className={`a-pop flex h-7 w-7 items-center justify-center rounded-full text-[9px] font-bold ring-2 ring-slate-900 ${i === CHECKINS.length - 1 ? "bg-slate-700 text-slate-200" : "bg-gradient-to-br from-brand-400 to-purple-500 text-white"}`} style={stagger(i, 900)}>
+                    <span key={c} className={`a-pop flex h-7 w-7 items-center justify-center rounded-full text-[9px] font-semibold ring-2 ring-gp-panel ${i === CHECKINS.length - 1 ? "bg-gp-raised text-gp-mist" : "bg-gp-raised text-gp-bone"}`} style={stagger(i, 900)}>
                       {c}
                     </span>
                   ))}
                 </div>
-                <p className="mt-3 text-[11px] text-slate-400">
-                  Peak <span className="font-semibold text-white">18:00 – 20:00</span>
+                <p className="mt-3 text-[11px] text-gp-slate">
+                  Peak <span className="font-medium text-gp-bone">18:00 – 20:00</span>
                 </p>
-                <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
-                  <div className="a-fill h-full w-[68%] rounded-full bg-gradient-to-r from-emerald-400 to-brand-400" style={stagger(0, 1200)} />
+                <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-gp-bone/10">
+                  <div className="a-fill h-full w-[68%] rounded-full bg-gradient-to-r from-gp-mint to-gp-ember" style={stagger(0, 1200)} />
                 </div>
               </div>
             </div>
 
             {/* classes */}
-            <div className="a-rise mt-2 rounded-xl border border-white/[0.06] bg-white/[0.03] p-3" style={stagger(8)}>
-              <p className="text-[10px] font-medium uppercase tracking-wider text-slate-500">Today&apos;s classes</p>
+            <div className="a-rise mt-2 rounded-xl border border-gp-edge bg-gp-bone/[0.03] p-3" style={stagger(8)}>
+              <p className="text-[10px] font-medium uppercase tracking-wider text-gp-slate">Today&apos;s classes</p>
               <ul className="mt-2 space-y-1.5">
                 {CLASSES.map((c, i) => (
                   <li key={c.name} className="a-rise flex items-center gap-3 text-[11px]" style={stagger(i, 900)}>
-                    <span className="w-10 font-mono text-slate-400">{c.time}</span>
-                    <span className="flex-1 truncate font-medium text-slate-200">
-                      {c.name} <span className="text-slate-500">· {c.room}</span>
+                    <span className="w-10 font-mono text-gp-slate">{c.time}</span>
+                    <span className="flex-1 truncate font-medium text-gp-mist">
+                      {c.name} <span className="text-gp-slate">· {c.room}</span>
                     </span>
-                    <span className="hidden h-1.5 w-20 overflow-hidden rounded-full bg-white/10 sm:block">
-                      <span className={`a-fill block h-full rounded-full ${c.booked >= c.cap ? "bg-amber-400" : "bg-brand-400"}`} style={{ width: `${(c.booked / c.cap) * 100}%`, ...stagger(i, 1300) }} />
+                    <span className="hidden h-1.5 w-20 overflow-hidden rounded-full bg-gp-bone/10 sm:block">
+                      <span className={`a-fill block h-full rounded-full ${c.booked >= c.cap ? "bg-gp-ember" : "bg-gp-mint"}`} style={{ width: `${(c.booked / c.cap) * 100}%`, ...stagger(i, 1300) }} />
                     </span>
-                    <span className={`w-12 text-right font-semibold ${c.booked >= c.cap ? "text-amber-300" : "text-slate-300"}`}>
+                    <span className={`w-12 text-right font-semibold ${c.booked >= c.cap ? "text-gp-ember" : "text-gp-mist"}`}>
                       {c.booked}/{c.cap}
                     </span>
                   </li>
@@ -147,9 +147,9 @@ export default function ProductMock() {
       </div>
 
       {/* floating events: take turns popping up, while they float */}
-      <Event turn={0} className="-right-3 top-10 animate-float lg:-right-10" style={{ animationDelay: "0.6s" }} tint="bg-emerald-500/15 text-emerald-300" icon={<FiCheckCircle className="h-4 w-4" />} title="Payment received" text="Sara M. · Unlimited monthly · Rs 5,000" />
-      <Event turn={1} className="-left-3 bottom-16 animate-float-slow lg:-left-12" tint="bg-brand-500/15 text-brand-300" icon={<FiUserPlus className="h-4 w-4" />} title="New member from the website" text="Signed the waiver · booked HIIT Blast" />
-      <Event turn={2} className="-bottom-5 right-8 animate-float" style={{ animationDelay: "1.4s" }} tint="bg-fuchsia-500/15 text-fuchsia-300" icon={<FiMessageSquare className="h-4 w-4" />} title="WhatsApp reminder sent" text="Boxing Fundamentals · 24 members" />
+      <Event turn={0} className="-right-3 top-10 animate-float lg:-right-10" style={{ animationDelay: "0.6s" }} tint="bg-gp-mint/10 text-gp-mint" icon={<FiCheckCircle className="h-4 w-4" />} title="Payment received" text="Sara M. · Unlimited monthly · Rs 5,000" />
+      <Event turn={1} className="-left-3 bottom-16 animate-float-slow lg:-left-12" tint="bg-gp-mint/10 text-gp-mint" icon={<FiUserPlus className="h-4 w-4" />} title="New member from the website" text="Signed the waiver · booked HIIT Blast" />
+      <Event turn={2} className="-bottom-5 right-8 animate-float" style={{ animationDelay: "1.4s" }} tint="bg-gp-ember/10 text-gp-ember" icon={<FiMessageSquare className="h-4 w-4" />} title="WhatsApp reminder sent" text="Boxing Fundamentals · 24 members" />
     </div>
   );
 }
