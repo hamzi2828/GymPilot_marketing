@@ -370,18 +370,8 @@ details > summary::-webkit-details-marker {
 .a-hw-step { animation: m-hw-step 6s ease-out infinite both; }
 .a-hw-fill { animation: m-hw-fill 6s cubic-bezier(0.22, 1, 0.36, 1) infinite both; }
 
-/* The hero: the live ticker steps through five lines (the sixth repeats the
-   first, so the wrap is seamless), and the floating events take turns. */
-@keyframes m-hero-ticker {
-  0%, 16% { transform: translateY(0); }
-  20%, 36% { transform: translateY(-1.5rem); }
-  40%, 56% { transform: translateY(-3rem); }
-  60%, 76% { transform: translateY(-4.5rem); }
-  80%, 96% { transform: translateY(-6rem); }
-  100% { transform: translateY(-7.5rem); }
-}
+/* The product mock's floating events take turns (ProductMock.tsx). */
 @keyframes m-hero-event { 0% { opacity: 0; transform: translateY(10px) scale(0.95); } 5%, 30% { opacity: 1; transform: none; } 36%, 100% { opacity: 0; transform: translateY(-6px) scale(0.98); } }
-.a-hero-ticker { animation: m-hero-ticker 12.5s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
 .a-hero-event { animation: m-hero-event 9s cubic-bezier(0.22, 1, 0.36, 1) infinite both; }
 
 /* View all features pops in with a bounce when it is shown or scrolls in. */
@@ -420,7 +410,7 @@ details[open] > summary ~ * { animation: m-rise 0.45s cubic-bezier(0.22, 1, 0.36
   .a-point-r, .a-point-l, .a-ping-ring, .btn-sweep::after, .btn-shine:hover::after, .a-menu,
   .a-wyg-node, .a-wyg-bar, .a-wyg-build, .a-wyg-type, .a-wyg-row, .a-wyg-tick,
   .a-bn-scan, .a-bn-draw, .a-bn-slide, .a-bn-ring, .a-bn-seat, .a-hw-step, .a-hw-fill,
-  .a-hero-ticker, .a-hero-event, .a-cta-in, .reveal.is-visible .v-cta-in,
+  .a-hero-event, .a-cta-in, .reveal.is-visible .v-cta-in,
   details[open] > summary ~ * { animation: none !important; }
   .a-wyg-flow, .a-bn-up { display: none; }
   .reveal.is-visible .v-draw { stroke-dasharray: none; }

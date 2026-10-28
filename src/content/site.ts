@@ -46,7 +46,6 @@ export const SITE = {
   whatsapp: WHATSAPP,
   /** Opens a WhatsApp chat with us, the first message started. Empty when no number is set. */
   whatsappUrl: WHATSAPP ? `https://wa.me/${WHATSAPP}?text=${encodeURIComponent("Hi GymsPilotPro, I would like to know more for my gym.")}` : "",
-  demoGymUrl: process.env.NEXT_PUBLIC_DEMO_GYM_URL || "",
   heroPills: ["Memberships & billing", "Class booking", "Personal training", "Your own domain"],
 };
 

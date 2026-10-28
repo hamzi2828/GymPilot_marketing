@@ -1,43 +1,9 @@
 import { FaWhatsapp } from "react-icons/fa";
-import { FiBell, FiCheck, FiCheckCircle, FiChevronRight, FiGlobe, FiUsers } from "react-icons/fi";
+import { FiCheck, FiChevronRight } from "react-icons/fi";
 import { FOOTER, HERO, SITE } from "@/content/site";
 import { stagger } from "@/lib/motion";
 import { Wordmark } from "./Brand";
 import HeroRibbon from "./HeroRibbon";
-
-// What the product does, as things happening at a gym, one after another
-// under the buttons (globals.css: .a-hero-ticker). The first line comes
-// again at the end so the loop wraps without a jump; reduced motion shows
-// the first one only.
-const LIVE = [
-  { icon: FiCheckCircle, tint: "text-gp-mint", text: "Ali paid Rs 4,900 at the desk" },
-  { icon: FiCheck, tint: "text-gp-mint", text: "Sara checked in by QR code" },
-  { icon: FiUsers, tint: "text-gp-ember", text: "HIIT at 18:00 is full" },
-  { icon: FiBell, tint: "text-gp-ember", text: "Fee reminder sent to 24 members" },
-  { icon: FiGlobe, tint: "text-gp-mint", text: "New member joined from your website" },
-];
-
-function LiveTicker() {
-  return (
-    <div className="a-rise mt-7 inline-flex max-w-full items-center gap-3 rounded-full border border-gp-edge bg-gp-bone/[0.03] py-1.5 pl-2 pr-4 text-[13px]" style={stagger(6)}>
-      <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-gp-mint/10 px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.08em] text-gp-mint">
-        <span className="a-blink h-1.5 w-1.5 rounded-full bg-gp-mint" aria-hidden="true" /> Live
-      </span>
-      <span className="relative h-6 min-w-0 overflow-hidden text-left" aria-label={LIVE.map((l) => l.text).join(". ")}>
-        <span className="a-hero-ticker block" aria-hidden="true">
-          {[...LIVE, LIVE[0]].map((l, i) => {
-            const Icon = l.icon;
-            return (
-              <span key={i} className="flex h-6 items-center gap-2 truncate text-gp-mist">
-                <Icon className={`h-3.5 w-3.5 shrink-0 ${l.tint}`} /> {l.text}
-              </span>
-            );
-          })}
-        </span>
-      </span>
-    </div>
-  );
-}
 
 const BTN = "group inline-flex h-12 items-center justify-center gap-2.5 whitespace-nowrap rounded-xl px-[22px] text-[15px] font-medium transition-[box-shadow,transform] duration-300 active:scale-[0.97]";
 
@@ -76,26 +42,12 @@ export default function Hero() {
           ))}
         </ul>
 
-        <LiveTicker />
-
-        {(SITE.whatsappUrl || SITE.demoGymUrl) && (
-          <p className="a-rise mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[13px] text-gp-slate" style={stagger(7)}>
-            {SITE.whatsappUrl && (
-              <span>
-                Prefer to chat?{" "}
-                <a href={SITE.whatsappUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 font-medium text-gp-mist underline-offset-4 hover:text-gp-bone hover:underline">
-                  <FaWhatsapp className="h-3.5 w-3.5 text-gp-mint" aria-hidden="true" /> Message us on WhatsApp
-                </a>
-              </span>
-            )}
-            {SITE.demoGymUrl && (
-              <span>
-                Want to poke around first?{" "}
-                <a href={SITE.demoGymUrl} target="_blank" rel="noreferrer" className="font-medium text-gp-mist underline-offset-4 hover:text-gp-bone hover:underline">
-                  Open a live demo gym
-                </a>
-              </span>
-            )}
+        {SITE.whatsappUrl && (
+          <p className="a-rise mt-6 text-[13px] text-gp-slate" style={stagger(7)}>
+            Prefer to chat?{" "}
+            <a href={SITE.whatsappUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 font-medium text-gp-mist underline-offset-4 hover:text-gp-bone hover:underline">
+              <FaWhatsapp className="h-3.5 w-3.5 text-gp-mint" aria-hidden="true" /> Message us on WhatsApp
+            </a>
           </p>
         )}
       </div>
