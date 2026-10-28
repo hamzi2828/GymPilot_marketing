@@ -1,0 +1,143 @@
+/* First-load logo intro (reference: source/intro/intro.css + intro.js, the
+   entrance before the video). Theme tokens, so it is black in dark mode and
+   the light page colour in light mode. */
+
+.intro {
+  --ease: cubic-bezier(0.16, 1, 0.3, 1); /* expo.out */
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  background: rgb(var(--gp-void));
+  color: rgb(var(--gp-bone));
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  opacity: 1;
+  transition-property: opacity, visibility;
+  transition-timing-function: ease;
+}
+.out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* the seam: draws across the middle, then fades as the logo arrives */
+.seam {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(var(--gp-mint)) 30%, rgb(var(--gp-bone)) 50%, rgb(var(--gp-ember)) 70%, transparent);
+  box-shadow: 0 0 22px rgb(var(--gp-mint) / 0.8);
+  animation: seam 0.95s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+@keyframes seam {
+  0% { transform: scaleX(0); opacity: 1; }
+  47% { transform: scaleX(1); opacity: 1; }
+  60% { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(1.3); opacity: 0; }
+}
+
+.intro .logo {
+  position: relative;
+  font-size: clamp(34px, 6.4vw, 92px);
+  filter: drop-shadow(0 10px 40px rgb(0 0 0 / 0.5));
+}
+:global(html[data-gp-theme="light"]) .intro .logo {
+  filter: none;
+}
+
+/* the G: top block drops in, bottom block rises, the crossbar slides in lit */
+.mark {
+  position: relative;
+  display: inline-flex;
+}
+.mark svg {
+  overflow: visible;
+}
+.mark svg g path {
+  animation: blockTop 0.8s var(--ease) 0.5s both;
+}
+.mark svg g path:nth-child(2) {
+  animation-name: blockBot;
+  animation-delay: 0.6s;
+}
+.mark svg g path:nth-child(3) {
+  animation: blockBar 0.75s var(--ease) 0.9s both;
+}
+@keyframes blockTop {
+  from { transform: translateY(-16px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes blockBot {
+  from { transform: translateY(16px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes blockBar {
+  from { transform: translateX(28px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.glow {
+  position: absolute;
+  pointer-events: none;
+  left: 0.35em;
+  top: 0.47em;
+  width: 0.9em;
+  height: 0.2em;
+  border-radius: 1em;
+  background: linear-gradient(90deg, transparent, #7fe3d2, #e5a34a);
+  filter: blur(0.12em);
+  opacity: 0;
+  transform-origin: 100% 50%;
+  animation: glow 1.3s ease-out 0.9s both;
+}
+@keyframes glow {
+  0% { opacity: 0; transform: scaleX(0.2); }
+  30% { opacity: 1; transform: scaleX(1); }
+  100% { opacity: 0; transform: scaleX(1); }
+}
+
+/* the letters rise out of a blur, one after another (delays set inline) */
+.word {
+  display: inline-flex;
+}
+.ch {
+  display: inline-block;
+  animation: rise 0.8s var(--ease) both;
+}
+@keyframes rise {
+  from { transform: translateY(70%); opacity: 0; filter: blur(12px); }
+  to { transform: none; opacity: 1; filter: none; }
+}
+
+/* the mint dot drops onto the i with a bounce */
+.i::after {
+  box-shadow: 0 0 0.3em rgb(var(--gp-mint) / 0.7);
+  animation: dot 0.7s linear 1.3s both;
+}
+@keyframes dot {
+  0% { transform: translate(-50%, -1.2em); opacity: 0; animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  45% { transform: translate(-50%, 0); opacity: 1; animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1); }
+  65% { transform: translate(-50%, -0.22em); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  82% { transform: translate(-50%, 0); animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1); }
+  91% { transform: translate(-50%, -0.06em); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  100% { transform: translate(-50%, 0); opacity: 1; }
+}
+
+/* PRO pops in last */
+.pro {
+  animation: pop 0.55s cubic-bezier(0.34, 1.8, 0.64, 1) 1.4s both;
+}
+@keyframes pop {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro {
+    display: none;
+  }
+}

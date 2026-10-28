@@ -15,6 +15,7 @@ import DemoForm from "@/components/marketing/DemoForm";
 import SiteFooter from "@/components/marketing/SiteFooter";
 import JsonLd from "@/components/marketing/JsonLd";
 import ScrollProgress from "@/components/marketing/ScrollProgress";
+import LogoIntro from "@/components/marketing/LogoIntro";
 
 // The landing page is "/" whatever a link to it carried (?utm_source=…).
 export const metadata: Metadata = {
@@ -29,6 +30,7 @@ export default function LandingPage() {
   return (
     <>
       <JsonLd />
+      <LogoIntro />
       <SiteHeader />
       <main>
         <Hero />
