@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FiChevronUp } from "react-icons/fi";
 import Brand from "./Brand";
+import FooterWordmark from "./FooterWordmark";
 import ContactLinks from "./ContactLinks";
 import FullPageLink from "@/components/FullPageLink";
 import { FOOTER, HERO, LEGAL, SITE } from "@/content/site";
@@ -78,10 +79,8 @@ export default function SiteFooter() {
         </div>
       </div>
 
-      {/* The giant fading wordmark along the bottom edge. */}
-      <div className="gp-giant mt-10 translate-y-[12%] select-none whitespace-nowrap text-center font-gp-brand text-[15.5vw] font-semibold leading-[0.8] tracking-[-0.03em]" aria-hidden="true">
-        gymspilot
-      </div>
+      {/* The giant wordmark along the bottom edge; its letters light up and lift near the pointer. */}
+      <FooterWordmark />
     </footer>
   );
 }
