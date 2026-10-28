@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 export default function CheckoutPage() {
   return (
     // useSearchParams needs a boundary; the plan is read from ?plan=.
-    <Suspense fallback={<div className="min-h-screen bg-slate-50" />}>
+    <Suspense fallback={<div className="gp-site min-h-screen bg-gp-void" />}>
       <CheckoutClient />
     </Suspense>
   );

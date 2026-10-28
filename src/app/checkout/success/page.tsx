@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function CheckoutSuccessPage() {
   return (
     // useSearchParams needs a boundary; the signup is read from ?signup=.
-    <Suspense fallback={<div className="min-h-screen bg-slate-950" />}>
+    <Suspense fallback={<div className="gp-site min-h-screen bg-gp-void" />}>
       <SuccessClient />
     </Suspense>
   );

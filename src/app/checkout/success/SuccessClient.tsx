@@ -104,38 +104,38 @@ export default function SuccessClient() {
   const trialEnds = ready && state?.trialEndsAt ? new Date(state.trialEndsAt).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" }) : null;
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-slate-950 px-5 py-24 text-white">
+    <main className="gp-site relative min-h-screen overflow-hidden bg-gp-void px-5 py-24 font-gp text-gp-bone">
       <div className="bg-grid-dark absolute inset-0 [mask-image:radial-gradient(ellipse_at_top,black_25%,transparent_70%)]" aria-hidden="true" />
       <Glow
         className="left-1/2 top-0 h-[560px] w-[900px] -translate-x-1/2 -translate-y-1/3"
-        color={trouble ? "rgba(245,158,11,0.28)" : ready ? "rgba(16,185,129,0.32)" : "rgba(99,102,241,0.32)"}
+        color={trouble ? "rgb(var(--gp-ember) / 0.24)" : ready ? "rgb(var(--gp-mint) / 0.24)" : "rgb(var(--gp-blue) / 0.2)"}
         drift="a"
       />
       <div className="relative mx-auto max-w-xl text-center" aria-live="polite">
         {ready ? (
-          <span className="a-pop mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-400 ring-1 ring-inset ring-emerald-500/30">
+          <span className="a-pop mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gp-mint/15 text-gp-mint ring-1 ring-inset ring-gp-mint/30">
             <FiCheckCircle className="h-8 w-8" />
           </span>
         ) : trouble ? (
-          <span className="a-pop mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-400 ring-1 ring-inset ring-amber-500/30">
+          <span className="a-pop mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gp-ember/15 text-gp-ember ring-1 ring-inset ring-gp-ember/30">
             <FiAlertTriangle className="h-8 w-8" />
           </span>
         ) : (
-          <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5 ring-1 ring-inset ring-white/10">
-            <span className="h-8 w-8 animate-spin rounded-full border-2 border-white/15 border-t-indigo-400" aria-hidden="true" />
+          <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gp-bone/5 ring-1 ring-inset ring-gp-bone/10">
+            <span className="h-8 w-8 animate-spin rounded-full border-2 border-gp-bone/15 border-t-gp-mint" aria-hidden="true" />
           </span>
         )}
 
-        <h1 className="a-rise mt-6 font-display text-3xl font-extrabold tracking-tight sm:text-4xl" style={stagger(1)}>
+        <h1 className="a-rise gp-shine mt-6 pb-1 text-3xl font-medium tracking-[-0.04em] sm:text-4xl" style={stagger(1)}>
           {heading}
         </h1>
-        <p className="a-rise mt-4 text-lg leading-relaxed text-slate-300" style={stagger(2)}>
+        <p className="a-rise mt-4 text-lg leading-relaxed text-gp-mist" style={stagger(2)}>
           {text}
         </p>
 
         {working && slow && (
           <>
-            <p className="mt-3 text-sm text-slate-400">
+            <p className="mt-3 text-sm text-gp-slate">
               This is taking longer than usual. You can close this page — there is no need to pay again, and your sign-in link reaches you, by
               email or from our team, once your gym is ready.
             </p>
@@ -145,20 +145,20 @@ export default function SuccessClient() {
 
         {ready && (
           <>
-            <div className="a-rise mt-8 space-y-3 rounded-2xl border border-white/10 bg-white/5 p-5 text-left text-sm text-slate-300" style={stagger(3)}>
+            <div className="a-rise mt-8 space-y-3 rounded-2xl border border-gp-bone/10 bg-gp-bone/5 p-5 text-left text-sm text-gp-mist" style={stagger(3)}>
               {emailed ? (
                 <p className="flex items-start gap-2.5">
-                  <FiMail className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+                  <FiMail className="mt-0.5 h-4 w-4 shrink-0 text-gp-mint" />
                   <span>Look for an email with your set-password link. Nothing in a few minutes? Check your spam folder.</span>
                 </p>
               ) : (
                 <p className="flex items-start gap-2.5">
-                  <FiMessageCircle className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+                  <FiMessageCircle className="mt-0.5 h-4 w-4 shrink-0 text-gp-mint" />
                   <span>Our team will contact you with the link to set your password, usually within one working day.</span>
                 </p>
               )}
               {trialEnds && (
-                <p className="text-xs text-emerald-400">
+                <p className="text-xs text-gp-mint">
                   Your free trial runs until {trialEnds}. Your card is first charged then, unless you cancel before.
                 </p>
               )}
@@ -169,12 +169,12 @@ export default function SuccessClient() {
                   href={state.siteUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-shine btn-shine-dark inline-flex h-12 items-center gap-2 rounded-full bg-white px-6 text-sm font-semibold text-slate-900 transition-transform hover:-translate-y-0.5"
+                  className="inline-flex h-12 items-center gap-2 rounded-xl bg-gp-bone px-[22px] text-[15px] font-medium text-gp-ink transition-transform duration-300 hover:-translate-y-0.5"
                 >
                   Open your website <FiExternalLink className="h-4 w-4" />
                 </a>
               )}
-              <Link href="/" className="inline-flex h-12 items-center gap-2 rounded-full px-5 text-sm font-semibold text-slate-300 hover:text-white">
+              <Link href="/" className="inline-flex h-12 items-center gap-2 rounded-xl px-5 text-[15px] font-medium text-gp-mist transition-colors hover:text-gp-bone">
                 Back to {SITE.name} <FiArrowRight className="h-4 w-4" />
               </Link>
             </div>
@@ -184,9 +184,9 @@ export default function SuccessClient() {
         {trouble && (
           <div className="mt-8 flex flex-col items-center gap-3">
             {/* Something went wrong after they paid: never leave them with nobody to ask. */}
-            <p className="text-sm text-slate-400">Tell us and we will sort it out.</p>
+            <p className="text-sm text-gp-slate">Tell us and we will sort it out.</p>
             <ContactLinks layout="row" />
-            <Link href="/" className="inline-flex h-12 items-center gap-2 rounded-full px-5 text-sm font-semibold text-slate-300 hover:text-white">
+            <Link href="/" className="inline-flex h-12 items-center gap-2 rounded-xl px-5 text-[15px] font-medium text-gp-mist transition-colors hover:text-gp-bone">
               Back to {SITE.name} <FiArrowRight className="h-4 w-4" />
             </Link>
           </div>

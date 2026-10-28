@@ -37,43 +37,43 @@ export default function LegalPage({ doc }: { doc: LegalDoc }) {
   return (
     <>
       <SiteHeader />
-      <main>
-        <section className="relative overflow-hidden bg-slate-950 pb-14 pt-32 text-white sm:pb-16 sm:pt-36">
+      <main className="font-gp">
+        <section className="relative overflow-hidden border-b border-gp-edge bg-gp-void pb-14 pt-32 text-gp-bone sm:pb-16 sm:pt-36">
           <div className="bg-grid-dark absolute inset-0 [mask-image:radial-gradient(ellipse_at_top,black_30%,transparent_75%)]" aria-hidden="true" />
-          <Glow className="left-1/2 top-0 h-[520px] w-[900px] -translate-x-1/2 -translate-y-1/2" color="rgba(79,70,229,0.34)" drift="a" />
+          <Glow className="left-1/2 top-0 h-[520px] w-[900px] -translate-x-1/2 -translate-y-1/2" color="rgb(var(--gp-mint) / 0.1)" drift="a" />
           <div className="relative mx-auto max-w-3xl px-5 sm:px-8">
-            <p className="a-rise text-xs font-semibold uppercase tracking-[0.18em] text-brand-300" style={stagger(0)}>
+            <p className="a-rise text-[13px] text-gp-mint" style={stagger(0)}>
               Legal
             </p>
-            <h1 className="a-rise mt-3 font-display text-4xl font-extrabold tracking-[-0.03em] sm:text-5xl" style={stagger(1)}>
+            <h1 className="a-rise gp-shine mt-3 pb-1 text-4xl font-medium leading-[1.05] tracking-[-0.045em] [text-wrap:balance] sm:text-5xl" style={stagger(1)}>
               {doc.title}
             </h1>
-            <p className="a-rise mt-5 text-lg leading-relaxed text-slate-300" style={stagger(2)}>
+            <p className="a-rise mt-5 text-lg leading-relaxed text-gp-slate" style={stagger(2)}>
               {doc.lead}
             </p>
             {LEGAL.updated && (
-              <p className="a-rise mt-4 text-sm text-slate-400" style={stagger(3)}>
+              <p className="a-rise mt-4 text-sm text-gp-slate" style={stagger(3)}>
                 Last updated {LEGAL.updated}
               </p>
             )}
           </div>
         </section>
 
-        <section className="bg-white py-12 sm:py-16">
+        <section className="bg-gp-void py-12 sm:py-16">
           <div className="mx-auto max-w-3xl px-5 sm:px-8">
-            <nav aria-label="On this page" className="rounded-2xl border border-slate-200 bg-slate-50 p-5 sm:p-6">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">On this page</p>
+            <nav aria-label="On this page" className="rounded-[20px] border border-gp-edge bg-gp-graphite p-5 sm:p-6">
+              <p className="text-[13px] text-gp-slate">On this page</p>
               <ol className="mt-3 grid gap-x-6 gap-y-1.5 text-sm sm:grid-cols-2">
                 {doc.sections.map((s, i) => (
                   <li key={s.id}>
-                    <a href={`#${s.id}`} className="inline-flex gap-2 rounded text-slate-700 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
-                      <span className="w-5 shrink-0 text-slate-400">{i + 1}.</span> {s.heading}
+                    <a href={`#${s.id}`} className="inline-flex gap-2 rounded text-gp-mist transition-colors hover:text-gp-bone focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gp-mint">
+                      <span className="w-5 shrink-0 text-gp-slate">{i + 1}.</span> {s.heading}
                     </a>
                   </li>
                 ))}
                 <li>
-                  <a href="#contact" className="inline-flex gap-2 rounded text-slate-700 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
-                    <span className="w-5 shrink-0 text-slate-400">{doc.sections.length + 1}.</span> Contact us
+                  <a href="#contact" className="inline-flex gap-2 rounded text-gp-mist transition-colors hover:text-gp-bone focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gp-mint">
+                    <span className="w-5 shrink-0 text-gp-slate">{doc.sections.length + 1}.</span> Contact us
                   </a>
                 </li>
               </ol>
@@ -83,17 +83,17 @@ export default function LegalPage({ doc }: { doc: LegalDoc }) {
               <section key={s.id} id={s.id} aria-labelledby={`${s.id}-title`} className="scroll-mt-24 pt-10">
                 {/* The label is shown where a new part of the page begins. */}
                 {s.kicker && s.kicker !== doc.sections[i - 1]?.kicker && (
-                  <p className="mb-6 border-t border-slate-200 pt-8 text-xs font-semibold uppercase tracking-[0.16em] text-brand-600">{s.kicker}</p>
+                  <p className="mb-6 border-t border-gp-edge pt-8 text-[13px] text-gp-mint">{s.kicker}</p>
                 )}
-                <h2 id={`${s.id}-title`} className="font-display text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
+                <h2 id={`${s.id}-title`} className="text-xl font-medium tracking-[-0.02em] text-gp-bone sm:text-2xl">
                   {i + 1}. {s.heading}
                 </h2>
-                <div className="mt-3 space-y-3 text-base leading-relaxed text-slate-700">
+                <div className="mt-3 space-y-3 text-base leading-relaxed text-gp-mist">
                   {s.blocks.map((block, j) =>
                     typeof block === "string" ? (
                       <p key={j}>{block}</p>
                     ) : (
-                      <ul key={j} className="list-disc space-y-1.5 pl-5 marker:text-slate-400">
+                      <ul key={j} className="list-disc space-y-1.5 pl-5 marker:text-gp-slate">
                         {block.list.map((item) => (
                           <li key={item}>{item}</li>
                         ))}
@@ -105,26 +105,26 @@ export default function LegalPage({ doc }: { doc: LegalDoc }) {
             ))}
 
             <section id="contact" aria-labelledby="contact-title" className="scroll-mt-24 pt-10">
-              <h2 id="contact-title" className="font-display text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
+              <h2 id="contact-title" className="text-xl font-medium tracking-[-0.02em] text-gp-bone sm:text-2xl">
                 {doc.sections.length + 1}. Contact us
               </h2>
-              <div className="mt-3 space-y-3 text-base leading-relaxed text-slate-700">
+              <div className="mt-3 space-y-3 text-base leading-relaxed text-gp-mist">
                 <p>Questions about this page? Ask us. We answer in plain words.</p>
                 {seller.length > 0 && <p>{seller.join(", ")}</p>}
                 {/* A legal address of its own is shown when it differs from the everyday one. */}
                 {LEGAL.email && LEGAL.email !== SITE.contactEmail && (
-                  <a href={`mailto:${LEGAL.email}`} className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900">
+                  <a href={`mailto:${LEGAL.email}`} className="inline-flex items-center gap-2 text-sm text-gp-mist hover:text-gp-bone">
                     <FiMail className="h-4 w-4" /> {LEGAL.email}
                   </a>
                 )}
-                <ContactLinks tone="light" />
+                <ContactLinks tone="dark" />
               </div>
             </section>
 
-            <nav aria-label="Other legal pages" className="mt-12 flex flex-col gap-2 border-t border-slate-200 pt-6 text-sm sm:flex-row sm:flex-wrap sm:gap-x-6">
-              <span className="text-slate-500">Also read:</span>
+            <nav aria-label="Other legal pages" className="mt-12 flex flex-col gap-2 border-t border-gp-edge pt-6 text-sm sm:flex-row sm:flex-wrap sm:gap-x-6">
+              <span className="text-gp-slate">Also read:</span>
               {others.map((d) => (
-                <Link key={d.slug} href={`/${d.slug}`} className="font-semibold text-brand-700 hover:text-brand-800">
+                <Link key={d.slug} href={`/${d.slug}`} className="font-medium text-gp-mint transition-colors hover:text-gp-bone">
                   {d.name}
                 </Link>
               ))}

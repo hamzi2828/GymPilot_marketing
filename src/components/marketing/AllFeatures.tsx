@@ -1,0 +1,174 @@
+"use client";
+
+// The /features list: a sticky bar to search every feature (press "/" to
+// jump to it) and pick an area, then one block per area with a card for each
+// feature leading to its own page. ?area=<n> or ?area=<groupKey> opens the
+// page on one area. Cards keep the feature's slug as their id so
+// /features#<slug> from the header's menu still lands on (and lights) them.
+
+import Link from "next/link";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { FiArrowRight, FiSearch } from "react-icons/fi";
+import { FEATURES, FEATURE_GROUPS, featureHref, type GroupKey } from "@/content/features";
+import { FEATURE_ICONS } from "./featureIcons";
+import { AREA_ICONS, featuresLabel, shortLabel, tintVars } from "./featureAreas";
+import s from "./AllFeatures.module.css";
+
+type Area = GroupKey | "all";
+
+// Each area sets its dark and light tint; the CSS picks one as --c.
+const tint = (key: GroupKey) => tintVars(key) as CSSProperties;
+
+function areaFromQuery(value: string | null): Area {
+  if (!value) return "all";
+  if (/^\d+$/.test(value)) return FEATURE_GROUPS[Number(value)]?.key ?? "all";
+  return FEATURE_GROUPS.find((g) => g.key === value)?.key ?? "all";
+}
+
+const norm = (t: string) => t.toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "");
+
+export default function AllFeatures() {
+  const [area, setArea] = useState<Area>("all");
+  const [query, setQuery] = useState("");
+  const input = useRef<HTMLInputElement>(null);
+
+  // Read ?area= after mounting, so the page itself stays static.
+  useEffect(() => {
+    setArea(areaFromQuery(new URLSearchParams(window.location.search).get("area")));
+  }, []);
+
+  // "/" anywhere on the page (outside a field) focuses the search.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
+      const el = document.activeElement as HTMLElement | null;
+      if (el && (/^(input|textarea|select)$/i.test(el.tagName) || el.isContentEditable)) return;
+      e.preventDefault();
+      input.current?.focus();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  const pick = (next: Area) => {
+    setArea(next);
+    const url = new URL(window.location.href);
+    if (next === "all") url.searchParams.delete("area");
+    else url.searchParams.set("area", next);
+    url.hash = "";
+    window.history.replaceState(window.history.state, "", url);
+  };
+
+  const groups = useMemo(() => {
+    const words = norm(query).split(/\s+/).filter(Boolean);
+    return FEATURE_GROUPS.filter((g) => area === "all" || g.key === area)
+      .map((g) => ({
+        group: g,
+        items: FEATURES.filter((f) => f.group === g.key).filter((f) => {
+          if (!words.length) return true;
+          const hay = norm(`${f.name} ${f.short} ${f.title} ${g.label}`);
+          return words.every((w) => hay.includes(w));
+        }),
+      }))
+      .filter((x) => x.items.length);
+  }, [area, query]);
+
+  const shown = groups.reduce((n, x) => n + x.items.length, 0);
+  const counts = useMemo(() => Object.fromEntries(FEATURE_GROUPS.map((g) => [g.key, FEATURES.filter((f) => f.group === g.key).length])), []);
+  let k = 0;
+
+  return (
+    <div className={s.root}>
+      <div className={s.bar}>
+        <div className={s.q} role="search">
+          <FiSearch className={s.qIcon} aria-hidden="true" />
+          <input
+            ref={input}
+            type="search"
+            className={s.input}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                setQuery("");
+                e.currentTarget.blur();
+              }
+            }}
+            placeholder={`Search ${FEATURES.length} features — fees, check-in, receipts…`}
+            aria-label="Search features"
+            autoComplete="off"
+            spellCheck={false}
+          />
+          {query ? (
+            <button type="button" className={s.clear} onClick={() => { setQuery(""); input.current?.focus(); }}>
+              Clear
+            </button>
+          ) : (
+            <kbd className={s.kbd} aria-hidden="true">/</kbd>
+          )}
+        </div>
+        <div className={s.chips} role="group" aria-label="Feature areas">
+          <button type="button" className={s.chip} aria-pressed={area === "all"} onClick={() => pick("all")}>
+            All<span>{FEATURES.length}</span>
+          </button>
+          {FEATURE_GROUPS.map((g) => (
+            <button key={g.key} type="button" className={s.chip} aria-pressed={area === g.key} onClick={() => pick(g.key)}>
+              {shortLabel(g.label)}<span>{counts[g.key]}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <p className={s.status} aria-live="polite">
+        {query || area !== "all" ? `Showing ${featuresLabel(shown)}` : `Every feature, by area · ${featuresLabel(shown)}`}
+      </p>
+
+      {groups.map(({ group, items }) => {
+        const GroupIcon = AREA_ICONS[group.key];
+        return (
+          <section key={group.key} id={group.key} aria-labelledby={`${group.key}-title`} className={s.grp} style={tint(group.key)}>
+            <div className={s.gh}>
+              <span className={s.ic} aria-hidden="true">
+                <GroupIcon />
+              </span>
+              <div>
+                <h2 id={`${group.key}-title`}>{group.title}</h2>
+                <p>{group.text}</p>
+              </div>
+            </div>
+            <div key={`${area}|${query}`} className={`${s.grid} ${s.in}`}>
+              {items.map((f) => {
+                const Icon = FEATURE_ICONS[f.key];
+                return (
+                  <Link key={f.key} id={f.slug} href={featureHref(f.key)} className={`feature-anchor ${s.card}`} style={{ "--k": k++ } as CSSProperties}>
+                    <span className={s.top}>
+                      <span className={`${s.ic} ${s.sm}`} aria-hidden="true">
+                        <Icon />
+                      </span>
+                      {f.addon && <span className={s.tag}>Add-on</span>}
+                    </span>
+                    <b>{f.name}</b>
+                    <span className={s.desc}>{f.short}</span>
+                    <em>
+                      Open <FiArrowRight aria-hidden="true" />
+                    </em>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        );
+      })}
+
+      {!shown && (
+        <div className={s.empty}>
+          <b>Nothing matches “{query}”</b>
+          <p>Try another word, or look through every area.</p>
+          <button type="button" onClick={() => { setQuery(""); pick("all"); input.current?.focus(); }}>
+            Show every feature
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}

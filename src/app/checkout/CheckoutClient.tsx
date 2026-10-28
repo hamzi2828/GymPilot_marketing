@@ -304,58 +304,58 @@ export default function CheckoutClient() {
   /* ------------------------------ the receipt ----------------------------- */
   if (done) {
     return (
-      <main className="relative min-h-screen overflow-hidden bg-slate-950 px-5 py-24 text-white">
+      <main className="gp-site relative min-h-screen overflow-hidden bg-gp-void px-5 py-24 font-gp text-gp-bone">
         <div className="bg-grid-dark absolute inset-0 [mask-image:radial-gradient(ellipse_at_top,black_25%,transparent_70%)]" aria-hidden="true" />
-        <Glow className="left-1/2 top-0 h-[560px] w-[900px] -translate-x-1/2 -translate-y-1/3" color="rgba(16,185,129,0.32)" drift="a" />
+        <Glow className="left-1/2 top-0 h-[560px] w-[900px] -translate-x-1/2 -translate-y-1/3" color="rgb(var(--gp-mint) / 0.14)" drift="a" />
         <div className="relative mx-auto max-w-xl text-center">
-          <span className="a-pop mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-400 ring-1 ring-inset ring-emerald-500/30">
+          <span className="a-pop mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gp-mint/15 text-gp-mint ring-1 ring-inset ring-gp-mint/30">
             <FiCheckCircle className="h-8 w-8" />
           </span>
-          <h1 className="a-rise mt-6 font-display text-3xl font-extrabold tracking-tight sm:text-4xl" style={stagger(1)}>
+          <h1 className="a-rise gp-shine mt-6 pb-1 text-3xl font-medium tracking-[-0.04em] sm:text-4xl" style={stagger(1)}>
             That is everything we need
           </h1>
-          <p className="a-rise mt-4 text-lg leading-relaxed text-slate-300" style={stagger(2)}>
+          <p className="a-rise mt-4 text-lg leading-relaxed text-gp-mist" style={stagger(2)}>
             {emailed ? (
               <>
-                We have sent a confirmation to <span className="font-semibold text-white">{form.email}</span>. We are setting up {form.gymName} now,
+                We have sent a confirmation to <span className="font-semibold text-gp-bone">{form.email}</span>. We are setting up {form.gymName} now,
                 and a second email with your web address and a link to set your admin password follows, usually within one working day.
               </>
             ) : (
               <>
                 We have your details and we are setting up {form.gymName} now. We will come back to you on{" "}
-                <span className="font-semibold text-white">{form.email}</span>
+                <span className="font-semibold text-gp-bone">{form.email}</span>
                 {form.phone ? <> or {form.phone}</> : null} with your web address and a link to set your admin password, usually within one working
                 day.
               </>
             )}
           </p>
           {emailed ? (
-            <p className="a-rise mt-3 text-sm text-slate-400" style={stagger(2)}>
+            <p className="a-rise mt-3 text-sm text-gp-slate" style={stagger(2)}>
               Nothing in your inbox in a few minutes? Check your spam folder.
             </p>
           ) : null}
-          <div className="a-rise mt-8 rounded-2xl border border-white/10 bg-white/5 p-5 text-left text-sm" style={stagger(3)}>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">What you chose</p>
+          <div className="a-rise mt-8 rounded-2xl border border-gp-bone/10 bg-gp-bone/5 p-5 text-left text-sm" style={stagger(3)}>
+            <p className="text-[13px] text-gp-slate">What you chose</p>
             <div className="mt-3 flex items-baseline justify-between gap-3">
-              <span className="text-slate-300">
+              <span className="text-gp-mist">
                 {plan?.name} · {cycle}
               </span>
-              <span className="font-display text-lg font-bold">
-                {formatMoney(total, currency)} <span className="text-xs font-normal text-slate-400">/ {per}</span>
+              <span className="font-gp-brand text-lg font-semibold">
+                {formatMoney(total, currency)} <span className="text-xs font-normal text-gp-slate">/ {per}</span>
               </span>
             </div>
-            {plan?.trialDays ? <p className="mt-2 text-xs text-emerald-400">Free for the first {plan.trialDays} days. Nothing to pay today.</p> : null}
-            <p className="mt-3 border-t border-white/10 pt-3 text-xs leading-relaxed text-slate-400">
+            {plan?.trialDays ? <p className="mt-2 text-xs text-gp-mint">Free for the first {plan.trialDays} days. Nothing to pay today.</p> : null}
+            <p className="mt-3 border-t border-gp-bone/10 pt-3 text-xs leading-relaxed text-gp-slate">
               How you pay: we contact you with payment details before anything is due. Bank transfer, JazzCash or Easypaisa.
             </p>
           </div>
           <Link
             href="/"
-            className="btn-shine btn-shine-dark mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-white px-6 text-sm font-semibold text-slate-900 transition-transform hover:-translate-y-0.5"
+            className="mt-8 inline-flex h-12 items-center gap-2 rounded-xl bg-gp-bone px-[22px] text-[15px] font-medium text-gp-ink transition-transform duration-300 hover:-translate-y-0.5"
           >
             Back to the website <FiArrowRight className="h-4 w-4" />
           </Link>
-          <p className="mt-10 text-sm text-slate-400">Questions in the meantime?</p>
+          <p className="mt-10 text-sm text-gp-slate">Questions in the meantime?</p>
           <ContactLinks layout="row" className="mt-3" />
         </div>
       </main>
@@ -364,27 +364,27 @@ export default function CheckoutClient() {
 
   /* ------------------------------- the form ------------------------------- */
   return (
-    <>
-      <header className="border-b border-slate-200 bg-white">
+    <div className="gp-site min-h-screen bg-gp-void font-gp text-gp-bone">
+      <header className="border-b border-gp-edge bg-gp-void/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-8">
           <Brand />
           <button
             type="button"
             onClick={() => router.push("/#pricing")}
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 transition-colors hover:text-slate-900"
+            className="inline-flex h-[34px] items-center gap-1.5 rounded-full border border-gp-edge-2 px-3 text-[13.5px] text-gp-mist transition-colors hover:border-gp-mint hover:text-gp-bone"
           >
             <FiArrowLeft className="h-4 w-4" /> Back to pricing
           </button>
         </div>
       </header>
 
-      <main className="min-h-screen bg-slate-50 px-5 py-12 sm:px-8 sm:py-16">
+      <main className="min-h-screen bg-gp-void px-5 py-12 sm:px-8 sm:py-16">
         <div className="mx-auto max-w-6xl">
-          <p className="a-rise text-xs font-semibold uppercase tracking-[0.18em] text-brand-600">Checkout</p>
-          <h1 className="a-rise mt-2 font-display text-3xl font-extrabold tracking-[-0.02em] text-slate-900 sm:text-4xl" style={stagger(1)}>
+          <p className="a-rise text-[13px] text-gp-mint">Checkout</p>
+          <h1 className="a-rise gp-shine mt-2 pb-1 text-3xl font-medium tracking-[-0.04em] sm:text-[44px] sm:leading-[1.05]" style={stagger(1)}>
             {selfServe === false ? "Request your free trial" : "Start your free trial"}
           </h1>
-          <p className="a-rise mt-3 max-w-2xl text-base text-slate-600" style={stagger(2)}>
+          <p className="a-rise mt-3 max-w-2xl text-base text-gp-slate" style={stagger(2)}>
             {selfServe === null
               ? "Pick a plan and tell us about your gym."
               : selfServe
@@ -393,31 +393,31 @@ export default function CheckoutClient() {
           </p>
 
           {cancelled && (
-            <p className="a-rise mt-5 max-w-2xl rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800" style={stagger(2)}>
+            <p className="a-rise mt-5 max-w-2xl rounded-xl border border-gp-ember/30 bg-gp-ember/10 px-4 py-3 text-sm text-gp-ember" style={stagger(2)}>
               Payment cancelled — nothing was charged. Your details are still here whenever you are ready.
             </p>
           )}
 
           {plansError ? (
-            <div className="mt-10 rounded-3xl border border-rose-200 bg-white p-8 text-center shadow-card">
-              <p className="text-base font-semibold text-slate-900">We could not load the plans.</p>
-              <p className="mt-1 text-sm text-slate-600">Check your connection and try again. Nothing you typed has been sent.</p>
+            <div className="mt-10 rounded-[20px] border border-rose-500/30 bg-gp-graphite p-8 text-center">
+              <p className="text-base font-medium text-gp-bone">We could not load the plans.</p>
+              <p className="mt-1 text-sm text-gp-mist">Check your connection and try again. Nothing you typed has been sent.</p>
               <button
                 type="button"
                 onClick={loadPlans}
-                className="mt-5 inline-flex h-11 items-center gap-2 rounded-full bg-slate-900 px-6 text-sm font-semibold text-white transition-transform hover:-translate-y-0.5"
+                className="mt-5 inline-flex h-11 items-center gap-2 rounded-xl bg-gp-bone px-6 text-sm font-medium text-gp-ink transition-transform hover:-translate-y-0.5"
               >
                 Try again
               </button>
-              <p className="mt-6 text-sm text-slate-500">Still not loading? Reach us another way.</p>
-              <ContactLinks tone="light" layout="row" className="mt-3" />
+              <p className="mt-6 text-sm text-gp-slate">Still not loading? Reach us another way.</p>
+              <ContactLinks layout="row" className="mt-3" />
             </div>
           ) : !plans ? (
-            <div className="mt-10 h-64 animate-pulse rounded-3xl border border-slate-200 bg-white" />
+            <div className="mt-10 h-64 animate-pulse rounded-[20px] border border-gp-edge bg-gp-graphite" />
           ) : plans.length === 0 ? (
-            <div className="mt-10 rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center">
-              <p className="text-base text-slate-600">{PRICING.fallback}</p>
-              <Link href="/#demo" className="btn-shine mt-6 inline-flex h-11 items-center gap-2 rounded-full bg-slate-900 px-6 text-sm font-semibold text-white">
+            <div className="mt-10 rounded-[20px] border border-dashed border-gp-edge-2 bg-gp-graphite p-10 text-center">
+              <p className="text-base text-gp-mist">{PRICING.fallback}</p>
+              <Link href="/#demo" className="mt-6 inline-flex h-11 items-center gap-2 rounded-xl bg-gp-bone px-6 text-sm font-medium text-gp-ink">
                 Book a demo <FiArrowRight className="h-4 w-4" />
               </Link>
             </div>
@@ -425,11 +425,11 @@ export default function CheckoutClient() {
             <div className="mt-10 grid gap-6 lg:grid-cols-[1.3fr_1fr]">
               {/* ---------------------------- details ---------------------------- */}
               {/* Second on a phone: what they are buying, and for how much, is read first. */}
-              <div className="order-2 rounded-3xl border border-slate-200 bg-white p-6 shadow-card sm:p-8 lg:order-1">
-                <h2 className="font-display text-lg font-bold text-slate-900">Your details</h2>
+              <div className="order-2 rounded-[20px] border border-gp-edge bg-gp-graphite p-6 sm:p-8 lg:order-1">
+                <h2 className="text-lg font-medium tracking-[-0.02em] text-gp-bone">Your details</h2>
 
                 {error && (
-                  <p ref={errorRef} tabIndex={-1} role="alert" className="mt-4 rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-700 focus:outline-none">
+                  <p ref={errorRef} tabIndex={-1} role="alert" className="mt-4 rounded-xl bg-rose-500/10 px-4 py-3 text-sm text-rose-500 focus:outline-none">
                     {error}
                   </p>
                 )}
@@ -437,9 +437,9 @@ export default function CheckoutClient() {
                 <div className="mt-5 grid gap-4 sm:grid-cols-2">
                   {FIELDS.map((f) => (
                     <label key={f.key} className={f.wide ? "sm:col-span-2" : ""}>
-                      <span className="text-sm font-semibold text-slate-700">
+                      <span className="text-[13px] font-normal text-gp-mist">
                         {f.label}
-                        {!f.required && <span className="ml-1 font-normal text-slate-400">optional</span>}
+                        {!f.required && <span className="ml-1 font-normal text-gp-slate">optional</span>}
                       </span>
                       <input
                         type={"type" in f ? f.type : "text"}
@@ -450,15 +450,15 @@ export default function CheckoutClient() {
                           setForm((x) => ({ ...x, [f.key]: e.target.value }));
                           if (f.key === "gymName" && !touchedAddress) setWebAddress(slugify(e.target.value));
                         }}
-                        className="mt-1.5 h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-[15px] text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-brand-400 focus:ring-4 focus:ring-brand-100"
+                        className="mt-1.5 h-12 w-full rounded-[11px] border border-gp-edge-2 bg-gp-bone/[0.03] px-4 text-[15px] text-gp-bone outline-none transition-colors placeholder:text-gp-slate focus:border-gp-mint focus:ring-[3px] focus:ring-gp-mint/15"
                       />
                     </label>
                   ))}
 
                   {rootDomain ? (
                     <label className="sm:col-span-2">
-                      <span className="text-sm font-semibold text-slate-700">Your web address</span>
-                      <div className="mt-1.5 flex items-center rounded-xl border border-slate-200 bg-white pr-4 focus-within:border-brand-400 focus-within:ring-4 focus-within:ring-brand-100">
+                      <span className="text-[13px] font-normal text-gp-mist">Your web address</span>
+                      <div className="mt-1.5 flex items-center rounded-[11px] border border-gp-edge-2 bg-gp-bone/[0.03] pr-4 transition-colors focus-within:border-gp-mint focus-within:ring-[3px] focus-within:ring-gp-mint/15">
                         <input
                           ref={addressRef}
                           value={webAddress}
@@ -469,12 +469,12 @@ export default function CheckoutClient() {
                           }}
                           placeholder="ironworks"
                           aria-invalid={!!addressError}
-                          className="h-12 min-w-0 flex-1 rounded-xl bg-transparent px-4 text-[15px] text-slate-900 outline-none placeholder:text-slate-400"
+                          className="h-12 min-w-0 flex-1 rounded-[11px] bg-transparent px-4 text-[15px] text-gp-bone outline-none placeholder:text-gp-slate"
                         />
-                        <span className="whitespace-nowrap text-sm text-slate-400">.{rootDomain}</span>
+                        <span className="whitespace-nowrap text-sm text-gp-slate">.{rootDomain}</span>
                       </div>
                       {addressError ? (
-                        <span className="mt-1.5 block text-xs text-rose-700">
+                        <span className="mt-1.5 block text-xs text-rose-500">
                           {addressError.message}
                           {addressError.suggestion && (
                             <button
@@ -484,34 +484,34 @@ export default function CheckoutClient() {
                                 setWebAddress(addressError.suggestion);
                                 setAddressError(null);
                               }}
-                              className="ml-1.5 font-semibold text-brand-700 underline underline-offset-2 hover:text-brand-800"
+                              className="ml-1.5 font-medium text-gp-mint underline underline-offset-2 hover:text-gp-bone"
                             >
                               Use {addressError.suggestion}
                             </button>
                           )}
                         </span>
                       ) : (
-                        <span className="mt-1.5 block text-xs text-slate-500">
+                        <span className="mt-1.5 block text-xs text-gp-slate">
                           Using your own domain? We&apos;ll connect it for you — contact us after sign-up.
                         </span>
                       )}
                     </label>
                   ) : (
-                    <p className="sm:col-span-2 rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                    <p className="sm:col-span-2 rounded-xl bg-gp-bone/[0.04] px-4 py-3 text-sm text-gp-mist">
                       You will get a web address when your gym is set up. Using your own domain? We&apos;ll connect it for you — contact us after sign-up.
                     </p>
                   )}
 
                   <label className="sm:col-span-2">
-                    <span className="text-sm font-semibold text-slate-700">
-                      Anything we should know <span className="ml-1 font-normal text-slate-400">optional</span>
+                    <span className="text-[13px] font-normal text-gp-mist">
+                      Anything we should know <span className="ml-1 font-normal text-gp-slate">optional</span>
                     </span>
                     <textarea
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       rows={3}
                       placeholder="How many members you have, what you are moving from…"
-                      className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-[15px] leading-relaxed text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-brand-400 focus:ring-4 focus:ring-brand-100"
+                      className="mt-1.5 w-full rounded-[11px] border border-gp-edge-2 bg-gp-bone/[0.03] px-4 py-3 text-[15px] leading-relaxed text-gp-bone outline-none transition-colors placeholder:text-gp-slate focus:border-gp-mint focus:ring-[3px] focus:ring-gp-mint/15"
                     />
                   </label>
 
@@ -528,20 +528,20 @@ export default function CheckoutClient() {
                 </div>
 
                 {/* On a phone the plan is a scroll back up by now: say it again beside the button. */}
-                <p className="mt-7 flex items-baseline justify-between gap-3 rounded-xl bg-slate-50 px-4 py-3 text-sm lg:hidden">
-                  <span className="text-slate-600">
+                <p className="mt-7 flex items-baseline justify-between gap-3 rounded-xl bg-gp-bone/[0.04] px-4 py-3 text-sm lg:hidden">
+                  <span className="text-gp-mist">
                     {plan?.name || "Plan"} · {cycle}
                   </span>
-                  <span className="font-display font-bold text-slate-900">
-                    {formatMoney(total, currency)} <span className="text-xs font-normal text-slate-500">/ {per}</span>
+                  <span className="font-medium text-gp-bone">
+                    {formatMoney(total, currency)} <span className="text-xs font-normal text-gp-slate">/ {per}</span>
                   </span>
                 </p>
 
                 {/* No payment page follows this form, so it says what does. */}
                 {selfServe === false && (
-                  <div className="mt-4 rounded-2xl border border-brand-100 bg-brand-50/60 p-4 lg:mt-7">
-                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-700">What happens next</p>
-                    <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-sm leading-relaxed text-slate-700">
+                  <div className="mt-4 rounded-2xl border border-gp-mint/30 bg-gp-mint/10 p-4 lg:mt-7">
+                    <p className="text-[13px] text-gp-mint">What happens next</p>
+                    <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-sm leading-relaxed text-gp-mist">
                       <li>You send this form. No card, and nothing to pay today.</li>
                       <li>Our team sets your gym up and sends you your web address and a link to set your password, by email or phone, usually within one working day.</li>
                       <li>
@@ -552,17 +552,17 @@ export default function CheckoutClient() {
                   </div>
                 )}
 
-                <p className={`text-center text-xs leading-relaxed text-slate-500 ${selfServe === false ? "mt-4" : "mt-4 lg:mt-7"}`}>
+                <p className={`text-center text-xs leading-relaxed text-gp-slate ${selfServe === false ? "mt-4" : "mt-4 lg:mt-7"}`}>
                   By continuing you agree to our{" "}
-                  <Link href="/terms" target="_blank" className="font-semibold text-slate-700 underline underline-offset-2 hover:text-slate-900">
+                  <Link href="/terms" target="_blank" className="font-semibold text-gp-mist underline underline-offset-2 hover:text-gp-bone">
                     Terms
                   </Link>
                   ,{" "}
-                  <Link href="/privacy" target="_blank" className="font-semibold text-slate-700 underline underline-offset-2 hover:text-slate-900">
+                  <Link href="/privacy" target="_blank" className="font-semibold text-gp-mist underline underline-offset-2 hover:text-gp-bone">
                     Privacy Policy
                   </Link>{" "}
                   and{" "}
-                  <Link href="/refund-policy" target="_blank" className="font-semibold text-slate-700 underline underline-offset-2 hover:text-slate-900">
+                  <Link href="/refund-policy" target="_blank" className="font-semibold text-gp-mist underline underline-offset-2 hover:text-gp-bone">
                     Refund Policy
                   </Link>
                   .
@@ -573,7 +573,7 @@ export default function CheckoutClient() {
                   onClick={submit}
                   disabled={busy || !plan}
                   aria-busy={busy || undefined}
-                  className="btn-shine group mt-3 inline-flex h-13 w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-600 via-violet-600 to-fuchsia-600 py-4 text-base font-bold text-white shadow-lift transition-transform duration-300 hover:-translate-y-0.5 disabled:opacity-60"
+                  className="group mt-3 inline-flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-gp-bone py-4 text-base font-medium text-gp-ink transition-transform duration-300 hover:-translate-y-0.5 disabled:opacity-60"
                 >
                   {busy
                     ? selfServe
@@ -590,7 +590,7 @@ export default function CheckoutClient() {
                 </button>
 
                 {/* Said before they click, not discovered on Stripe's page: when the card is charged, and how much. */}
-                <p className="mt-4 flex items-start justify-center gap-1.5 text-center text-xs text-slate-500">
+                <p className="mt-4 flex items-start justify-center gap-1.5 text-center text-xs text-gp-slate">
                   <FiLock className="mt-px h-3.5 w-3.5 shrink-0" />
                   <span>
                     {!selfServe
@@ -603,35 +603,35 @@ export default function CheckoutClient() {
                   </span>
                 </p>
 
-                <div className="mt-6 border-t border-slate-100 pt-5 text-center">
-                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Stuck, or have a question?</p>
-                  <ContactLinks tone="light" layout="row" className="mt-3" />
+                <div className="mt-6 border-t border-gp-edge pt-5 text-center">
+                  <p className="text-[13px] text-gp-slate">Stuck, or have a question?</p>
+                  <ContactLinks layout="row" className="mt-3" />
                 </div>
               </div>
 
               {/* ----------------------------- summary --------------------------- */}
               <aside className="order-1 lg:sticky lg:top-8 lg:order-2 lg:self-start">
-                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-card">
-                  <h2 className="font-display text-lg font-bold text-slate-900">Your plan</h2>
+                <div className="rounded-[20px] border border-gp-edge bg-gp-graphite p-6">
+                  <h2 className="text-lg font-medium tracking-[-0.02em] text-gp-bone">Your plan</h2>
 
                   {hasYearly ? (
-                    <div className="mt-4 inline-flex w-full items-center rounded-full border border-slate-200 bg-slate-50 p-1 text-sm">
+                    <div className="mt-4 inline-flex w-full items-center rounded-full border border-gp-edge bg-gp-bone/[0.04] p-1 text-sm">
                       {(["monthly", "yearly"] as Cycle[]).map((c) => (
                         <button
                           key={c}
                           type="button"
                           onClick={() => setCycle(c)}
-                          className={`flex-1 rounded-full px-3 py-1.5 font-semibold capitalize transition-all ${
-                            cycle === c ? "bg-slate-900 text-white shadow" : "text-slate-600 hover:text-slate-900"
+                          className={`flex-1 rounded-full px-3 py-1.5 font-medium capitalize transition-all ${
+                            cycle === c ? "bg-gp-bone text-gp-ink shadow" : "text-gp-mist hover:text-gp-bone"
                           }`}
                         >
                           {c}
-                          {c === "yearly" && saving > 0 && <span className="ml-1 text-[11px] text-emerald-600">save {saving}%</span>}
+                          {c === "yearly" && saving > 0 && <span className="ml-1 text-[11px] text-gp-mint">save {saving}%</span>}
                         </button>
                       ))}
                     </div>
                   ) : (
-                    plan && <p className="mt-3 text-xs text-slate-500">{plan.name} is billed monthly.</p>
+                    plan && <p className="mt-3 text-xs text-gp-slate">{plan.name} is billed monthly.</p>
                   )}
 
                   <div className="mt-4 space-y-2">
@@ -643,26 +643,26 @@ export default function CheckoutClient() {
                           type="button"
                           onClick={() => setPlanSlug(p.slug)}
                           className={`flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-all ${
-                            on ? "border-brand-500 bg-brand-50/60 ring-1 ring-brand-200" : "border-slate-200 hover:border-slate-300"
+                            on ? "border-gp-mint bg-gp-mint/10 ring-1 ring-gp-mint/30" : "border-gp-edge hover:border-gp-edge-2"
                           }`}
                         >
                           <span
                             className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${
-                              on ? "border-brand-600 bg-brand-600 text-white" : "border-slate-300"
+                              on ? "border-gp-mint bg-gp-mint text-gp-ink" : "border-gp-edge-2"
                             }`}
                           >
                             {on && <FiCheck className="h-3 w-3" />}
                           </span>
                           <span className="min-w-0 flex-1">
-                            <span className="block text-sm font-bold text-slate-900">{p.name}</span>
-                            <span className="block truncate text-xs text-slate-500">
+                            <span className="block text-sm font-medium text-gp-bone">{p.name}</span>
+                            <span className="block truncate text-xs text-gp-slate">
                               {p.limits.maxMembers ? `up to ${p.limits.maxMembers.toLocaleString()} members` : "unlimited members"}
                             </span>
                           </span>
                           {/* A monthly-only plan shows its monthly price even on yearly; picking it switches to monthly. */}
-                          <span className="whitespace-nowrap text-sm font-bold text-slate-900">
+                          <span className="whitespace-nowrap text-sm font-medium text-gp-bone">
                             {formatMoney(cycle === "yearly" && p.price.yearly > 0 ? p.price.yearly : p.price.monthly, p.price.currency)}
-                            {cycle === "yearly" && !(p.price.yearly > 0) && <span className="text-xs font-normal text-slate-500"> /mo</span>}
+                            {cycle === "yearly" && !(p.price.yearly > 0) && <span className="text-xs font-normal text-gp-slate"> /mo</span>}
                           </span>
                         </button>
                       );
@@ -671,13 +671,13 @@ export default function CheckoutClient() {
 
                   {(included.length > 0 || sellable.length > 0) && (
                     <>
-                      <p className="mt-6 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Add-ons</p>
+                      <p className="mt-6 text-[13px] text-gp-slate">Add-ons</p>
                       <div className="mt-2 space-y-2">
                         {included.map((addon) => (
-                          <div key={addon.slug} className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-3">
-                            <FiCheck className="h-4 w-4 shrink-0 text-emerald-600" />
-                            <span className="min-w-0 flex-1 text-sm font-semibold text-slate-900">{addon.name}</span>
-                            <span className="text-sm font-bold text-emerald-700">Free</span>
+                          <div key={addon.slug} className="flex items-center gap-3 rounded-2xl border border-gp-mint/30 bg-gp-mint/10 p-3">
+                            <FiCheck className="h-4 w-4 shrink-0 text-gp-mint" />
+                            <span className="min-w-0 flex-1 text-sm font-semibold text-gp-bone">{addon.name}</span>
+                            <span className="text-sm font-medium text-gp-mint">Free</span>
                           </div>
                         ))}
                         {sellable.map((addon) => {
@@ -690,24 +690,24 @@ export default function CheckoutClient() {
                                 setChosenAddons((list) => (on ? list.filter((s) => s !== addon.slug) : [...list, addon.slug]))
                               }
                               className={`flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-all ${
-                                on ? "border-brand-500 bg-brand-50/60 ring-1 ring-brand-200" : "border-slate-200 hover:border-slate-300"
+                                on ? "border-gp-mint bg-gp-mint/10 ring-1 ring-gp-mint/30" : "border-gp-edge hover:border-gp-edge-2"
                               }`}
                             >
                               <span
                                 className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 ${
-                                  on ? "border-brand-600 bg-brand-600 text-white" : "border-slate-300"
+                                  on ? "border-gp-mint bg-gp-mint text-gp-ink" : "border-gp-edge-2"
                                 }`}
                               >
-                                {on ? <FiCheck className="h-3 w-3" /> : <FiPlus className="h-3 w-3 text-slate-400" />}
+                                {on ? <FiCheck className="h-3 w-3" /> : <FiPlus className="h-3 w-3 text-gp-slate" />}
                               </span>
                               <span className="min-w-0 flex-1">
-                                <span className="flex items-center gap-1.5 text-sm font-bold text-slate-900">
-                                  {addon.slug.includes("app") && <FiSmartphone className="h-3.5 w-3.5 text-brand-600" />}
+                                <span className="flex items-center gap-1.5 text-sm font-medium text-gp-bone">
+                                  {addon.slug.includes("app") && <FiSmartphone className="h-3.5 w-3.5 text-gp-mint" />}
                                   {addon.name}
                                 </span>
-                                <span className="block truncate text-xs text-slate-500">{addon.description}</span>
+                                <span className="block truncate text-xs text-gp-slate">{addon.description}</span>
                               </span>
-                              <span className="whitespace-nowrap text-sm font-bold text-slate-900">
+                              <span className="whitespace-nowrap text-sm font-medium text-gp-bone">
                                 +{formatMoney(priceOf(addon.price), addon.price.currency)}
                               </span>
                             </button>
@@ -715,35 +715,35 @@ export default function CheckoutClient() {
                         })}
                       </div>
                       {[...included, ...sellable].some((a) => a.slug.includes("app")) && (
-                        <p className="mt-2 text-xs leading-relaxed text-slate-500">{PRICING.appNote}</p>
+                        <p className="mt-2 text-xs leading-relaxed text-gp-slate">{PRICING.appNote}</p>
                       )}
                     </>
                   )}
 
-                  <div className="mt-6 border-t border-slate-200 pt-4 text-sm">
-                    <div className="flex justify-between text-slate-600">
+                  <div className="mt-6 border-t border-gp-edge pt-4 text-sm">
+                    <div className="flex justify-between text-gp-mist">
                       <span>{plan?.name || "Plan"}</span>
-                      <span className="font-medium text-slate-900">{formatMoney(planPrice, currency)}</span>
+                      <span className="font-medium text-gp-bone">{formatMoney(planPrice, currency)}</span>
                     </div>
                     {addonLines.map((addon) => (
-                      <div key={addon.slug} className="mt-1.5 flex justify-between text-slate-600">
+                      <div key={addon.slug} className="mt-1.5 flex justify-between text-gp-mist">
                         <span>{addon.name}</span>
-                        <span className="font-medium text-slate-900">+{formatMoney(priceOf(addon.price), currency)}</span>
+                        <span className="font-medium text-gp-bone">+{formatMoney(priceOf(addon.price), currency)}</span>
                       </div>
                     ))}
-                    <div className="mt-3 flex items-baseline justify-between border-t border-slate-200 pt-3">
-                      <span className="font-semibold text-slate-900">Total</span>
-                      <span className="font-display text-2xl font-extrabold text-slate-900">
+                    <div className="mt-3 flex items-baseline justify-between border-t border-gp-edge pt-3">
+                      <span className="font-semibold text-gp-bone">Total</span>
+                      <span className="font-gp-brand text-2xl font-semibold text-gp-bone">
                         {formatMoney(total, currency)}
-                        <span className="text-sm font-normal text-slate-500"> / {per}</span>
+                        <span className="text-sm font-normal text-gp-slate"> / {per}</span>
                       </span>
                     </div>
                     {plan?.trialDays ? (
-                      <p className="mt-3 rounded-xl bg-emerald-50 px-3 py-2 text-center text-xs font-semibold text-emerald-700">
+                      <p className="mt-3 rounded-xl bg-gp-mint/10 px-3 py-2 text-center text-xs font-semibold text-gp-mint">
                         Free for {plan.trialDays} days · nothing to pay today
                       </p>
                     ) : selfServe ? (
-                      <p className="mt-3 rounded-xl bg-slate-50 px-3 py-2 text-center text-xs font-semibold text-slate-600">
+                      <p className="mt-3 rounded-xl bg-gp-bone/[0.04] px-3 py-2 text-center text-xs font-semibold text-gp-mist">
                         Charged today, then every {per}
                       </p>
                     ) : null}
@@ -755,6 +755,6 @@ export default function CheckoutClient() {
         </div>
       </main>
       <SiteFooter />
-    </>
+    </div>
   );
 }

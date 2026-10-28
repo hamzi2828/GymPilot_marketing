@@ -26,7 +26,7 @@ export default function ContactPage() {
   return (
     <>
       <SiteHeader />
-      <main>
+      <main className="font-gp">
         <DemoForm contact />
       </main>
       <SiteFooter />
