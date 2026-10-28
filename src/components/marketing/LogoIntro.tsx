@@ -7,7 +7,9 @@
 //
 // It renders nothing on the server or on the first client render, so the page
 // (and its LCP) is untouched and hydration matches; the overlay is fixed, so
-// nothing shifts. Shown once per browser session, never under reduced motion;
+// nothing shifts. Plays on every full page load (reload included, like the
+// reference) but not again when the visitor clicks back to the homepage
+// within the site; never under reduced motion;
 // a click, tap, key press or scroll skips it (onClick, so the click that
 // skips it is not also passed to a link underneath).
 
@@ -15,7 +17,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { GMark } from "./Brand";
 import s from "./LogoIntro.module.css";
 
-const KEY = "gpp-intro";
+// Module state survives client-side navigation but resets on a full reload.
+let playedThisLoad = false;
 const HOLD_MS = 2150; // the entrance finishes at about 2s; then the fade
 const FADE_MS = 500;
 const WORD = ["g", "y", "m", "s", "p", "ı", "l", "o", "t"];
@@ -26,12 +29,8 @@ export default function LogoIntro() {
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    try {
-      if (sessionStorage.getItem(KEY) === "1") return;
-      sessionStorage.setItem(KEY, "1");
-    } catch {
-      return;
-    }
+    if (playedThisLoad) return;
+    playedThisLoad = true;
     setPhase("on");
   }, []);
 
