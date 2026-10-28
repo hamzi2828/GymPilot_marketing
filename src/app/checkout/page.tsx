@@ -14,9 +14,9 @@ export const metadata: Metadata = {
     type: "website",
     siteName: SITE.name,
     url: "/checkout",
-    title: `Start your free trial — ${SITE.name}`,
+    title: `Start your free trial | ${SITE.name}`,
     description: DESCRIPTION,
-    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: `${SITE.name} — ${SITE.tagline}` }],
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: `${SITE.name} | ${SITE.tagline}` }],
   },
   robots: { index: false, follow: true },
 };

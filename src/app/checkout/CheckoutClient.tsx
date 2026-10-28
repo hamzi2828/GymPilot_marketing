@@ -388,13 +388,13 @@ export default function CheckoutClient() {
             {selfServe === null
               ? "Pick a plan and tell us about your gym."
               : selfServe
-              ? "Pick a plan, tell us about your gym, then add a card on Stripe's secure page. Your gym — website, admin and all — is set up the moment you finish."
-              : "No card needed. Send us your details and our team sets your gym up — website, admin and all — usually within one working day."}
+              ? "Pick a plan, tell us about your gym, then add a card on Stripe's secure page. Your gym, with its website and admin, is set up the moment you finish."
+              : "No card needed. Send us your details and our team sets your gym up, website and admin included, usually within one working day."}
           </p>
 
           {cancelled && (
             <p className="a-rise mt-5 max-w-2xl rounded-xl border border-gp-ember/30 bg-gp-ember/10 px-4 py-3 text-sm text-gp-ember" style={stagger(2)}>
-              Payment cancelled — nothing was charged. Your details are still here whenever you are ready.
+              Payment cancelled, so nothing was charged. Your details are still here whenever you are ready.
             </p>
           )}
 
@@ -492,13 +492,13 @@ export default function CheckoutClient() {
                         </span>
                       ) : (
                         <span className="mt-1.5 block text-xs text-gp-slate">
-                          Using your own domain? We&apos;ll connect it for you — contact us after sign-up.
+                          Using your own domain? We&apos;ll connect it for you. Just contact us after sign-up.
                         </span>
                       )}
                     </label>
                   ) : (
                     <p className="sm:col-span-2 rounded-xl bg-gp-bone/[0.04] px-4 py-3 text-sm text-gp-mist">
-                      You will get a web address when your gym is set up. Using your own domain? We&apos;ll connect it for you — contact us after sign-up.
+                      You will get a web address when your gym is set up. Using your own domain? We&apos;ll connect it for you. Just contact us after sign-up.
                     </p>
                   )}
 

@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const feature = featureBySlug(slug);
   if (!feature) return {};
   const url = `/features/${feature.slug}`;
-  const title = `${feature.title} — ${SITE.name}`;
+  const title = `${feature.title} | ${SITE.name}`;
   return {
     title: `${feature.name} · Features`,
     description: feature.text,

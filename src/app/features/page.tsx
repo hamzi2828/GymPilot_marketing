@@ -25,11 +25,11 @@ export const metadata: Metadata = {
     type: "website",
     siteName: SITE.name,
     url: "/features",
-    title: `Every feature — ${SITE.name}`,
+    title: `Every feature | ${SITE.name}`,
     description: DESCRIPTION,
     // Setting openGraph here replaces the whole inherited block, image and
     // all, so the site's card is named again.
-    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: `${SITE.name} — ${SITE.tagline}` }],
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: `${SITE.name} | ${SITE.tagline}` }],
   },
 };
 

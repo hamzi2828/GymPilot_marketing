@@ -8,7 +8,7 @@ import { useAsyncAction } from "@/app/super-admin/_shared/ui";
 
 // The API answers EMAIL_NOT_CONFIGURED when it has no way to send email: no
 // link would ever arrive, so the page says so rather than promise one.
-const NO_EMAIL = "Password reset by email isn't available yet — contact support.";
+const NO_EMAIL = "Password reset by email isn't available yet. Please contact support.";
 
 export default function SuperAdminForgotPage() {
   const [email, setEmail] = useState("");

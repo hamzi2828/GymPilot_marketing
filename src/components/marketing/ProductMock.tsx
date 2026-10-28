@@ -114,7 +114,7 @@ export default function ProductMock() {
                   ))}
                 </div>
                 <p className="mt-3 text-[11px] text-gp-slate">
-                  Peak <span className="font-medium text-gp-bone">18:00 – 20:00</span>
+                  Peak <span className="font-medium text-gp-bone">18:00 to 20:00</span>
                 </p>
                 <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-gp-bone/10">
                   <div className="a-fill h-full w-[68%] rounded-full bg-gradient-to-r from-gp-mint to-gp-ember" style={stagger(0, 1200)} />

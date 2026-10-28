@@ -155,7 +155,7 @@ export const SUGGESTIONS = {
   /** The heading; `highlight` follows it, drawn in colour. */
   title: "Your ideas,",
   highlight: "built free",
-  text: "We welcome your suggestions. If anything in GymsPilotPro could be simpler or friendlier for you, tell us — we are pleased to build improvements at no extra cost.",
+  text: "We welcome your suggestions. If anything in GymsPilotPro could be simpler or friendlier for you, tell us. We are pleased to build improvements at no extra cost.",
   points: [
     { title: "Tell us what would help", text: "Message us about anything that could be simpler or quicker for you." },
     { title: "We plan it with you", text: "We reply and work out the details, so it fits how your gym runs." },
@@ -219,7 +219,7 @@ export const TESTIMONIALS: { quote: string; who: string; where: string; sample: 
 export const FAQ: { q: string; a: string; more?: boolean }[] = [
   {
     q: "How do members pay?",
-    a: "Online, you pick one way in Settings → Payments. Safepay, in Pakistan: card, JazzCash, Easypaisa or any bank app, with a reminder and a link to pay before the due date, on it and on the last day, and automatic card payments for members who agree, if you switch them on. Stripe: cards, where Stripe is available to your business. Generic, in any country: before the due date, on it and on the last day the member gets a link with your bank QR code and account details, sends a bank transfer and uploads a screenshot, and your staff approve it — no gateway fee, but each receipt is checked by hand. At the desk you record cash, bank transfer, wallet or card-machine payments, part payments included; these are recorded, not processed.",
+    a: "Online, you pick one way in Settings → Payments. Safepay, in Pakistan: card, JazzCash, Easypaisa or any bank app, with a reminder and a link to pay before the due date, on it and on the last day, and automatic card payments for members who agree, if you switch them on. Stripe: cards, where Stripe is available to your business. Generic, in any country: before the due date, on it and on the last day the member gets a link with your bank QR code and account details, sends a bank transfer and uploads a screenshot, and your staff approve it. There is no gateway fee, but each receipt is checked by hand. At the desk you record cash, bank transfer, wallet or card-machine payments, part payments included; these are recorded, not processed.",
   },
   {
     q: "Does the money go to my account?",
@@ -261,8 +261,8 @@ export const FAQ: { q: string; a: string; more?: boolean }[] = [
 export const DEMO_FORM = {
   eyebrow: "Book a demo",
   title: "See GymsPilotPro running on a gym like yours",
-  text: "Tell us a little about the gym and we will set up a walkthrough on your numbers — memberships, timetable, billing and the website.",
-  sizes: ["Under 100 members", "100 – 500 members", "500 – 2,000 members", "2,000+ members"],
+  text: "Tell us a little about the gym and we will set up a walkthrough on your numbers: memberships, timetable, billing and the website.",
+  sizes: ["Under 100 members", "100 to 500 members", "500 to 2,000 members", "2,000+ members"],
 };
 
 // The contact page (/contact): the same form, asked as a question. It is the

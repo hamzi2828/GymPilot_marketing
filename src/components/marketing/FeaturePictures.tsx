@@ -85,7 +85,7 @@ function BookingPicture() {
         ))}
       </div>
       <p className="v-rise mt-3 flex items-center gap-1.5 text-[11px] text-gp-slate" style={stagger(9)}>
-        <FiBell className="h-3.5 w-3.5 text-gp-mint" /> “A spot opened in Pilates — you&apos;re in!”
+        <FiBell className="h-3.5 w-3.5 text-gp-mint" /> “A spot opened in Pilates. You&apos;re in!”
       </p>
     </Frame>
   );
@@ -889,7 +889,7 @@ function LoginsPicture() {
         <p className="text-[11px] font-semibold text-gp-bone">Set password · Ali Khan</p>
         <div className="mt-2 space-y-1 text-[11px]">
           {[
-            ["Email", "—"],
+            ["Email", "None"],
             ["Phone", "0300 555 0142"],
             ["Username", "alikhan"],
           ].map(([l, v], i) => (
@@ -936,7 +936,7 @@ function ImportPicture() {
         Recognised: name · phone · member ID · package · start · expiry
       </p>
       <p className="v-rise mt-1.5 rounded-md bg-gp-ember/10 px-2.5 py-1.5 text-[10px] text-gp-ember ring-1 ring-gp-ember/30" style={stagger(6)}>
-        Line 18 — no package called “Gold”
+        Line 18: no package called “Gold”
       </p>
     </Frame>
   );
@@ -1124,7 +1124,7 @@ function ReceiptsPicture() {
           <span>60.00</span>
         </p>
         <p className="v-fade mt-2 text-center text-[9px] text-gp-slate" style={stagger(7)}>
-          Thank you — see you tomorrow!
+          Thank you, see you tomorrow!
         </p>
       </div>
       <div className="flex flex-col gap-1.5 text-[10px] font-semibold">

@@ -20,9 +20,9 @@ export function legalMetadata(doc: LegalDoc): Metadata {
       type: "website",
       siteName: SITE.name,
       url,
-      title: `${doc.name} — ${SITE.name}`,
+      title: `${doc.name} | ${SITE.name}`,
       description: doc.description,
-      images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: `${SITE.name} — ${SITE.tagline}` }],
+      images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: `${SITE.name} | ${SITE.tagline}` }],
     },
   };
 }

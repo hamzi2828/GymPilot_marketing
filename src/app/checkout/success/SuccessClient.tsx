@@ -136,7 +136,7 @@ export default function SuccessClient() {
         {working && slow && (
           <>
             <p className="mt-3 text-sm text-gp-slate">
-              This is taking longer than usual. You can close this page — there is no need to pay again, and your sign-in link reaches you, by
+              This is taking longer than usual. You can close this page. There is no need to pay again, and your sign-in link reaches you, by
               email or from our team, once your gym is ready.
             </p>
             <ContactLinks layout="row" className="mt-5" />
