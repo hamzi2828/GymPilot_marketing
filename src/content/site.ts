@@ -76,7 +76,7 @@ export const LEGAL = {
 // the landing-page section that lights it up.
 export const NAV: { label: string; href: string; menu?: "features"; spy?: string }[] = [
   { label: "Product", href: "#product" },
-  { label: "Features", href: "/features", menu: "features", spy: "#features" },
+  { label: "Features", href: "/features", menu: "features", spy: "#areas" },
   { label: "How it works", href: "#how-it-works" },
   { label: "Pricing", href: "#pricing" },
   { label: "FAQ", href: "#faq" },

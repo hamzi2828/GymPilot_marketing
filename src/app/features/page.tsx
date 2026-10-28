@@ -11,6 +11,7 @@ import Reveal from "@/components/marketing/Reveal";
 import Glow from "@/components/marketing/Glow";
 import Suggestions from "@/components/marketing/Suggestions";
 import TargetGlow from "@/components/marketing/TargetGlow";
+import FeatureGroupsGrid from "@/components/marketing/FeatureGroupsGrid";
 import AllFeatures from "@/components/marketing/AllFeatures";
 
 // For search results: one sentence, under 160 characters.
@@ -59,6 +60,12 @@ export default function FeaturesPage() {
                 {FEATURES_PAGE.title} {SITE.name}: open any feature to read how it works and see it in action. Search, or pick an area.
               </p>
             </div>
+
+            {/* The eight areas at a glance, numbered; each card jumps to its row below. */}
+            <nav aria-label="Feature groups" className="mt-10">
+              <p className="mb-4 text-sm text-gp-slate">{FEATURES_PAGE.hint}</p>
+              <FeatureGroupsGrid variant="cards" />
+            </nav>
 
             {/* No entrance transform here: it would trap the sticky search bar under the cards. */}
             <div className="mt-9">

@@ -188,7 +188,7 @@ export default function SiteHeader() {
   const onFeatures = pathname === "/features" || pathname.startsWith("/features/");
   // Features is lit under /features, so there it leads to /features itself,
   // not back to the landing page's features section.
-  const featuresHref = onFeatures ? "/features" : href("#features");
+  const featuresHref = onFeatures ? "/features" : href("#areas");
 
   const [active, setActive] = useState<string>("");
   const [open, setOpen] = useState(false);
