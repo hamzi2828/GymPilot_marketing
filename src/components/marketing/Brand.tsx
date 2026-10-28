@@ -13,24 +13,27 @@ export function BrandMark({ className = "h-9 w-9" }: { className?: string }) {
   );
 }
 
-// The dumbbell mark (the original GymsPilotPro icon) on a rounded tile lit
-// mint to amber. Fixed colours, so it reads the same in light and dark.
+// "G" built from three blocks, the crossbar lit mint to amber. The blocks
+// use currentColor, so the mark follows the text colour in light and dark.
 export function GMark({ className = "mk" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 64 64" className={className} aria-hidden="true">
+    <svg viewBox="0 0 40 40" className={className} aria-hidden="true">
       <defs>
-        <linearGradient id="gp-mark-tile" x1="0" y1="0" x2="1" y2="1">
+        <linearGradient id="gp-mark-bar" x1="18" y1="0" x2="38" y2="0" gradientUnits="userSpaceOnUse">
           <stop offset="0" stopColor="#7FE3D2" />
           <stop offset="1" stopColor="#E5A34A" />
         </linearGradient>
       </defs>
-      <rect width="64" height="64" rx="16" fill="url(#gp-mark-tile)" />
-      <path fill="#050707" d="M10 26h5v12h-5zM49 26h5v12h-5zM17 21h6v22h-6zM41 21h6v22h-6zM23 29h18v6H23z" />
+      <g fill="currentColor">
+        <path d="M2 18V12A10 10 0 0 1 12 2H38V10H14A4 4 0 0 0 10 14V18Z" />
+        <path d="M2 22H10V26A4 4 0 0 0 14 30H26A4 4 0 0 0 30 26V22H38V28A10 10 0 0 1 28 38H12A10 10 0 0 1 2 28Z" />
+        <path d="M18 13H38V19H18Z" fill="url(#gp-mark-bar)" />
+      </g>
     </svg>
   );
 }
 
-/** The wordmark: the dumbbell mark, "gymspılot" in Tektur with a mint dot on the i, then a boxed PRO. */
+/** The wordmark: the G mark, "gymspılot" in Tektur with a mint dot on the i, then a boxed PRO. */
 export function Wordmark({ className = "", mark = true, light = false }: { className?: string; mark?: boolean; light?: boolean }) {
   return (
     <span className={`gp-logo ${light ? "on-light" : ""} ${className}`}>
