@@ -46,11 +46,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" data-gp-theme="light" suppressHydrationWarning className={`${inter.variable} ${sora.variable} ${geist.variable} ${tektur.variable}`}>
       <head>
-        {/* The site opens light; a visitor who picked dark with the barbell
-            switch gets dark again, set before first paint so nothing flashes. */}
+        {/* Every visit opens light. Dark, picked with the barbell switch, lasts
+            for that browser session only (set before first paint so nothing
+            flashes). The old long-lived "gp-theme" choice is cleared. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{if(localStorage.getItem("gp-theme")==="dark")document.documentElement.setAttribute("data-gp-theme","dark")}catch(e){}`,
+            __html: `try{localStorage.removeItem("gp-theme");if(sessionStorage.getItem("gp-theme-v2")==="dark")document.documentElement.setAttribute("data-gp-theme","dark")}catch(e){}`,
           }}
         />
       </head>

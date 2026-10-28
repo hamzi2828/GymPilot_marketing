@@ -2,7 +2,8 @@
 
 // The reference's barbell switch between the light (default) and dark site.
 // The theme lives on <html data-gp-theme>, "light" unless the visitor picked
-// dark (localStorage "gp-theme", applied before paint by layout.tsx); every
+// dark this session (sessionStorage "gp-theme-v2", applied before paint by
+// layout.tsx); every
 // switch on the page reads it
 // from there, so two of them (the bar and the phone menu) always agree.
 // Where the browser has view transitions, the new theme rolls out from the
@@ -12,7 +13,7 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import styles from "./ThemeSwitch.module.css";
 
-const KEY = "gp-theme";
+const KEY = "gp-theme-v2";
 const DURATION = 980;
 
 const isLight = () => document.documentElement.getAttribute("data-gp-theme") === "light";
@@ -31,7 +32,7 @@ export function useLightTheme() {
 function paint(light: boolean) {
   document.documentElement.setAttribute("data-gp-theme", light ? "light" : "dark");
   try {
-    localStorage.setItem(KEY, light ? "light" : "dark");
+    sessionStorage.setItem(KEY, light ? "light" : "dark");
   } catch {
     // Storage blocked: the choice lasts for this page only.
   }
@@ -137,7 +138,7 @@ export default function ThemeSwitch({ className = "" }: { className?: string }) 
   const [hint, setHint] = useState(false);
   useEffect(() => {
     try {
-      setHint(!localStorage.getItem(KEY));
+      setHint(!sessionStorage.getItem(KEY));
     } catch {
       setHint(true);
     }
