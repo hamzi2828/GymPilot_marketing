@@ -21,6 +21,90 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* ---------------------------------------------------------------------------
+   Public website look (black, mint, amber; Geist + Tektur). Any page that
+   renders the site header (.gp-site) switches the whole body to it, so the
+   super-admin panel keeps its own light look.
+   --------------------------------------------------------------------------- */
+/* Theme tokens as RGB triplets (Tailwind's gp-* colours read them). Dark is
+   the default; <html data-gp-theme="light"> is set by the header's barbell
+   switch (and before paint by the script in layout.tsx). */
+:root {
+  --gp-void: 0 0 0;
+  --gp-graphite: 13 17 17;
+  --gp-panel: 18 23 23;
+  --gp-raised: 25 30 30;
+  --gp-slate: 124 129 127;
+  --gp-mist: 169 174 172;
+  --gp-bone: 242 243 241;
+  --gp-ink: 5 7 7;
+  --gp-mint: 127 227 210;
+  --gp-ember: 229 163 74;
+  --gp-paper: 238 239 236;
+  --gp-blue: 111 168 255;
+  --gp-violet: 169 139 255;
+  --gp-edge: rgba(255, 255, 255, 0.08);
+  --gp-edge-2: rgba(255, 255, 255, 0.14);
+}
+html[data-gp-theme="light"] {
+  --gp-void: 243 244 241;
+  --gp-graphite: 255 255 255;
+  --gp-panel: 255 255 255;
+  --gp-raised: 234 236 232;
+  --gp-slate: 85 90 89;
+  --gp-mist: 60 65 64;
+  --gp-bone: 10 13 13;
+  --gp-ink: 247 248 245;
+  --gp-mint: 11 117 102;
+  --gp-ember: 143 86 9;
+  --gp-paper: 255 255 255;
+  --gp-blue: 37 99 200;
+  --gp-violet: 110 80 200;
+  --gp-edge: rgba(10, 13, 13, 0.09);
+  --gp-edge-2: rgba(10, 13, 13, 0.16);
+}
+body:has(.gp-site) {
+  --site-bg: rgb(var(--gp-void));
+  color-scheme: dark;
+  background: rgb(var(--gp-void));
+  color: rgb(var(--gp-bone));
+  font-family: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: normal;
+  transition: background-color 0.4s, color 0.4s;
+}
+html[data-gp-theme="light"] body:has(.gp-site) { color-scheme: light; }
+body:has(.gp-site) ::selection { background: rgb(var(--gp-mint) / 0.3); }
+body:has(.gp-site) :focus-visible { outline: 2px solid rgb(var(--gp-mint)); outline-offset: 3px; border-radius: 10px; }
+
+/* Headline sheen from the reference: grey edges, bone centre. */
+.gp-shine {
+  background: linear-gradient(90deg, #5d6261 0%, #9ea3a1 22%, #f2f3f1 42%, #f2f3f1 58%, #9ea3a1 78%, #5d6261 100%);
+  background-size: 200% 100%;
+  background-position: 50% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+html[data-gp-theme="light"] .gp-shine {
+  background-image: linear-gradient(90deg, #6b706e 0%, #3c4140 22%, #0a0d0d 42%, #0a0d0d 58%, #3c4140 78%, #6b706e 100%);
+}
+.gp-shine-in { animation: gp-sheen 2.4s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both; }
+@keyframes gp-sheen { from { background-position: 120% 0; filter: blur(10px); } to { background-position: 50% 0; filter: blur(0); } }
+@media (prefers-reduced-motion: reduce) { html[data-gp-theme="light"] .gp-shine {
+  background-image: linear-gradient(90deg, #6b706e 0%, #3c4140 22%, #0a0d0d 42%, #0a0d0d 58%, #3c4140 78%, #6b706e 100%);
+}
+.gp-shine-in { animation: none; } }
+
+/* Wordmark: Tektur, a mint square for the dot of the i, boxed PRO. */
+.gp-logo { display: inline-flex; align-items: center; gap: 0.36em; font: 600 19px/1 var(--font-tektur), var(--font-geist), system-ui, sans-serif; letter-spacing: -0.01em; color: rgb(var(--gp-bone)); }
+.gp-logo .mk { width: 1.15em; height: 1.15em; flex: none; }
+.gp-logo .i { position: relative; display: inline-block; }
+.gp-logo .i::after { content: ""; position: absolute; left: 50%; top: 0.1em; width: 0.16em; height: 0.16em; transform: translateX(-50%); background: rgb(var(--gp-mint)); }
+.gp-logo .pro { font-weight: 500; font-size: 0.5em; letter-spacing: 0.08em; border: 1px solid var(--gp-edge-2); padding: 0.2em 0.45em; color: rgb(var(--gp-mist)); margin-left: 0.15em; }
+.gp-logo.on-light { color: #0a0d0d; }
+.gp-logo.on-light .i::after { background: #0b7566; }
+.gp-logo.on-light .pro { border-color: rgba(10, 13, 13, 0.16); color: #3c4140; }
+
 /* Native <details> is what the FAQ uses: no JS, keyboard-accessible. */
 details > summary {
   list-style: none;
@@ -226,7 +310,7 @@ details > summary::-webkit-details-marker {
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(110deg, rgba(99,102,241,0.7), rgba(217,70,239,0.7), rgba(99,102,241,0.7));
+  background: linear-gradient(110deg, rgb(var(--gp-mint) / 0.7), rgb(var(--gp-ember) / 0.7), rgb(var(--gp-mint) / 0.7));
   background-size: 200% 100%;
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
@@ -237,7 +321,7 @@ details > summary::-webkit-details-marker {
 }
 /* The same edge in green, for an add-on a plan gives away. */
 .edge-glow-free::before {
-  background: linear-gradient(110deg, rgba(16,185,129,0.75), rgba(45,212,191,0.75), rgba(16,185,129,0.75));
+  background: linear-gradient(110deg, rgb(var(--gp-mint) / 0.75), rgb(var(--gp-mint) / 0.4), rgb(var(--gp-mint) / 0.75));
   background-size: 200% 100%;
 }
 .a-point-r { animation: m-point-r 1.15s ease-in-out infinite; }
@@ -252,11 +336,11 @@ details > summary::-webkit-details-marker {
    runs along the line, each node lights as it passes, and each card's little
    scene builds itself (WhatYouGet.tsx sets the delays to the pulse's arrival). */
 @keyframes m-wyg-flow { 0% { left: 0%; opacity: 0; } 8% { opacity: 1; } 72% { opacity: 1; } 80%, 100% { left: 100%; opacity: 0; } }
-@keyframes m-wyg-node { 0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.45); } 7% { transform: translate(-50%, -50%) scale(1.15); } 18% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 14px rgba(124, 58, 237, 0); } 100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgba(124, 58, 237, 0); } }
+@keyframes m-wyg-node { 0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgb(var(--gp-mint) / 0.45); } 7% { transform: translate(-50%, -50%) scale(1.15); } 18% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 14px rgb(var(--gp-mint) / 0); } 100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgb(var(--gp-mint) / 0); } }
 @keyframes m-wyg-bar { 0% { transform: scaleY(0.15); } 12%, 78% { transform: scaleY(1); } 92%, 100% { transform: scaleY(0.15); } }
 @keyframes m-wyg-build { 0% { opacity: 0; transform: translateY(6px); } 10%, 78% { opacity: 1; transform: none; } 90%, 100% { opacity: 0; transform: none; } }
 @keyframes m-wyg-type { 0% { width: 0; } 22%, 80% { width: 11ch; } 92%, 100% { width: 0; } }
-@keyframes m-wyg-row { 0%, 100% { background-color: rgb(241 245 249); color: rgb(71 85 105); transform: none; } 6%, 14% { background-color: rgb(237 233 254); color: rgb(109 40 217); transform: scale(1.05); } 24% { background-color: rgb(241 245 249); color: rgb(71 85 105); transform: none; } }
+@keyframes m-wyg-row { 0%, 100% { background-color: rgb(var(--gp-bone) / 0.05); color: rgb(var(--gp-mist)); transform: none; } 6%, 14% { background-color: rgb(var(--gp-mint) / 0.15); color: rgb(var(--gp-mint)); transform: scale(1.05); } 24% { background-color: rgb(var(--gp-bone) / 0.05); color: rgb(var(--gp-mist)); transform: none; } }
 @keyframes m-wyg-tick { 0% { opacity: 0; transform: scale(0.3); } 7% { opacity: 1; transform: scale(1.18); } 12%, 70% { opacity: 1; transform: scale(1); } 82%, 100% { opacity: 0; transform: scale(0.6); } }
 .a-wyg-flow { animation: m-wyg-flow 6s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
 .a-wyg-node { animation: m-wyg-node 6s ease-out infinite both; }
@@ -272,7 +356,7 @@ details > summary::-webkit-details-marker {
 @keyframes m-bn-up { 0% { opacity: 0; transform: translate(-50%, 6px); } 8% { opacity: 1; } 28%, 100% { opacity: 0; transform: translate(-50%, -18px); } }
 @keyframes m-bn-slide { 0% { opacity: 0; transform: translateX(28px); } 10%, 74% { opacity: 1; transform: none; } 86%, 100% { opacity: 0; transform: translateX(-14px); } }
 @keyframes m-bn-ring { 0%, 12%, 100% { transform: rotate(0); } 2% { transform: rotate(16deg); } 4% { transform: rotate(-14deg); } 6% { transform: rotate(10deg); } 8% { transform: rotate(-6deg); } }
-@keyframes m-bn-seat { 0% { background-color: rgb(226 232 240); transform: scale(1); } 4% { background-color: rgb(124 58 237); transform: scale(1.25); } 8%, 80% { background-color: rgb(124 58 237); transform: scale(1); } 92%, 100% { background-color: rgb(226 232 240); transform: scale(1); } }
+@keyframes m-bn-seat { 0% { background-color: rgb(var(--gp-bone) / 0.1); transform: scale(1); } 4% { background-color: rgb(var(--gp-mint)); transform: scale(1.25); } 8%, 80% { background-color: rgb(var(--gp-mint)); transform: scale(1); } 92%, 100% { background-color: rgb(var(--gp-bone) / 0.1); transform: scale(1); } }
 .a-bn-scan { animation: m-bn-scan 2.4s ease-in-out infinite; }
 .a-bn-draw { stroke-dasharray: 1; animation: m-bn-draw 6s cubic-bezier(0.45, 0, 0.55, 1) infinite both; }
 .a-bn-up { animation: m-bn-up 6s ease-out infinite both; }
@@ -281,7 +365,7 @@ details > summary::-webkit-details-marker {
 .a-bn-seat { animation: m-bn-seat 6s ease-out infinite both; }
 
 /* "Up and running in a day": the step numbers light in turn, the setup bar fills. */
-@keyframes m-hw-step { 0% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.65); } 14% { box-shadow: 0 0 0 14px rgba(168, 85, 247, 0); } 100% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0); } }
+@keyframes m-hw-step { 0% { box-shadow: 0 0 0 0 rgb(var(--gp-mint) / 0.65); } 14% { box-shadow: 0 0 0 14px rgb(var(--gp-mint) / 0); } 100% { box-shadow: 0 0 0 0 rgb(var(--gp-mint) / 0); } }
 @keyframes m-hw-fill { 0% { width: 0; } 25%, 80% { width: 100%; } 92%, 100% { width: 0; } }
 .a-hw-step { animation: m-hw-step 6s ease-out infinite both; }
 .a-hw-fill { animation: m-hw-fill 6s cubic-bezier(0.22, 1, 0.36, 1) infinite both; }
@@ -319,7 +403,7 @@ details > summary::-webkit-details-marker {
 /* A light sweep across a button on hover. */
 .btn-shine { position: relative; overflow: hidden; isolation: isolate; }
 .btn-shine::after { content: ""; position: absolute; top: -20%; bottom: -20%; left: 0; width: 45%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent); transform: translateX(-150%) skewX(-20deg); pointer-events: none; }
-.btn-shine-dark::after { background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.28), transparent); }
+.btn-shine-dark::after { background: linear-gradient(90deg, transparent, rgb(var(--gp-mint) / 0.28), transparent); }
 .btn-shine:hover::after { animation: m-shine 0.9s ease; }
 
 /* FAQ answers slide in as they open. */
@@ -341,3 +425,51 @@ details[open] > summary ~ * { animation: m-rise 0.45s cubic-bezier(0.22, 1, 0.36
   .a-wyg-flow, .a-bn-up { display: none; }
   .reveal.is-visible .v-draw { stroke-dasharray: none; }
 }
+
+/* [header/hero slice] The feature card reached from the Features menu or
+   Jump to glows mint on the public site, not violet (TargetGlow.tsx). */
+body:has(.gp-site) .feature-anchor:target::after,
+body:has(.gp-site) .feature-anchor.is-target::after { box-shadow: 0 0 0 2px rgb(var(--gp-mint) / 0.75), 0 0 28px 4px rgb(var(--gp-mint) / 0.25); }
+
+/* [header/hero slice] Theme-aware pieces of the header, hero and footer.
+   Dark is the default; html[data-gp-theme="light"] ports the reference's
+   light rules (.top, .island, .btn-dark, .hero::before, .glass). */
+/* The top strip that content scrolls away under. */
+.gp-top-fade { background: linear-gradient(rgb(var(--gp-void)) 0%, rgb(var(--gp-void) / 0.7) 55%, transparent); }
+html[data-gp-theme="light"] .gp-top-fade { background: linear-gradient(rgb(var(--gp-void)) 0%, rgb(var(--gp-void) / 0.8) 55%, transparent); }
+/* The island's glass, and the panels that open from it. */
+.gp-glass { background: rgba(20, 24, 24, 0.82); box-shadow: 0 20px 60px -20px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
+.gp-glass-panel { background: rgba(16, 20, 20, 0.97); box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
+html[data-gp-theme="light"] .gp-glass { background: rgba(255, 255, 255, 0.88); box-shadow: 0 20px 50px -24px rgba(0, 0, 0, 0.25); }
+html[data-gp-theme="light"] .gp-glass-panel { background: rgba(255, 255, 255, 0.98); box-shadow: 0 30px 70px -28px rgba(0, 0, 0, 0.28); }
+/* Buttons: the light one (bone) and the dark one (raised, with a top highlight). */
+.gp-btn-light:hover { box-shadow: 0 10px 40px -12px rgb(var(--gp-mint) / 0.5); }
+.gp-btn-dark { background: rgb(var(--gp-raised)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06); }
+.gp-btn-dark:hover { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 10px 40px -10px rgb(var(--gp-mint) / 0.45); }
+html[data-gp-theme="light"] .gp-btn-dark { background: rgb(var(--gp-paper)); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04); }
+html[data-gp-theme="light"] .gp-btn-dark:hover { box-shadow: 0 10px 30px -14px rgb(var(--gp-mint) / 0.45); }
+/* The hero's two faint pools of light (dark only) and its glass card. */
+.gp-hero-pools { background: radial-gradient(50% 60% at 18% 0%, rgb(var(--gp-bone) / 0.06), transparent 70%), radial-gradient(40% 50% at 85% 5%, rgb(var(--gp-bone) / 0.05), transparent 70%); }
+html[data-gp-theme="light"] .gp-hero-pools { display: none; }
+.gp-hero-glass { background: linear-gradient(180deg, rgba(30, 40, 38, 0.55), rgba(10, 13, 13, 0.4) 60%, rgba(0, 0, 0, 0)); }
+html[data-gp-theme="light"] .gp-hero-glass { background: linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.4) 60%, rgba(255, 255, 255, 0)); }
+/* The footer's giant fading wordmark. */
+.gp-giant { background: linear-gradient(180deg, rgb(var(--gp-bone) / 0.16), rgb(var(--gp-bone) / 0) 85%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+html[data-gp-theme="light"] .gp-giant { background: linear-gradient(180deg, rgb(var(--gp-bone) / 0.12), rgb(var(--gp-bone) / 0) 85%); -webkit-background-clip: text; background-clip: text; }
+/* The barbell switch's plate drop (ThemeSwitch.tsx): the browser's own
+   cross-fade is off while it runs, so the clip-path ripple shows. */
+html.gp-plate-vt::view-transition-old(root),
+html.gp-plate-vt::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+html.gp-plate-vt::view-transition-old(root) { transform-origin: center; }
+html.gp-plate-vt::view-transition-group(gp-plate),
+html.gp-plate-vt::view-transition-old(gp-plate),
+html.gp-plate-vt::view-transition-new(gp-plate) { animation: none; }
+
+/* Site pages: the grid and glass helpers follow the theme (the super-admin
+   panel, which has no .gp-site, keeps the fixed versions above). */
+body:has(.gp-site) .bg-grid-dark,
+body:has(.gp-site) .bg-grid-light {
+  background-image: linear-gradient(rgb(var(--gp-bone) / 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--gp-bone) / 0.045) 1px, transparent 1px);
+}
+body:has(.gp-site) .glass { background: rgb(var(--gp-bone) / 0.05); border-color: var(--gp-edge-2); }

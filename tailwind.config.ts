@@ -7,8 +7,32 @@ export default {
       fontFamily: {
         sans: ["var(--font-inter)", "ui-sans-serif", "system-ui", "sans-serif"],
         display: ["var(--font-sora)", "var(--font-inter)", "ui-sans-serif", "system-ui", "sans-serif"],
+        // The public website (reference redesign): Geist for text, Tektur for
+        // the wordmark and big numbers. The super-admin panel keeps Inter.
+        gp: ["var(--font-geist)", "ui-sans-serif", "system-ui", "sans-serif"],
+        "gp-brand": ["var(--font-tektur)", "var(--font-geist)", "ui-sans-serif", "system-ui", "sans-serif"],
       },
       colors: {
+        // Public website palette. Each colour is a CSS variable (globals.css)
+        // so the header's barbell switch can flip the site to light mode.
+        // Kept apart from `brand` so the super-admin panel is untouched.
+        gp: {
+          void: "rgb(var(--gp-void) / <alpha-value>)",
+          graphite: "rgb(var(--gp-graphite) / <alpha-value>)",
+          panel: "rgb(var(--gp-panel) / <alpha-value>)",
+          raised: "rgb(var(--gp-raised) / <alpha-value>)",
+          slate: "rgb(var(--gp-slate) / <alpha-value>)",
+          mist: "rgb(var(--gp-mist) / <alpha-value>)",
+          bone: "rgb(var(--gp-bone) / <alpha-value>)",
+          ink: "rgb(var(--gp-ink) / <alpha-value>)",
+          mint: "rgb(var(--gp-mint) / <alpha-value>)",
+          ember: "rgb(var(--gp-ember) / <alpha-value>)",
+          paper: "rgb(var(--gp-paper) / <alpha-value>)",
+          blue: "rgb(var(--gp-blue) / <alpha-value>)",
+          violet: "rgb(var(--gp-violet) / <alpha-value>)",
+          edge: "var(--gp-edge)",
+          "edge-2": "var(--gp-edge-2)",
+        },
         // The product's own colour. The panel and the marketing site share it
         // so GymsPilotPro looks like one thing everywhere it appears.
         brand: {
