@@ -242,7 +242,7 @@ export default function FeatureOrbit() {
                 ref={(el) => {
                   cardRefs.current[i] = el;
                 }}
-                className={s.card}
+                className={`${s.card} ${i === active ? s.live : ""}`}
                 style={tintVars(a.key) as CSSProperties}
                 tabIndex={0}
                 role="button"
@@ -302,7 +302,9 @@ export default function FeatureOrbit() {
   );
 }
 
-// A small, made-up glimpse of each area, as on the reference.
+// A small, made-up glimpse of each area, as on the reference. The front card
+// gets .live, which plays its scene (rows slide in and pulse in turn, bars
+// grow, the receipt prints, the chat replies); the others sit still.
 function Vignette({ area }: { area: GroupKey }) {
   const row = (av: ReactNode, name: string, sub: string, tag: string, tone?: "m" | "e") => (
     <div className={s.row}>
@@ -354,7 +356,7 @@ function Vignette({ area }: { area: GroupKey }) {
           </div>
           <div className={s.bars}>
             {[40, 62, 48, 75, 55, 68, 92].map((h, i, all) => (
-              <b key={i} className={i === all.length - 1 ? s.barHi : undefined} style={{ height: `${h}%` }} />
+              <b key={i} className={i === all.length - 1 ? s.barHi : undefined} style={{ height: `${h}%`, "--i": i } as CSSProperties} />
             ))}
           </div>
         </>
