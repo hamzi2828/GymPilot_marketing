@@ -1,14 +1,15 @@
 "use client";
 
-// The reference's barbell switch between the dark (default) and light site.
-// The theme lives on <html data-gp-theme="light">, set before paint by
-// layout.tsx from localStorage "gp-theme"; every switch on the page reads it
+// The reference's barbell switch between the light (default) and dark site.
+// The theme lives on <html data-gp-theme>, "light" unless the visitor picked
+// dark (localStorage "gp-theme", applied before paint by layout.tsx); every
+// switch on the page reads it
 // from there, so two of them (the bar and the phone menu) always agree.
 // Where the browser has view transitions, the new theme rolls out from the
 // switch behind a weight-plate rim; otherwise, or for anyone who has asked
 // for reduced motion, it simply changes.
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import styles from "./ThemeSwitch.module.css";
 
 const KEY = "gp-theme";
@@ -22,9 +23,9 @@ function subscribe(onChange: () => void) {
   return () => mo.disconnect();
 }
 
-/** Whether the site is in light mode; dark on the server and during hydration. */
+/** Whether the site is in light mode; light on the server and during hydration. */
 export function useLightTheme() {
-  return useSyncExternalStore(subscribe, isLight, () => false);
+  return useSyncExternalStore(subscribe, isLight, () => true);
 }
 
 function paint(light: boolean) {
@@ -131,6 +132,16 @@ function setTheme(light: boolean, from: HTMLElement) {
 
 export default function ThemeSwitch({ className = "" }: { className?: string }) {
   const light = useLightTheme();
+  // Until a visitor has used the switch once, a soft ring pulses round it and
+  // a few bubbles rise off the plate, so people notice they can go dark.
+  const [hint, setHint] = useState(false);
+  useEffect(() => {
+    try {
+      setHint(!localStorage.getItem(KEY));
+    } catch {
+      setHint(true);
+    }
+  }, []);
   return (
     <button
       type="button"
@@ -138,13 +149,21 @@ export default function ThemeSwitch({ className = "" }: { className?: string }) 
       aria-checked={light}
       aria-label={light ? "Switch to dark mode" : "Switch to light mode"}
       title={light ? "Dark mode" : "Light mode"}
-      onClick={(e) => setTheme(!isLight(), e.currentTarget)}
-      className={`${styles.tg} ${className}`}
+      onClick={(e) => {
+        setHint(false);
+        setTheme(!isLight(), e.currentTarget);
+      }}
+      className={`${styles.tg} ${hint ? styles.hint : ""} ${className}`}
     >
       <span className={styles.rod} aria-hidden="true" />
       <span className={`${styles.col} ${styles.colL}`} aria-hidden="true" />
       <span className={`${styles.col} ${styles.colR}`} aria-hidden="true" />
-      <span className={styles.pl} aria-hidden="true" />
+      <span className={styles.pl} aria-hidden="true">
+        <span className={styles.bub} />
+        <span className={styles.bub} />
+        <span className={styles.bub} />
+      </span>
+      <span className={styles.ping} aria-hidden="true" />
     </button>
   );
 }

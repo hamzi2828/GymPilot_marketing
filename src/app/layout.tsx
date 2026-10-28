@@ -44,14 +44,13 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${sora.variable} ${geist.variable} ${tektur.variable}`}>
+    <html lang="en" data-gp-theme="light" suppressHydrationWarning className={`${inter.variable} ${sora.variable} ${geist.variable} ${tektur.variable}`}>
       <head>
-        {/* Applies the saved light/dark choice before first paint, so the
-            page doesn't flash dark then light. The barbell switch in the
-            site header writes the same key. */}
+        {/* The site opens light; a visitor who picked dark with the barbell
+            switch gets dark again, set before first paint so nothing flashes. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{if(localStorage.getItem("gp-theme")==="light")document.documentElement.setAttribute("data-gp-theme","light")}catch(e){}`,
+            __html: `try{if(localStorage.getItem("gp-theme")==="dark")document.documentElement.setAttribute("data-gp-theme","dark")}catch(e){}`,
           }}
         />
       </head>
