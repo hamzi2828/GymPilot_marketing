@@ -1,0 +1,24 @@
+/* The benefit cards' scenes inside the area carousel (FeatureOrbit): each
+   scene (BenefitScenes.tsx) sits in a dark well that shrinks first when the
+   card is short. Only the front card (.live) plays it; the others hold their
+   finished look. */
+.vig {
+  flex: 0 1 140px;
+  min-height: 84px;
+  display: flex;
+  flex-direction: column;
+}
+.scene {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 14px;
+  background: rgb(var(--gp-void));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tint) 22%, transparent);
+}
+.card:not(.live) .scene * {
+  animation: none !important;
+}
+.card:not(.live) .scene :global(.a-bn-up) {
+  opacity: 0;
+}

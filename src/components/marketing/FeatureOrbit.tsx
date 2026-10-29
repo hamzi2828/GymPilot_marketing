@@ -1,7 +1,8 @@
 "use client";
 
-// "31 features in eight areas": a sticky, scroll-driven 3D carousel with one
-// card per feature area. Scrolling through the section turns the carousel;
+// "31 features in eight areas": a sticky, scroll-driven 3D carousel. Four
+// outcome cards come first (get paid, no unpaid visits, win members back,
+// know your numbers, each with its scene), then one card per feature area. Scrolling through the section turns the carousel;
 // the tabs at the bottom jump to an area (the mechanics are useOrbit.ts and
 // OrbitStage.module.css, shared with Benefits). Phones get the same pinned, scrolling
 // carousel, sized as the reference sizes it at <=640px. Only for
@@ -13,7 +14,11 @@ import { useRouter } from "next/navigation";
 import { type CSSProperties, type KeyboardEvent, type MouseEvent, type ReactNode } from "react";
 import { FiChevronRight, FiLock } from "react-icons/fi";
 import { LuCrown, LuFingerprint } from "react-icons/lu";
-import { FEATURE_GROUPS, FEATURES, featuresIn, type GroupKey } from "@/content/features";
+import { FEATURE_GROUPS, FEATURES, featureByKey, featureHref, featuresIn, type FeatureKey, type GroupKey } from "@/content/features";
+import { BENEFITS } from "@/content/site";
+import { FEATURE_ICONS } from "./featureIcons";
+import { BENEFIT_SCENES } from "./BenefitScenes";
+import sc from "./OrbitScene.module.css";
 import { AREA_ICONS, featuresLabel, numberWord, shortLabel, tintVars } from "./featureAreas";
 import ViewAllFeaturesButton from "./ViewAllFeaturesButton";
 import { trackGlow, useOrbit } from "./useOrbit";
@@ -23,13 +28,31 @@ import s from "./FeatureOrbit.module.css";
 const AREAS = FEATURE_GROUPS.map((g) => ({ ...g, count: featuresIn(g.key).length }));
 const areaHref = (key: GroupKey) => `/features#${key}`;
 
+// The owner's four outcome cards go first, then one card per area.
+const BENEFIT_KEYS: FeatureKey[] = ["renewals", "alerts", "messaging", "dailysales"];
+const BENEFIT_TABS: Partial<Record<FeatureKey, string>> = { renewals: "Get paid", alerts: "Unpaid visits", messaging: "Win back", dailysales: "Numbers" };
+const BENEFIT_TINTS = [
+  { "--tint-d": "#7FE3D2", "--tint-l": "#0B7566" },
+  { "--tint-d": "#E5A34A", "--tint-l": "#8F5609" },
+];
+type Card =
+  | { kind: "benefit"; key: FeatureKey; title: string; text: string; tab: string; href: string }
+  | { kind: "area"; area: (typeof AREAS)[number]; href: string };
+const CARDS: Card[] = [
+  ...BENEFIT_KEYS.map((k) => {
+    const b = BENEFITS.items.find((x) => x.key === k)!;
+    return { kind: "benefit" as const, key: k, title: b.title, text: b.text, tab: BENEFIT_TABS[k] ?? b.tab, href: featureHref(k) };
+  }),
+  ...AREAS.map((a) => ({ kind: "area" as const, area: a, href: areaHref(a.key) })),
+];
+
 export default function FeatureOrbit() {
   const router = useRouter();
-  const { sectionRef, trackRef, tabsRef, pillRef, cardRef, dimRef, tabRef, flat, active, goto, steps } = useOrbit(AREAS.length);
+  const { sectionRef, trackRef, tabsRef, pillRef, cardRef, dimRef, tabRef, flat, active, goto, steps } = useOrbit(CARDS.length);
 
+  // Any card, front or side, opens its page (the owner's call).
   const open = (i: number) => {
-    if (!flat && i !== active) goto(i);
-    else router.push(areaHref(AREAS[i].key));
+    router.push(CARDS[i].href);
   };
 
   const onCardClick = (i: number) => (e: MouseEvent) => {
@@ -57,7 +80,51 @@ export default function FeatureOrbit() {
         </div>
 
         <div ref={trackRef} className={o.track}>
-          {AREAS.map((a, i) => {
+          {CARDS.map((c, i) => {
+            if (c.kind === "benefit") {
+              const Icon = FEATURE_ICONS[c.key];
+              const Scene = BENEFIT_SCENES[c.key];
+              const feature = featureByKey(c.key);
+              const bi = BENEFIT_KEYS.indexOf(c.key);
+              return (
+                <article
+                  key={`b-${c.key}`}
+                  ref={cardRef(i)}
+                  className={`${o.card} ${sc.card} ${i === active ? sc.live : ""}`}
+                  style={BENEFIT_TINTS[bi % 2] as CSSProperties}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`${c.title}: ${c.text}`}
+                  onClick={onCardClick(i)}
+                  onKeyDown={onCardKey(i)}
+                  onPointerMove={trackGlow}
+                >
+                  <div className={o.top}>
+                    <span>{feature.name}</span>
+                    <span className={o.icon} aria-hidden>
+                      <Icon />
+                    </span>
+                  </div>
+                  <h3>{c.title}</h3>
+                  <p className={o.intro}>{c.text}</p>
+                  {Scene && (
+                    <div className={`${o.vig} ${sc.vig}`} aria-hidden>
+                      <div className={sc.scene}>
+                        <Scene />
+                      </div>
+                    </div>
+                  )}
+                  <div className={o.foot}>
+                    <span>See how it works</span>
+                    <Link href={c.href} className={o.go} tabIndex={-1}>
+                      Open <FiChevronRight aria-hidden />
+                    </Link>
+                  </div>
+                  <span className={o.dim} ref={dimRef(i)} />
+                </article>
+              );
+            }
+            const a = c.area;
             const Icon = AREA_ICONS[a.key];
             return (
               <article
@@ -85,7 +152,7 @@ export default function FeatureOrbit() {
                 </div>
                 <div className={o.foot}>
                   <span>{featuresLabel(a.count)}</span>
-                  <Link href={areaHref(a.key)} className={o.go} tabIndex={-1}>
+                  <Link href={c.href} className={o.go} tabIndex={-1}>
                     Open <FiChevronRight aria-hidden />
                   </Link>
                 </div>
@@ -95,11 +162,11 @@ export default function FeatureOrbit() {
           })}
         </div>
 
-        <div ref={tabsRef} className={o.tabs} role="tablist" aria-label="Feature areas">
+        <div ref={tabsRef} className={o.tabs} role="tablist" aria-label="What it does and the feature areas">
           <span ref={pillRef} className={o.pill} aria-hidden />
-          {AREAS.map((a, i) => (
+          {CARDS.map((c, i) => (
             <button
-              key={a.key}
+              key={c.kind === "benefit" ? `b-${c.key}` : c.area.key}
               ref={tabRef(i)}
               type="button"
               role="tab"
@@ -107,7 +174,7 @@ export default function FeatureOrbit() {
               className={`${o.tab} ${i === active ? o.tabOn : ""}`}
               onClick={() => goto(i)}
             >
-              <span>{shortLabel(a.label)}</span>
+              <span>{c.kind === "benefit" ? c.tab : shortLabel(c.area.label)}</span>
             </button>
           ))}
         </div>

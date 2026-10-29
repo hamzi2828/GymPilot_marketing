@@ -4,7 +4,6 @@ import Hero from "@/components/marketing/Hero";
 import ConvergeHeadline from "@/components/marketing/ConvergeHeadline";
 import GymPulse from "@/components/marketing/GymPulse";
 import FeatureOrbit from "@/components/marketing/FeatureOrbit";
-import Benefits from "@/components/marketing/Benefits";
 import WhatYouGet from "@/components/marketing/WhatYouGet";
 import HowItWorks from "@/components/marketing/HowItWorks";
 import Suggestions from "@/components/marketing/Suggestions";
@@ -36,7 +35,6 @@ export default function LandingPage() {
         <Hero />
         <ConvergeHeadline />
         <GymPulse />
-        <Benefits />
         <WhatYouGet />
         <FeatureOrbit />
         <HowItWorks />
