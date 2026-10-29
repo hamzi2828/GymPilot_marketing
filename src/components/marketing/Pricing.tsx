@@ -16,6 +16,11 @@ import SectionHeading from "./SectionHeading";
 // for again after each of these waits before the page admits it has none.
 const RETRY_AFTER_MS = [2000, 5000, 10000];
 
+// The limit boxes already show members, staff, trainers and classes, so the
+// plan's own lines saying the same ("Up to 150 members", "3 staff, 3 trainers,
+// 15 classes a week") are left out of its feature list here.
+const repeatsLimits = (f: string) => /^up to [\d,]+ members$/i.test(f.trim()) || /\bstaff\b.*\btrainers?\b/i.test(f);
+
 function limit(n: number) {
   return n ? n.toLocaleString() : "Unlimited";
 }
@@ -292,9 +297,9 @@ export default function Pricing() {
                         ))}
                       </div>
                     )}
-                    {plan.features.length > 0 && (
+                    {plan.features.filter((f) => !repeatsLimits(f)).length > 0 && (
                       <ul className={`mt-6 space-y-2 text-sm ${isPopular ? "text-gp-bone" : "text-gp-mist"}`}>
-                        {plan.features.map((f, j) => (
+                        {plan.features.filter((f) => !repeatsLimits(f)).map((f, j) => (
                           <li key={f} className="a-rise flex items-start gap-2" style={stagger(i * 2 + 6 + j)}>
                             <FiCheck className="mt-0.5 h-4 w-4 shrink-0 text-gp-mint" /> {f}
                           </li>
