@@ -136,7 +136,7 @@ export const HOW_IT_WORKS = {
 export const SETUP_JOURNEY = [
   {
     title: "We set up your gym",
-    text: "Tell us your gym's name and pick a plan. Within one working day the system behind your desk is ready: sign-ups, fees, check-in, classes, staff and reports in one place.",
+    text: "Pick a plan and we set it all up in one working day: sign-ups, fees, check-in, classes, staff and reports.",
   },
   {
     title: "Your own website, on your address",
