@@ -144,7 +144,7 @@ export const SETUP_JOURNEY = [
   },
   {
     title: "Members join, and you get paid",
-    text: "A member portal where members book, pay and check in from their phone, no app store needed. Add your classes and prices, bring in your members, and take your first payment.",
+    text: "Members book, pay and check in from their phone, with no app store needed. Add your prices and take your first payment.",
   },
 ];
 
