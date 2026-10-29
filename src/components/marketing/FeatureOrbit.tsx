@@ -35,20 +35,33 @@ const BENEFIT_TINTS = [
   { "--tint-d": "#7FE3D2", "--tint-l": "#0B7566" },
   { "--tint-d": "#E5A34A", "--tint-l": "#8F5609" },
 ];
-// Classes & PT and Staff & trainers share one card here (the owner's call);
-// it opens the Classes area on /features. The /features page keeps both.
-const teamCount = AREAS.find((a) => a.key === "team")?.count ?? 0;
-const CAROUSEL_AREAS = AREAS.filter((a) => a.key !== "team").map((a) =>
-  a.key === "classes"
-    ? {
-        ...a,
-        label: "Classes, PT & staff",
-        title: "Classes, trainers and staff",
-        text: "Your timetable and trainers' diaries with members booking themselves in, plus rotas, leave and payslips for the team.",
-        count: a.count + teamCount,
-      }
-    : a
-);
+// Some areas share a card here (the owner's calls); each opens the first
+// area on /features, which keeps them all separate:
+// - Front desk + Check-in: about signing up and checking in (fees are the
+//   Get paid card), shown with the check-in scene.
+// - Classes & PT + Staff & trainers.
+const countOf = (k: GroupKey) => AREAS.find((a) => a.key === k)?.count ?? 0;
+const CAROUSEL_AREAS = AREAS.filter((a) => a.key !== "team" && a.key !== "checkin").map((a) => {
+  if (a.key === "desk")
+    return {
+      ...a,
+      vig: "checkin" as GroupKey,
+      label: "Front desk & check-in",
+      title: "The front desk and check-in",
+      text: "Sign members up in one quick form, then check them in by fingerprint, QR code or member ID.",
+      count: a.count + countOf("checkin"),
+    };
+  if (a.key === "classes")
+    return {
+      ...a,
+      vig: a.key,
+      label: "Classes, PT & staff",
+      title: "Classes, trainers and staff",
+      text: "Your timetable and trainers' diaries with members booking themselves in, plus rotas, leave and payslips for the team.",
+      count: a.count + countOf("team"),
+    };
+  return { ...a, vig: a.key };
+});
 const benefit = (k: FeatureKey) => BENEFITS.items.find((x) => x.key === k)!;
 const OUTCOMES: { key: FeatureKey; title: string; text: string; tab: string }[] = [
   {
@@ -62,7 +75,7 @@ const OUTCOMES: { key: FeatureKey; title: string; text: string; tab: string }[] 
 const BENEFIT_KEYS = OUTCOMES.map((x) => x.key);
 type Card =
   | { kind: "benefit"; key: FeatureKey; title: string; text: string; tab: string; href: string }
-  | { kind: "area"; area: (typeof AREAS)[number]; href: string };
+  | { kind: "area"; area: (typeof CAROUSEL_AREAS)[number]; href: string };
 const CARDS: Card[] = [
   ...OUTCOMES.map((x) => ({ kind: "benefit" as const, ...x, href: `/features#${featureByKey(x.key).slug}` })),
   ...CAROUSEL_AREAS.map((a) => ({ kind: "area" as const, area: a, href: areaHref(a.key) })),
@@ -170,7 +183,7 @@ export default function FeatureOrbit() {
                 <h3>{a.title}</h3>
                 <p className={o.intro}>{a.text}</p>
                 <div className={o.vig} aria-hidden>
-                  <Vignette area={a.key} />
+                  <Vignette area={a.vig} />
                 </div>
                 <div className={o.foot}>
                   <span>{featuresLabel(a.count)}</span>

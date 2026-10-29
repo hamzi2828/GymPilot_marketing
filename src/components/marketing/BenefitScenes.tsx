@@ -11,13 +11,18 @@ const at = (seconds: number): CSSProperties => ({ animationDelay: `${seconds}s` 
 // Get paid on time: each "Due" turns "Paid", then the reminder bell rings.
 function PaidScene() {
   return (
-    <div className="relative flex h-full flex-col justify-center gap-1.5 px-4">
-      <FiBell className="a-bn-ring absolute right-3 top-2.5 h-4 w-4 text-gp-ember" style={at(2.2)} />
+    <div className="flex h-full flex-col justify-center gap-1.5 px-4">
+      {/* The bell has its own line, so it never sits on a row's badge. */}
+      <div className="flex items-center justify-between text-[10px] font-medium text-gp-slate">
+        <span>Fees due today</span>
+        <FiBell className="a-bn-ring h-3.5 w-3.5 text-gp-ember" style={at(2.2)} />
+      </div>
       {["Ali Raza", "Sara Khan", "Usman Ali"].map((name, i) => (
         <div key={name} className="flex items-center justify-between rounded-md bg-gp-panel px-2.5 py-1 text-[11px] text-gp-mist shadow-sm ring-1 ring-gp-bone/10">
           {name}
-          <span className="relative">
-            <span className="rounded-full bg-gp-ember/15 px-2 py-0.5 text-[10px] font-semibold text-gp-ember">Due</span>
+          {/* Due and Paid share one fixed-width slot, so Paid covers Due exactly. */}
+          <span className="relative inline-flex w-[52px] shrink-0 justify-center">
+            <span className="w-full rounded-full bg-gp-ember/15 py-0.5 text-center text-[10px] font-semibold text-gp-ember">Due</span>
             <span className="a-wyg-build absolute inset-0 inline-flex items-center justify-center gap-0.5 rounded-full bg-gp-mint text-[10px] font-semibold text-gp-ink" style={at(0.4 + i * 0.6)}>
               <FiCheck className="h-2.5 w-2.5" /> Paid
             </span>
