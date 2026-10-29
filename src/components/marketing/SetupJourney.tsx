@@ -163,11 +163,15 @@ export default function SetupJourney() {
                   <p className="v-rise mt-3 text-[15px] leading-relaxed text-gp-mist" style={stagger(2)}>
                     {step.text}
                   </p>
+                  {i === 0 && (
+                    <div className="mt-3" aria-hidden="true">
+                      <SetupChips />
+                    </div>
+                  )}
                   <div className="mt-auto space-y-3 pt-6" aria-hidden="true">
                     <div className="h-28 rounded-xl bg-gp-void ring-1 ring-inset ring-gp-bone/5">
                       <Scene />
                     </div>
-                    {i === 0 && <SetupChips />}
                   </div>
                 </div>
               </Reveal>
