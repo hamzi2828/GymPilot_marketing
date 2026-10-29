@@ -6,7 +6,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import IncludedCard from "./IncludedCard";
-import { FiArrowRight, FiCheck, FiPlus, FiRefreshCw, FiSmartphone } from "react-icons/fi";
+import { FiArrowRight, FiPlus, FiRefreshCw, FiSmartphone } from "react-icons/fi";
 import { PRICING } from "@/content/site";
 import { formatMoney, publicFetch, recommendedPlanIndex, yearlySaving, type PublicAddon, type PublicPlan } from "@/lib/api";
 import { stagger } from "@/lib/motion";
