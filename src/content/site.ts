@@ -131,6 +131,23 @@ export const HOW_IT_WORKS = {
   note: "No web address yet? We give you one when we set your gym up, and connect your own later.",
 };
 
+// The homepage's one "how it works" section (SetupJourney.tsx): each step
+// and what the gym has once it is done, told as one card.
+export const SETUP_JOURNEY = [
+  {
+    title: "We set up your gym",
+    text: "Tell us your gym's name and pick a plan. Within one working day the system behind your desk is ready: sign-ups, fees, check-in, classes, staff and reports in one place.",
+  },
+  {
+    title: "Your own website, on your address",
+    text: "Your gym online with your logo and colours. Have a domain like yourgym.com? Tell us after you sign up and our team connects it, padlock included.",
+  },
+  {
+    title: "Members join, and you get paid",
+    text: "A member portal where members book, pay and check in from their phone, no app store needed. Add your classes and prices, bring in your members, and take your first payment.",
+  },
+];
+
 export const STEPS = [
   {
     title: "We set up your gym",

@@ -1,19 +1,19 @@
 import type { CSSProperties } from "react";
-import { FiCheck, FiCheckCircle, FiGlobe, FiSettings, FiSmartphone } from "react-icons/fi";
-import { HOW_IT_WORKS, STEPS, WHAT_YOU_GET } from "@/content/site";
+import { FiCheck, FiCheckCircle, FiUserPlus } from "react-icons/fi";
+import { HOW_IT_WORKS, SETUP_JOURNEY } from "@/content/site";
 import { stagger } from "@/lib/motion";
 import Reveal from "./Reveal";
 import SectionHeading from "./SectionHeading";
 import Glow from "./Glow";
 
 // "What you get" and "How it works" as one story (the owner's call): three
-// steps, each showing what the gym has once that step is done. Step 1 sets up
-// the system behind the desk, step 2 puts the gym's own website on its own
-// address, step 3 opens the member portal so members book and pay. On wide
+// cards, each one step and what the gym has once it is done. 1: we set up
+// the system behind the desk (website, member portal and admin area tick
+// off); 2: the gym's own website, on its own address; 3: the member portal,
+// then the first member and the first payment. On wide
 // screens a line joins the steps and a pulse runs along it; each card's scene
 // builds as the pulse reaches it (globals.css). Still under reduced motion.
 
-const ICONS = [FiSettings, FiGlobe, FiSmartphone];
 const TINTS = ["from-gp-mint to-gp-mint/60", "from-gp-ember to-gp-ember/60", "from-gp-violet to-gp-blue"];
 const LOOP = 6;
 const ARRIVAL = [0.8, 2.4, 4.0];
@@ -38,6 +38,19 @@ function DeskScene() {
           </span>
         ))}
       </div>
+    </div>
+  );
+}
+
+// The three parts of the setup tick off as it finishes.
+function SetupChips() {
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {["Website", "Member portal", "Admin area"].map((part, i) => (
+        <span key={part} className="a-wyg-build inline-flex items-center gap-1 rounded-full bg-gp-mint/15 px-2.5 py-1 text-[11px] font-medium text-gp-mint ring-1 ring-inset ring-gp-mint/30" style={at(ARRIVAL[0] + 1.3 + i * 0.3)}>
+          <FiCheck className="h-3 w-3" /> {part}
+        </span>
+      ))}
     </div>
   );
 }
@@ -77,7 +90,7 @@ function WebsiteScene() {
 function PortalScene() {
   const t = ARRIVAL[2];
   return (
-    <div className="flex h-full items-center justify-center gap-4 px-3">
+    <div className="flex h-full items-center justify-center gap-3 px-3">
       <div className="relative h-[104px] w-[84px] shrink-0 rounded-[14px] border-[3px] border-gp-bone/80 bg-gp-panel p-1.5 shadow-sm">
         <span className="mx-auto mb-1.5 block h-1 w-6 rounded-full bg-gp-bone/80" />
         {["Book", "Pay", "Check in"].map((label, i) => (
@@ -89,12 +102,17 @@ function PortalScene() {
           <FiCheck className="h-3.5 w-3.5" />
         </span>
       </div>
-      <span className="a-wyg-build flex flex-col rounded-lg bg-gp-panel px-2.5 py-1.5 text-left text-[10px] text-gp-mist shadow-sm ring-1 ring-gp-bone/10" style={at(t + 1.2)}>
-        <span className="inline-flex items-center gap-1 font-medium text-gp-bone">
-          <FiCheckCircle className="h-3 w-3 text-gp-mint" /> First payment
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+        <span className="a-bn-slide flex items-center gap-1.5 rounded-lg bg-gp-panel px-2 py-1.5 text-left text-[10px] text-gp-bone shadow-sm ring-1 ring-gp-bone/10" style={at(t + 1.1)}>
+          <FiUserPlus className="h-3 w-3 shrink-0 text-gp-ember" /> New member joined
         </span>
-        <span className="font-semibold text-gp-mint">Rs 4,900</span>
-      </span>
+        <span className="a-bn-slide flex items-center justify-between gap-1.5 rounded-lg bg-gp-panel px-2 py-1.5 text-left text-[10px] text-gp-bone shadow-sm ring-1 ring-gp-bone/10" style={at(t + 1.6)}>
+          <span className="inline-flex items-center gap-1.5">
+            <FiCheckCircle className="h-3 w-3 shrink-0 text-gp-mint" /> Payment received
+          </span>
+          <span className="font-semibold text-gp-mint">Rs 4,900</span>
+        </span>
+      </div>
     </div>
   );
 }
@@ -115,7 +133,7 @@ export default function SetupJourney() {
             <span className="v-fill absolute inset-0 origin-left rounded-full bg-gradient-to-r from-gp-mint via-gp-ember to-gp-violet" style={stagger(1)} />
             <span className="a-wyg-flow absolute top-1/2 h-3 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gp-bone/90 blur-[3px]" style={{ animationDuration: `${LOOP}s` }} />
           </div>
-          {STEPS.map((_, i) => (
+          {SETUP_JOURNEY.map((_, i) => (
             <span
               key={i}
               aria-hidden="true"
@@ -128,10 +146,8 @@ export default function SetupJourney() {
         </Reveal>
 
         <ol className="mt-5 grid gap-5 md:mt-6 md:grid-cols-3">
-          {STEPS.map((step, i) => {
-            const Icon = ICONS[i];
+          {SETUP_JOURNEY.map((step, i) => {
             const Scene = SCENES[i];
-            const part = WHAT_YOU_GET.parts[i];
             return (
               <Reveal key={step.title} delay={i * 110} as="li">
                 <div className="flex h-full flex-col rounded-2xl border border-gp-edge-2 bg-gp-panel p-6 shadow-card">
@@ -147,17 +163,11 @@ export default function SetupJourney() {
                   <p className="v-rise mt-3 text-[15px] leading-relaxed text-gp-mist" style={stagger(2)}>
                     {step.text}
                   </p>
-
-                  {/* What the gym has once this step is done. */}
-                  <div className="mt-auto pt-6">
-                    <div className="h-28 rounded-xl bg-gp-void ring-1 ring-inset ring-gp-bone/5" aria-hidden="true">
+                  <div className="mt-auto space-y-3 pt-6" aria-hidden="true">
+                    <div className="h-28 rounded-xl bg-gp-void ring-1 ring-inset ring-gp-bone/5">
                       <Scene />
                     </div>
-                    <p className="mt-4 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-gp-slate">
-                      <Icon className="h-3.5 w-3.5 text-gp-mint" /> You get
-                    </p>
-                    <p className="mt-1 font-gp text-base font-semibold text-gp-bone">{part.title}</p>
-                    <p className="mt-1 text-sm leading-relaxed text-gp-mist">{part.text}</p>
+                    {i === 0 && <SetupChips />}
                   </div>
                 </div>
               </Reveal>
