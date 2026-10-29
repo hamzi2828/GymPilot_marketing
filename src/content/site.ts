@@ -140,7 +140,7 @@ export const SETUP_JOURNEY = [
   },
   {
     title: "Your own website",
-    text: "Your gym online with your logo and colours. Have a domain like yourgym.com? Tell us after you sign up and our team connects it, padlock included.",
+    text: "Your logo and colours on your own address, like yourgym.com. We connect it for you, padlock included.",
   },
   {
     title: "Members join, and you get paid",
