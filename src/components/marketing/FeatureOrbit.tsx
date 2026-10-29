@@ -2,200 +2,30 @@
 
 // "31 features in eight areas": a sticky, scroll-driven 3D carousel with one
 // card per feature area. Scrolling through the section turns the carousel;
-// the tabs at the bottom jump to an area. Phones get the same pinned, scrolling
+// the tabs at the bottom jump to an area (the mechanics are useOrbit.ts and
+// OrbitStage.module.css, shared with Benefits). Phones get the same pinned, scrolling
 // carousel, sized as the reference sizes it at <=640px. Only for
 // anyone who asks for less motion does it lay flat: a swipeable row on phones
 // or a grid on wider screens.
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent, type PointerEvent, type ReactNode } from "react";
+import { type CSSProperties, type KeyboardEvent, type MouseEvent, type ReactNode } from "react";
 import { FiChevronRight, FiLock } from "react-icons/fi";
 import { LuCrown, LuFingerprint } from "react-icons/lu";
 import { FEATURE_GROUPS, FEATURES, featuresIn, type GroupKey } from "@/content/features";
 import { AREA_ICONS, featuresLabel, numberWord, shortLabel, tintVars } from "./featureAreas";
 import ViewAllFeaturesButton from "./ViewAllFeaturesButton";
+import { trackGlow, useOrbit } from "./useOrbit";
+import o from "./OrbitStage.module.css";
 import s from "./FeatureOrbit.module.css";
 
 const AREAS = FEATURE_GROUPS.map((g) => ({ ...g, count: featuresIn(g.key).length }));
-const LAST = AREAS.length - 1;
-
-const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
 const areaHref = (key: GroupKey) => `/features#${key}`;
 
 export default function FeatureOrbit() {
   const router = useRouter();
-  const sectionRef = useRef<HTMLElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const cardRefs = useRef<(HTMLElement | null)[]>([]);
-  const dimRefs = useRef<(HTMLSpanElement | null)[]>([]);
-  const tabsRef = useRef<HTMLDivElement>(null);
-  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const pillRef = useRef<HTMLSpanElement>(null);
-  const [flat, setFlat] = useState(false);
-  const [reduced, setReduced] = useState(false);
-  const [active, setActive] = useState(0);
-
-  // The scroll carousel renders by default (no layout jump on load); only
-  // reduced motion switches to the flat layout after mount.
-  useEffect(() => {
-    const rm = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => {
-      setReduced(rm.matches);
-      setFlat(rm.matches);
-    };
-    update();
-    rm.addEventListener("change", update);
-    return () => rm.removeEventListener("change", update);
-  }, []);
-
-  // The 3D carousel, driven by how far the section has scrolled.
-  useEffect(() => {
-    if (flat) return;
-    const sec = sectionRef.current;
-    const track = trackRef.current;
-    if (!sec || !track) return;
-    const cards = cardRefs.current;
-    const dims = dimRefs.current;
-    let f = 0;
-    let tf = 0;
-    let running = false;
-    let near = true;
-    let raf = 0;
-    let shown = -1;
-
-    const total = () => Math.max(1, sec.offsetHeight - window.innerHeight);
-    const read = () => {
-      tf = clamp(-sec.getBoundingClientRect().top / total(), 0, 1) * LAST;
-    };
-    const paint = () => {
-      f += (tf - f) * 0.12;
-      if (Math.abs(tf - f) < 0.0005) f = tf;
-      const w = track.offsetWidth;
-      cards.forEach((c, i) => {
-        if (!c) return;
-        const d = i - f;
-        const ad = Math.abs(d);
-        const sg = Math.sign(d);
-        const x = sg * w * (0.66 * Math.min(ad, 1) + 0.3 * Math.max(ad - 1, 0));
-        c.style.transform = `translateX(${x}px) translateZ(${-Math.min(ad, 3) * 170}px) rotateY(${-clamp(d, -2, 2) * 36}deg)`;
-        c.style.opacity = String(ad > 2.7 ? 0 : 1 - Math.max(ad - 1.7, 0));
-        c.style.zIndex = String(100 - Math.round(ad * 10));
-        c.style.setProperty("--rim", String(Math.min(ad, 1) * 0.9));
-        c.style.setProperty("--rimdir", d > 0 ? "90deg" : "270deg");
-        c.style.pointerEvents = ad > 2.2 ? "none" : "auto";
-        const dim = dims[i];
-        if (dim) dim.style.opacity = String(Math.min(0.55, ad * 0.45 + Math.max(ad - 1, 0) * 0.2));
-      });
-      const ai = Math.round(f);
-      if (ai !== shown) {
-        shown = ai;
-        setActive(ai);
-      }
-      if (f !== tf && near) raf = requestAnimationFrame(paint);
-      else running = false;
-    };
-    const kick = () => {
-      if (!running && near) {
-        running = true;
-        raf = requestAnimationFrame(paint);
-      }
-    };
-    const onScroll = () => {
-      read();
-      kick();
-    };
-    const io = new IntersectionObserver(
-      ([en]) => {
-        near = en.isIntersecting;
-        kick();
-      },
-      { rootMargin: "200px 0px" },
-    );
-    io.observe(sec);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    read();
-    f = tf;
-    running = true;
-    paint();
-
-    return () => {
-      cancelAnimationFrame(raf);
-      io.disconnect();
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      cards.forEach((c) => {
-        if (!c) return;
-        c.style.transform = "";
-        c.style.opacity = "";
-        c.style.zIndex = "";
-        c.style.pointerEvents = "";
-        c.style.removeProperty("--rim");
-        c.style.removeProperty("--rimdir");
-      });
-      dims.forEach((d) => {
-        if (d) d.style.opacity = "";
-      });
-    };
-  }, [flat]);
-
-  // In the flat row (reduced motion on phones), the tab follows the card swiped into view.
-  useEffect(() => {
-    if (!flat) return;
-    const track = trackRef.current;
-    if (!track) return;
-    const onScroll = () => {
-      if (track.scrollWidth <= track.clientWidth) return;
-      const first = cardRefs.current[0];
-      const second = cardRefs.current[1];
-      const step = first && second ? second.offsetLeft - first.offsetLeft : track.clientWidth;
-      setActive(clamp(Math.round(track.scrollLeft / Math.max(1, step)), 0, LAST));
-    };
-    track.addEventListener("scroll", onScroll, { passive: true });
-    return () => track.removeEventListener("scroll", onScroll);
-  }, [flat]);
-
-  // The sliding pill behind the active tab.
-  const placePill = useCallback(() => {
-    const tab = tabRefs.current[active];
-    const tabs = tabsRef.current;
-    const pill = pillRef.current;
-    if (!tab || !tabs || !pill) return;
-    pill.style.left = `${tab.offsetLeft}px`;
-    pill.style.width = `${tab.offsetWidth}px`;
-    if (tabs.scrollWidth > tabs.clientWidth) {
-      tabs.scrollTo({ left: tab.offsetLeft - tabs.clientWidth / 2 + tab.offsetWidth / 2, behavior: reduced ? "instant" : "smooth" });
-    }
-  }, [active, reduced]);
-
-  useEffect(() => {
-    placePill();
-    window.addEventListener("resize", placePill);
-    return () => window.removeEventListener("resize", placePill);
-  }, [placePill, flat]);
-
-  const goto = (i: number) => {
-    const behavior: ScrollBehavior = reduced ? "instant" : "smooth";
-    if (!flat) {
-      const sec = sectionRef.current;
-      if (!sec) return;
-      const top = sec.getBoundingClientRect().top + window.scrollY;
-      const total = Math.max(1, sec.offsetHeight - window.innerHeight);
-      window.scrollTo({ top: top + (i / LAST) * total + 2, behavior });
-      return;
-    }
-    const track = trackRef.current;
-    const card = cardRefs.current[i];
-    if (!track || !card) return;
-    setActive(i);
-    if (track.scrollWidth > track.clientWidth) {
-      const first = cardRefs.current[0];
-      track.scrollTo({ left: card.offsetLeft - (first?.offsetLeft ?? 0), behavior });
-    } else {
-      card.scrollIntoView({ block: "nearest", behavior });
-    }
-  };
+  const { sectionRef, trackRef, tabsRef, pillRef, cardRef, dimRef, tabRef, flat, active, goto, steps } = useOrbit(AREAS.length);
 
   const open = (i: number) => {
     if (!flat && i !== active) goto(i);
@@ -213,18 +43,11 @@ export default function FeatureOrbit() {
       open(i);
     }
   };
-  const onCardMove = (e: PointerEvent<HTMLElement>) => {
-    // The glow follows a mouse; touches are page scrolls, so skip the work.
-    if (e.pointerType !== "mouse") return;
-    const r = e.currentTarget.getBoundingClientRect();
-    e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
-    e.currentTarget.style.setProperty("--my", `${e.clientY - r.top}px`);
-  };
 
   return (
-    <section ref={sectionRef} id="areas" aria-labelledby="areas-title" className={`${s.orbit} ${flat ? s.flat : ""}`} style={{ "--steps": LAST } as CSSProperties}>
-      <div className={s.stage}>
-        <div className={s.head}>
+    <section ref={sectionRef} id="areas" aria-labelledby="areas-title" className={`${o.orbit} ${flat ? o.flat : ""}`} style={{ "--steps": steps } as CSSProperties}>
+      <div className={o.stage}>
+        <div className={o.head}>
           {/* The owner wanted the "View all features" button here instead of a
               visible heading; the heading stays for screen readers. */}
           <h2 id="areas-title" className="sr-only">
@@ -233,64 +56,55 @@ export default function FeatureOrbit() {
           <ViewAllFeaturesButton size="lg" count={FEATURES.length} />
         </div>
 
-        <div ref={trackRef} className={s.track}>
+        <div ref={trackRef} className={o.track}>
           {AREAS.map((a, i) => {
             const Icon = AREA_ICONS[a.key];
             return (
               <article
                 key={a.key}
-                ref={(el) => {
-                  cardRefs.current[i] = el;
-                }}
-                className={`${s.card} ${i === active ? s.live : ""}`}
+                ref={cardRef(i)}
+                className={`${o.card} ${i === active ? s.live : ""}`}
                 style={tintVars(a.key) as CSSProperties}
                 tabIndex={0}
                 role="button"
                 aria-label={`${a.label}, ${featuresLabel(a.count)}`}
                 onClick={onCardClick(i)}
                 onKeyDown={onCardKey(i)}
-                onPointerMove={onCardMove}
+                onPointerMove={trackGlow}
               >
-                <div className={s.top}>
+                <div className={o.top}>
                   <span>{a.label}</span>
-                  <span className={s.icon} aria-hidden>
+                  <span className={o.icon} aria-hidden>
                     <Icon />
                   </span>
                 </div>
                 <h3>{a.title}</h3>
-                <p className={s.intro}>{a.text}</p>
-                <div className={s.vig} aria-hidden>
+                <p className={o.intro}>{a.text}</p>
+                <div className={o.vig} aria-hidden>
                   <Vignette area={a.key} />
                 </div>
-                <div className={s.foot}>
+                <div className={o.foot}>
                   <span>{featuresLabel(a.count)}</span>
-                  <Link href={areaHref(a.key)} className={s.go} tabIndex={-1}>
+                  <Link href={areaHref(a.key)} className={o.go} tabIndex={-1}>
                     Open <FiChevronRight aria-hidden />
                   </Link>
                 </div>
-                <span
-                  className={s.dim}
-                  ref={(el) => {
-                    dimRefs.current[i] = el;
-                  }}
-                />
+                <span className={o.dim} ref={dimRef(i)} />
               </article>
             );
           })}
         </div>
 
-        <div ref={tabsRef} className={s.tabs} role="tablist" aria-label="Feature areas">
-          <span ref={pillRef} className={s.pill} aria-hidden />
+        <div ref={tabsRef} className={o.tabs} role="tablist" aria-label="Feature areas">
+          <span ref={pillRef} className={o.pill} aria-hidden />
           {AREAS.map((a, i) => (
             <button
               key={a.key}
-              ref={(el) => {
-                tabRefs.current[i] = el;
-              }}
+              ref={tabRef(i)}
               type="button"
               role="tab"
               aria-selected={i === active}
-              className={`${s.tab} ${i === active ? s.tabOn : ""}`}
+              className={`${o.tab} ${i === active ? o.tabOn : ""}`}
               onClick={() => goto(i)}
             >
               <span>{shortLabel(a.label)}</span>

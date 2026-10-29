@@ -1,0 +1,316 @@
+/* The shared look of the homepage's sticky, scroll-driven 3D carousels
+   (reference: .orbit): FeatureOrbit ("31 features in eight areas") and Benefits
+   ("What changes for your gym"). useOrbit.ts drives it. The card shell, tabs, the
+   flat layout for reduced motion, phones and the light theme live here; each
+   section's own card contents live in its own module.
+   Colours come from the global --gp-* theme tokens; light-only tweaks are at the end. */
+
+.orbit {
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --sp-pop: linear(0, 0.0085, 0.0319, 0.0673, 0.1122, 0.1641, 0.2212, 0.2815, 0.3435, 0.406, 0.4678, 0.528, 0.5859, 0.6409, 0.6926, 0.7407, 0.785, 0.8255, 0.862, 0.8947, 0.9237, 0.949, 0.971, 0.9897, 1.0055, 1.0186, 1.0291, 1.0374, 1.0437, 1.0482, 1.0512, 1.0529, 1.0533, 1.0529, 1.0516, 1.0497, 1.0473, 1.0445, 1.0415, 1.0382, 1.0349, 1.0316, 1.0283, 1.0251, 1.022, 1.0191, 1.0163, 1.0138, 1.0114, 1.0093, 1.0073, 1.0056, 1.004, 1.0027, 1.0015, 1.0005, 0.9997, 1);
+  position: relative;
+  height: calc(100vh + var(--steps, 7) * 62vh);
+  margin-top: 130px;
+  color: rgb(var(--gp-bone));
+  scroll-margin-top: 90px;
+}
+
+.stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  overflow: clip;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  perspective: 1500px;
+}
+
+.head {
+  position: absolute;
+  top: max(96px, 11vh);
+  left: 0;
+  right: 0;
+  z-index: 5;
+  padding: 0 16px;
+  text-align: center;
+}
+.head h2 {
+  font-weight: 500;
+  font-size: clamp(28px, 3.6vw, 44px);
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+.head p {
+  font-size: 15px;
+  margin-top: 8px;
+  color: rgb(var(--gp-slate));
+}
+
+.track {
+  position: relative;
+  width: min(400px, 78vw);
+  height: min(470px, 58vh);
+  transform-style: preserve-3d;
+  margin-top: 70px;
+}
+
+.card {
+  --mx: 50%;
+  --my: 30%;
+  --tint: var(--tint-d, rgb(var(--gp-mint)));
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: linear-gradient(160deg, #1a2221 0%, #0e1313 55%, #0a0d0d 100%);
+  border: 1px solid var(--gp-edge-2);
+  box-shadow: 0 40px 80px -40px rgba(0, 0, 0, 1);
+  will-change: transform, opacity;
+  cursor: pointer;
+  contain: layout paint;
+  text-align: left;
+}
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(360px circle at var(--mx) var(--my), color-mix(in srgb, var(--tint) 18%, transparent), transparent 60%);
+  pointer-events: none;
+}
+.card::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: var(--rim, 0);
+  background: linear-gradient(var(--rimdir, 90deg), transparent 40%, color-mix(in srgb, var(--tint) 55%, transparent) 85%, rgb(var(--gp-bone)) 100%);
+  mix-blend-mode: screen;
+}
+.card > * {
+  position: relative;
+}
+
+.dim {
+  position: absolute !important;
+  inset: 0;
+  background: rgb(var(--gp-void));
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+  border-radius: inherit;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: rgb(var(--gp-slate));
+  font-size: 13px;
+}
+.icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  background: rgb(var(--gp-bone) / 0.06);
+  color: var(--tint);
+}
+.icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.card h3 {
+  font-weight: 500;
+  font-size: 28px;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  margin-top: 18px;
+  text-wrap: balance;
+}
+.intro {
+  color: rgb(var(--gp-slate));
+  font-size: 14.5px;
+  line-height: 1.55;
+  margin-top: 8px;
+}
+
+.vig {
+  margin-top: auto;
+  padding-top: 18px;
+}
+
+.foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 18px;
+  font-size: 13px;
+  color: rgb(var(--gp-slate));
+}
+.go {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: rgb(var(--gp-bone));
+  font-weight: 500;
+}
+.go svg {
+  width: 15px;
+  height: 15px;
+  transition: transform 0.3s var(--ease);
+}
+.go:hover svg {
+  transform: translateX(3px);
+}
+
+/* area tabs */
+.tabs {
+  position: absolute;
+  bottom: max(26px, 4vh);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgb(var(--gp-graphite) / 0.95);
+  border: 1px solid var(--gp-edge);
+  max-width: calc(100vw - 32px);
+  overflow-x: auto;
+  scrollbar-width: none;
+  z-index: 200;
+}
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+.tab {
+  position: relative;
+  flex: none;
+  height: 32px;
+  padding: 0 13px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: rgb(var(--gp-slate));
+  transition: color 0.25s;
+}
+.tab:hover {
+  color: rgb(var(--gp-mist));
+}
+.tabOn,
+.tabOn:hover {
+  color: rgb(var(--gp-ink));
+}
+.tab span {
+  position: relative;
+  z-index: 1;
+}
+.pill {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 0;
+  height: 32px;
+  border-radius: 999px;
+  background: rgb(var(--gp-bone));
+  transition: left 467ms var(--sp-pop), width 467ms var(--sp-pop);
+}
+
+/* ---------- flat: reduced motion only (a grid; a swipeable row on phones) ---------- */
+.flat {
+  height: auto;
+}
+.flat .stage {
+  position: relative;
+  height: auto;
+  overflow: visible;
+  perspective: none;
+}
+.flat .head {
+  position: static;
+}
+.flat .track {
+  width: 100%;
+  max-width: 1180px;
+  height: auto;
+  margin-top: 40px;
+  padding: 0 24px;
+  transform-style: flat;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+.flat .card {
+  position: relative;
+  inset: auto;
+  min-height: 440px;
+}
+.flat .dim {
+  display: none;
+}
+.flat .tabs {
+  position: relative;
+  bottom: auto;
+  left: auto;
+  transform: none;
+  margin: 24px auto 0;
+}
+
+/* phones: the same pinned, scroll-driven carousel as desktop, exactly as the
+   reference sizes it at <=640px (cards 78vw wide, side cards peeking, tabs pinned
+   at the bottom); the .flat rules here only apply under reduced motion */
+@media (max-width: 640px) {
+  .card h3 {
+    font-size: 24px;
+  }
+  .track {
+    height: min(470px, 62vh);
+  }
+  .flat .track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 16px;
+    padding: 0 16px 4px;
+    gap: 12px;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+  .flat .track::-webkit-scrollbar {
+    display: none;
+  }
+  .flat .card {
+    flex: 0 0 86%;
+    scroll-snap-align: start;
+    min-height: 430px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pill,
+  .go svg {
+    transition: none;
+  }
+}
+
+/* ---------- light theme (reference: html[data-gp-theme="light"] .ocard / .tabs) ---------- */
+:global(html[data-gp-theme="light"]) .card {
+  --tint: var(--tint-l, rgb(var(--gp-mint)));
+  background: linear-gradient(160deg, #ffffff 0%, #f6f8f5 100%);
+  box-shadow: 0 30px 60px -36px rgba(0, 0, 0, 0.25);
+}
+:global(html[data-gp-theme="light"]) .tabs {
+  background: rgba(255, 255, 255, 0.96);
+}
+:global(html[data-gp-theme="light"]) .icon {
+  background: rgb(var(--gp-bone) / 0.04);
+}

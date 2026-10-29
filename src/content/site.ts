@@ -95,17 +95,17 @@ export const HERO = {
 // What changes for the gym, in the owner's words: one outcome and one
 // sentence each. Each card leads to the feature behind it; the full list is
 // on /features. Every line is something the product does today.
-export const BENEFITS: { eyebrow: string; title: string; text: string; items: { key: FeatureKey; title: string; text: string }[]; cta: string } = {
+export const BENEFITS: { eyebrow: string; title: string; text: string; items: { key: FeatureKey; /** Its tab in the carousel: a word or two. */ tab: string; title: string; text: string }[]; cta: string } = {
   eyebrow: "How it helps",
   title: "What changes for your gym",
   text: "Less chasing and less paperwork. More members and fuller classes.",
   items: [
-    { key: "renewals", title: "Get paid on time", text: "See who has paid and who owes. Members get a payment link and pay by card, JazzCash, Easypaisa or bank transfer." },
-    { key: "alerts", title: "No more unpaid visits", text: "Members check in by QR code or fingerprint, and the desk hears “Fee expired” when a lapsed member walks in." },
-    { key: "website", title: "Win new members", text: "Your own website with your classes, trainers and prices, where people sign up." },
-    { key: "booking", title: "Fill your classes", text: "Members book classes and personal training from their phone and get a reminder." },
-    { key: "messaging", title: "Bring members back", text: "Reach members by email and phone notification when a fee is due or they stop coming." },
-    { key: "dailysales", title: "Know your numbers", text: "Each day's sales and your profit and loss, without a spreadsheet." },
+    { key: "renewals", tab: "Get paid", title: "Get paid on time", text: "See who has paid and who owes. Members get a payment link and pay by card, JazzCash, Easypaisa or bank transfer." },
+    { key: "alerts", tab: "Check-in", title: "No more unpaid visits", text: "Members check in by QR code or fingerprint, and the desk hears “Fee expired” when a lapsed member walks in." },
+    { key: "website", tab: "New members", title: "Win new members", text: "Your own website with your classes, trainers and prices, where people sign up." },
+    { key: "booking", tab: "Classes", title: "Fill your classes", text: "Members book classes and personal training from their phone and get a reminder." },
+    { key: "messaging", tab: "Win back", title: "Bring members back", text: "Reach members by email and phone notification when a fee is due or they stop coming." },
+    { key: "dailysales", tab: "Numbers", title: "Know your numbers", text: "Each day's sales and your profit and loss, without a spreadsheet." },
   ],
   cta: "View all features",
 };
