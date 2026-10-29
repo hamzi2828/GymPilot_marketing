@@ -167,6 +167,51 @@ export default function AllFeatures() {
     }
   }, [scrollToArea]);
 
+  // Arriving from a homepage card (/features#<area> or #<feature-slug>): land
+  // on that row, slide the row so the card is in view, and give it a pop
+  // (the ring glow itself is TargetGlow.tsx). An area gets its heading lit.
+  useEffect(() => {
+    let timers: number[] = [];
+    const go = () => {
+      let id = "";
+      try {
+        id = decodeURIComponent(window.location.hash.replace(/^#/, ""));
+      } catch {
+        return;
+      }
+      const el = id ? document.getElementById(id) : null;
+      if (!el) return;
+      const grp = el.classList.contains(s.grp) ? el : el.closest<HTMLElement>(`.${s.grp}`);
+      if (!grp) return;
+      lockUntil.current = performance.now() + 1400;
+      setArea(grp.id as Area);
+      if (el !== grp) {
+        // Horizontal first, at once, so the row's one-time peek sees it moved and stays put.
+        const track = el.parentElement;
+        if (track && track.scrollWidth > track.clientWidth) {
+          const snap = track.style.scrollSnapType;
+          track.style.scrollSnapType = "none";
+          track.scrollLeft = Math.max(0, el.offsetLeft - 4);
+          timers.push(window.setTimeout(() => (track.style.scrollSnapType = snap), 400));
+        }
+      }
+      grp.scrollIntoView({ block: "start", behavior: still() ? "auto" : "smooth" });
+      const lit = el === grp ? grp : el;
+      const cls = el === grp ? s.flashGrp : s.pop;
+      lit.classList.remove(cls);
+      void lit.offsetWidth;
+      lit.classList.add(cls);
+      timers.push(window.setTimeout(() => lit.classList.remove(cls), 2400));
+    };
+    timers.push(window.setTimeout(go, 250));
+    window.addEventListener("hashchange", go);
+    return () => {
+      window.removeEventListener("hashchange", go);
+      timers.forEach((t) => window.clearTimeout(t));
+      timers = [];
+    };
+  }, []);
+
   // Scroll-spy: the last area whose top has passed just under the sticky bar.
   useEffect(() => {
     let raf = 0;

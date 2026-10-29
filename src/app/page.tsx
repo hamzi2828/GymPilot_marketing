@@ -36,9 +36,9 @@ export default function LandingPage() {
         <ConvergeHeadline />
         <GymPulse />
         <WhatYouGet />
-        <FeatureOrbit />
         <HowItWorks />
         <Suggestions />
+        <FeatureOrbit />
         <Pricing />
         <Testimonials />
         <Faq />

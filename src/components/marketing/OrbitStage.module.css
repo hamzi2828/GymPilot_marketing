@@ -50,6 +50,10 @@
   color: rgb(var(--gp-slate));
 }
 
+/* The track itself never takes the click (in 3D it can sit over the front
+   card); the cards do, except those the script hides (pointer-events: none). */
+.track { pointer-events: none; }
+.track > * { pointer-events: auto; }
 .track {
   position: relative;
   width: min(400px, 78vw);

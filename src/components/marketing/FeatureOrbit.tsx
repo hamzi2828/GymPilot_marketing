@@ -1,8 +1,8 @@
 "use client";
 
-// "31 features in eight areas": a sticky, scroll-driven 3D carousel. Four
-// outcome cards come first (get paid, no unpaid visits, win members back,
-// know your numbers, each with its scene), then one card per feature area. Scrolling through the section turns the carousel;
+// "31 features in eight areas": a sticky, scroll-driven 3D carousel. Two
+// outcome cards come first (get paid with no unpaid visits, and win members
+// back, each with its scene), then one card per feature area. Scrolling through the section turns the carousel;
 // the tabs at the bottom jump to an area (the mechanics are useOrbit.ts and
 // OrbitStage.module.css, shared with Benefits). Phones get the same pinned, scrolling
 // carousel, sized as the reference sizes it at <=640px. Only for
@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import { type CSSProperties, type KeyboardEvent, type MouseEvent, type ReactNode } from "react";
 import { FiChevronRight, FiLock } from "react-icons/fi";
 import { LuCrown, LuFingerprint } from "react-icons/lu";
-import { FEATURE_GROUPS, FEATURES, featureByKey, featureHref, featuresIn, type FeatureKey, type GroupKey } from "@/content/features";
+import { FEATURE_GROUPS, FEATURES, featureByKey, featuresIn, type FeatureKey, type GroupKey } from "@/content/features";
 import { BENEFITS } from "@/content/site";
 import { FEATURE_ICONS } from "./featureIcons";
 import { BENEFIT_SCENES } from "./BenefitScenes";
@@ -28,22 +28,44 @@ import s from "./FeatureOrbit.module.css";
 const AREAS = FEATURE_GROUPS.map((g) => ({ ...g, count: featuresIn(g.key).length }));
 const areaHref = (key: GroupKey) => `/features#${key}`;
 
-// The owner's four outcome cards go first, then one card per area.
-const BENEFIT_KEYS: FeatureKey[] = ["renewals", "alerts", "messaging", "dailysales"];
-const BENEFIT_TABS: Partial<Record<FeatureKey, string>> = { renewals: "Get paid", alerts: "Unpaid visits", messaging: "Win back", dailysales: "Numbers" };
+// The owner's outcome cards go first, then one card per area. "Get paid on
+// time" and "No more unpaid visits" share one card, and "Know your numbers"
+// is the Money & reports card (the owner's calls).
 const BENEFIT_TINTS = [
   { "--tint-d": "#7FE3D2", "--tint-l": "#0B7566" },
   { "--tint-d": "#E5A34A", "--tint-l": "#8F5609" },
 ];
+// Classes & PT and Staff & trainers share one card here (the owner's call);
+// it opens the Classes area on /features. The /features page keeps both.
+const teamCount = AREAS.find((a) => a.key === "team")?.count ?? 0;
+const CAROUSEL_AREAS = AREAS.filter((a) => a.key !== "team").map((a) =>
+  a.key === "classes"
+    ? {
+        ...a,
+        label: "Classes, PT & staff",
+        title: "Classes, trainers and staff",
+        text: "Your timetable and trainers' diaries with members booking themselves in, plus rotas, leave and payslips for the team.",
+        count: a.count + teamCount,
+      }
+    : a
+);
+const benefit = (k: FeatureKey) => BENEFITS.items.find((x) => x.key === k)!;
+const OUTCOMES: { key: FeatureKey; title: string; text: string; tab: string }[] = [
+  {
+    key: "renewals",
+    title: "Get paid on time, no unpaid visits",
+    text: "See who owes and get paid online or by bank transfer. The desk hears “Fee expired” at the door.",
+    tab: "Get paid",
+  },
+  { key: "messaging", title: benefit("messaging").title, text: benefit("messaging").text, tab: "Win back" },
+];
+const BENEFIT_KEYS = OUTCOMES.map((x) => x.key);
 type Card =
   | { kind: "benefit"; key: FeatureKey; title: string; text: string; tab: string; href: string }
   | { kind: "area"; area: (typeof AREAS)[number]; href: string };
 const CARDS: Card[] = [
-  ...BENEFIT_KEYS.map((k) => {
-    const b = BENEFITS.items.find((x) => x.key === k)!;
-    return { kind: "benefit" as const, key: k, title: b.title, text: b.text, tab: BENEFIT_TABS[k] ?? b.tab, href: featureHref(k) };
-  }),
-  ...AREAS.map((a) => ({ kind: "area" as const, area: a, href: areaHref(a.key) })),
+  ...OUTCOMES.map((x) => ({ kind: "benefit" as const, ...x, href: `/features#${featureByKey(x.key).slug}` })),
+  ...CAROUSEL_AREAS.map((a) => ({ kind: "area" as const, area: a, href: areaHref(a.key) })),
 ];
 
 export default function FeatureOrbit() {
