@@ -4,8 +4,7 @@ import Hero from "@/components/marketing/Hero";
 import ConvergeHeadline from "@/components/marketing/ConvergeHeadline";
 import GymPulse from "@/components/marketing/GymPulse";
 import FeatureOrbit from "@/components/marketing/FeatureOrbit";
-import WhatYouGet from "@/components/marketing/WhatYouGet";
-import HowItWorks from "@/components/marketing/HowItWorks";
+import SetupJourney from "@/components/marketing/SetupJourney";
 import Suggestions from "@/components/marketing/Suggestions";
 import Pricing from "@/components/marketing/Pricing";
 import Testimonials from "@/components/marketing/Testimonials";
@@ -35,8 +34,7 @@ export default function LandingPage() {
         <Hero />
         <ConvergeHeadline />
         <GymPulse />
-        <WhatYouGet />
-        <HowItWorks />
+        <SetupJourney />
         <Suggestions />
         <FeatureOrbit />
         <Pricing />
