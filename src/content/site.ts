@@ -139,7 +139,7 @@ export const SETUP_JOURNEY = [
     text: "Pick a plan and we set it all up in one working day: sign-ups, fees, check-in, classes, staff and reports.",
   },
   {
-    title: "Your own website, on your address",
+    title: "Your own website",
     text: "Your gym online with your logo and colours. Have a domain like yourgym.com? Tell us after you sign up and our team connects it, padlock included.",
   },
   {
