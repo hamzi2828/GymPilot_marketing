@@ -38,9 +38,12 @@
 }
 
 .cols { position: absolute; inset: -30% -6%; display: flex; justify-content: space-between; pointer-events: none; }
-.side { display: flex; gap: 14px; transform: rotate(-9deg); }
+/* Each side fills the space up to the text (owner: no empty gap beside it);
+   the columns grow with it, up to 240px each. */
+.side { display: flex; gap: 14px; transform: rotate(-9deg); width: calc(50% - 280px); }
+.side:first-child { justify-content: flex-end; }
 .col {
-  display: flex; flex-direction: column; gap: 14px; width: 150px;
+  display: flex; flex-direction: column; gap: 14px; flex: 1 1 0; min-width: 0; max-width: 240px;
   animation: up 38s linear infinite; animation-play-state: paused; will-change: transform;
 }
 .live .col { animation-play-state: running; }
@@ -65,7 +68,7 @@
 
 .fade {
   position: absolute; inset: 0; pointer-events: none; transition: background 0.6s;
-  background: radial-gradient(36% 72% at 50% 50%, var(--pbg) 58%, transparent 100%);
+  background: radial-gradient(26% 72% at 50% 50%, var(--pbg) 62%, transparent 100%);
 }
 
 .body { position: relative; text-align: center; max-width: 460px; padding: 60px 20px; }
@@ -99,7 +102,8 @@
 }
 @media (max-width: 640px) {
   .cols { inset: -20% -22%; }
-  .col { width: 110px; }
+  .side { width: auto; }
+  .col { flex: none; width: 110px; }
   .tile { height: 110px; font-size: 12px; padding: 12px; }
   .ic { width: 28px; height: 28px; border-radius: 8px; }
   .ic svg { width: 14px; height: 14px; }
