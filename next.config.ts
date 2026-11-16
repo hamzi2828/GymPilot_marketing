@@ -52,7 +52,7 @@ const META = (process.env.NEXT_PUBLIC_META_PIXEL_ID || "").trim() !== "";
 const PANEL_PATHS = ["/login", "/forgot", "/reset", "/super-admin", "/super-admin/:path*"];
 
 // Where stored files are served from (see helper/blobUpload.js on the API).
-const UPLOAD_HOSTS = [API_ORIGIN, "https://*.public.blob.vercel-storage.com"].filter(Boolean);
+const UPLOAD_HOSTS = [API_ORIGIN, "https://media.gymspilotpro.com", "https://*.public.blob.vercel-storage.com"].filter(Boolean);
 
 function contentSecurityPolicy({ analytics, uploads = false }: { analytics: boolean; uploads?: boolean }): string {
   const ga = analytics && GA;
